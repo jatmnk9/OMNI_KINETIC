@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -38,7 +37,7 @@ export function Navigation() {
             >
               <Icon className="w-5 h-5" />
               <span className="text-[8px] font-bold uppercase tracking-[0.2em]">{item.label}</span>
-              {isActive && <div className="w-1 h-1 bg-accent rounded-full mt-0.5 animate-pulse" />}
+              {isActive && <div className="w-1.5 h-1.5 bg-accent rounded-full mt-1 animate-pulse" />}
             </Link>
           );
         })}

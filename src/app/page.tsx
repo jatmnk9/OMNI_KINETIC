@@ -99,7 +99,6 @@ export default function WelcomePage() {
     router.push('/dashboard');
   };
 
-  // If already logged in, show access card
   if (activeDevice !== 'none' && step === 'intro') {
     return (
       <main className="min-h-screen pb-24">
@@ -113,8 +112,8 @@ export default function WelcomePage() {
               <LogOut className="w-5 h-5 opacity-40" />
             </Button>
           </header>
-          <Card className="p-10 bg-brand overflow-hidden relative border-none group cursor-pointer rounded-[2rem]" onClick={() => router.push('/dashboard')}>
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+          <Card className="p-10 bg-white text-black overflow-hidden relative border-none group cursor-pointer rounded-[2rem]" onClick={() => router.push('/dashboard')}>
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
             <div className="relative z-10 flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
@@ -170,7 +169,7 @@ export default function WelcomePage() {
                   <Input id="email" name="email" type="email" placeholder="jane@luxe.com" className="pl-10 h-14 bg-card border-none rounded-xl" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-14 bg-accent font-bold uppercase tracking-[0.2em] rounded-xl mt-4">Create Account</Button>
+              <Button type="submit" className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4">Create Account</Button>
             </form>
           </section>
         )}
@@ -182,27 +181,27 @@ export default function WelcomePage() {
               <p className="text-sm font-light italic">Explore the kinetic collection</p>
             </header>
 
-            <div className="relative flex-1 flex flex-col items-center overflow-hidden">
+            <div className="relative flex-1 flex flex-col items-center">
               <Carousel 
                 setApi={setApi} 
-                className="w-full h-full cursor-grab active:cursor-grabbing"
-                opts={{ loop: true }}
+                className="w-full"
+                opts={{ loop: true, align: "center", skipSnaps: false }}
               >
-                <CarouselContent className="h-full">
+                <CarouselContent>
                   {DEVICES.map((device) => (
-                    <CarouselItem key={device.id} className="h-full flex flex-col items-center">
-                      <div className="flex flex-col items-center space-y-8 px-4 w-full h-full">
-                        <div className="relative w-full aspect-[3/4] overflow-visible rounded-[3rem] transition-transform duration-700">
+                    <CarouselItem key={device.id}>
+                      <div className="flex flex-col items-center space-y-8 px-4 w-full h-full pb-10">
+                        <div className="relative w-full aspect-[3/4] overflow-visible transition-transform duration-700">
                            <Image 
                              src={device.img || ''} 
                              alt={device.name} 
                              fill 
-                             className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-1000"
+                             className="object-contain drop-shadow-[0_35px_60px_rgba(255,255,255,0.1)] transition-transform duration-1000"
                              data-ai-hint="luxury perfume"
                              priority
                            />
                         </div>
-                        <div className="text-center space-y-3 pb-8">
+                        <div className="text-center space-y-3">
                           <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
                           <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
                           <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
@@ -223,7 +222,7 @@ export default function WelcomePage() {
                 {DEVICES.map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-1.5 rounded-full transition-all duration-300 ${current === i ? 'w-6 bg-accent' : 'w-1.5 bg-white/20'}`} 
+                    className={`h-1.5 rounded-full transition-all duration-300 ${current === i ? 'w-6 bg-white' : 'w-1.5 bg-white/20'}`} 
                   />
                 ))}
               </div>
@@ -234,11 +233,11 @@ export default function WelcomePage() {
         {step === 'scan' && (
           <section className="flex-1 flex flex-col items-center justify-center space-y-10 animate-in fade-in duration-500">
             <div className="relative">
-              <div className={`absolute -inset-16 bg-accent/20 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
+              <div className={`absolute -inset-16 bg-white/10 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
               <Button 
                 onClick={handleScan}
                 disabled={scanning}
-                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-accent text-white scale-110 shadow-[0_0_30px_rgba(var(--accent),0.4)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
+                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_30px_rgba(255,255,255,0.4)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
               >
                 {scanning ? <Bluetooth className="w-10 h-10 animate-pulse" /> : <Scan className="w-10 h-10" />}
               </Button>
@@ -263,22 +262,22 @@ export default function WelcomePage() {
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[1.5rem] ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card hover:bg-white/5'}`}
+                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[1.5rem] ${plan.badge ? 'ring-2 ring-white bg-white/5' : 'bg-card hover:bg-white/5'}`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}
+                  {plan.badge && <Badge className="absolute top-4 right-4 bg-white text-black text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}
                   <div className="space-y-4">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
                         <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
                         <p className="text-xs text-muted-foreground leading-relaxed">{plan.desc}</p>
                       </div>
-                      <p className="text-lg font-black text-accent">{plan.price}</p>
+                      <p className="text-lg font-black">{plan.price}</p>
                     </div>
                     <ul className="flex flex-wrap gap-2 pt-2 border-t border-white/5 mt-4">
                       {plan.features.map((f, i) => (
                         <li key={i} className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1 opacity-60">
-                          <Check className="w-3 h-3 text-accent" /> {f}
+                          <Check className="w-3 h-3 text-white" /> {f}
                         </li>
                       ))}
                     </ul>
