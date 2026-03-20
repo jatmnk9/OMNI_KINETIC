@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Scan, ArrowRight, Check, User, Mail, LogOut } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, Check, User, Mail, LogOut, Fingerprint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,9 +46,16 @@ const PLANS = [
 
 function OmniLogo() {
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-4xl font-headline tracking-[0.3em] font-black leading-none">OMNI</h1>
-      <h2 className="text-sm font-body tracking-[0.5em] font-bold opacity-40 -mt-1 uppercase">Kinetic</h2>
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <div className="relative w-48 h-24">
+        <svg viewBox="0 0 200 100" className="w-full h-full text-white fill-current">
+          <text x="50%" y="40%" textAnchor="middle" className="text-xl font-light tracking-[0.5em] uppercase">OMNI</text>
+          <path d="M40,75 C60,45 140,45 160,75" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-30" />
+          <text x="50%" y="75%" textAnchor="middle" className="text-4xl font-serif italic italic font-light tracking-tight" style={{ fontFamily: 'serif' }}>Kinetic</text>
+        </svg>
+      </div>
+      <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      <p className="text-[10px] tracking-[0.5em] uppercase opacity-60 font-medium">WHERE FRAGRANCE MEETS MOTION</p>
     </div>
   );
 }
@@ -101,27 +108,22 @@ export default function WelcomePage() {
 
   if (activeDevice !== 'none' && step === 'intro') {
     return (
-      <main className="min-h-screen pb-24">
-        <div className="p-8 pt-16 space-y-8 max-w-lg mx-auto">
-          <header className="flex justify-between items-start">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-headline font-bold">Active Ecosystem</h1>
-              <p className="text-muted-foreground">Welcome back, {userProfile?.name}.</p>
-            </div>
-            <Button variant="ghost" size="icon" onClick={logout}>
-              <LogOut className="w-5 h-5 opacity-40" />
-            </Button>
-          </header>
-          <Card className="p-10 bg-white text-black overflow-hidden relative border-none group cursor-pointer rounded-[2.5rem]" onClick={() => router.push('/dashboard')}>
-            <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
-                <h2 className="text-2xl font-bold tracking-tight">Access Hub</h2>
-              </div>
-              <ArrowRight className="w-6 h-6" />
-            </div>
-          </Card>
+      <main className="min-h-screen pb-24 bg-background">
+        <div className="p-8 pt-24 space-y-8 max-w-lg mx-auto text-center">
+          <OmniLogo />
+          <div className="pt-12 space-y-4">
+             <p className="text-muted-foreground text-sm font-light">Welcome back, {userProfile?.name}.</p>
+             <Card className="p-10 bg-white text-black overflow-hidden relative border-none group cursor-pointer rounded-[2.5rem]" onClick={() => router.push('/dashboard')}>
+               <div className="relative z-10 flex items-center justify-between">
+                 <div className="text-left space-y-1">
+                   <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
+                   <h2 className="text-2xl font-bold tracking-tight">Enter Hub</h2>
+                 </div>
+                 <ArrowRight className="w-6 h-6" />
+               </div>
+             </Card>
+             <Button variant="ghost" size="sm" onClick={logout} className="opacity-40 text-[9px] uppercase tracking-widest font-bold">Sign Out</Button>
+          </div>
         </div>
         <Navigation />
       </main>
@@ -130,55 +132,62 @@ export default function WelcomePage() {
 
   return (
     <main className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
-      <div className="flex-1 flex flex-col p-8 pt-20 max-w-lg mx-auto w-full space-y-12">
+      <div className="flex-1 flex flex-col p-8 pt-24 max-w-lg mx-auto w-full space-y-12">
         
         {step === 'intro' && (
-          <section className="space-y-12 text-center animate-in fade-in duration-1000">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-16 animate-in fade-in duration-1000">
             <OmniLogo />
-            <div className="space-y-4">
-              <p className="text-muted-foreground max-w-xs mx-auto text-sm leading-relaxed tracking-wide font-light">
-                The future of kinetic perfumery. Minimalist technology for maximal well-being.
+            
+            <div className="max-w-[280px] text-center space-y-6">
+              <p className="text-white/60 text-sm leading-relaxed tracking-wide font-light">
+                Your biometric journey begins here. Connect your wearable to unlock a personalized fragrance experience powered by your body&apos;s own signals.
               </p>
             </div>
-            <div className="pt-8">
-              <Button onClick={() => setStep('register')} className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-full hover:bg-neutral-200 transition-all">
-                Begin Experience
+
+            <div className="w-full pt-8">
+              <Button 
+                onClick={() => setStep('register')} 
+                variant="outline"
+                className="w-full h-16 border-white/20 bg-transparent text-white font-light tracking-[0.2em] uppercase rounded-none hover:bg-white/5 transition-all flex items-center justify-center gap-4"
+              >
+                <Fingerprint className="w-5 h-5 opacity-40" />
+                IDENTIFY YOUR DEVICE
               </Button>
             </div>
           </section>
         )}
 
         {step === 'register' && (
-          <section className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-            <header className="space-y-2">
-              <h2 className="text-4xl font-headline font-bold">Biographic Profile</h2>
-              <p className="text-muted-foreground text-sm">Initialize your identity to synchronize with the ecosystem.</p>
+          <section className="space-y-12 animate-in slide-in-from-right-4 duration-500 pt-12">
+            <header className="space-y-3 text-center">
+              <h2 className="text-4xl font-headline font-bold tracking-tight">Biographic Profile</h2>
+              <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold opacity-40">Initialize your identity</p>
             </header>
-            <form onSubmit={handleRegister} className="space-y-6">
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Full Name</Label>
+            <form onSubmit={handleRegister} className="space-y-8">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
-                  <Input id="name" name="name" placeholder="Jane Doe" className="pl-10 h-14 bg-card border-none rounded-2xl" required />
+                  <User className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
+                  <Input id="name" name="name" placeholder="E.g. Jane Doe" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Email Address</Label>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
-                  <Input id="email" name="email" type="email" placeholder="jane@luxe.com" className="pl-10 h-14 bg-card border-none rounded-2xl" required />
+                  <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
+                  <Input id="email" name="email" type="email" placeholder="jane@kinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-2xl mt-4">Create Account</Button>
+              <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl">Create Profile</Button>
             </form>
           </section>
         )}
 
         {step === 'explore' && (
-          <section className="flex-1 flex flex-col space-y-6 animate-in fade-in duration-700">
-            <header className="text-center space-y-2">
-              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-50">Choose Your Kinetic Hardware</h2>
-              <p className="text-sm font-light italic">Swipe to explore the collection</p>
+          <section className="flex-1 flex flex-col space-y-12 animate-in fade-in duration-700">
+            <header className="text-center space-y-3">
+              <h2 className="text-[10px] uppercase tracking-[0.4em] font-black opacity-40">Choose Hardware Architecture</h2>
+              <p className="text-xs font-light italic opacity-60">Swipe to synchronize</p>
             </header>
 
             <div className="relative flex-1 flex flex-col items-center">
@@ -195,26 +204,26 @@ export default function WelcomePage() {
                 <CarouselContent className="-ml-0">
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="pl-0 flex flex-col items-center">
-                      <div className="flex flex-col items-center space-y-8 px-4 w-full pb-10">
-                        <div className="relative w-64 aspect-[3/4] overflow-visible">
+                      <div className="flex flex-col items-center space-y-12 px-4 w-full pb-10">
+                        <div className="relative w-72 aspect-[3/4] overflow-visible">
                            <Image 
                              src={device.img || ''} 
                              alt={device.name} 
                              fill 
-                             className="object-contain drop-shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-transform duration-1000 scale-110"
+                             className="object-contain drop-shadow-[0_30px_60px_rgba(255,255,255,0.1)] transition-transform duration-1000 scale-110"
                              data-ai-hint="perfume bottle technology"
                              priority
                            />
                         </div>
-                        <div className="text-center space-y-3">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
-                          <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
-                          <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
+                        <div className="text-center space-y-4">
+                          <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
+                          <h3 className="text-5xl font-headline font-black tracking-tight">{device.name}</h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed max-w-[260px] mx-auto font-medium">{device.desc}</p>
                           <Button 
-                            className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-2xl mt-4 shadow-xl hover:bg-neutral-200 transition-all"
+                            className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl mt-6 shadow-2xl hover:scale-[1.02] transition-transform"
                             onClick={() => startLinking(device)}
                           >
-                            Synchronize Device
+                            Synchronize
                           </Button>
                         </div>
                       </div>
@@ -223,11 +232,11 @@ export default function WelcomePage() {
                 </CarouselContent>
               </Carousel>
               
-              <div className="flex gap-3 pb-8 mt-auto">
+              <div className="flex gap-4 pb-12 mt-auto">
                 {DEVICES.map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-1 rounded-full transition-all duration-500 ${current === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`} 
+                    className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-12 bg-white' : 'w-2 bg-white/20'}`} 
                   />
                 ))}
               </div>
@@ -238,51 +247,51 @@ export default function WelcomePage() {
         {step === 'scan' && (
           <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500">
             <div className="relative">
-              <div className={`absolute -inset-20 bg-white/10 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
+              <div className={`absolute -inset-24 bg-white/5 rounded-full blur-[100px] transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-150 animate-pulse' : 'opacity-0 scale-90'}`} />
               <Button 
                 onClick={handleScan}
                 disabled={scanning}
-                className={`relative h-36 w-36 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-700 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_40px_rgba(255,255,255,0.3)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
+                className={`relative h-44 w-44 rounded-full flex flex-col items-center justify-center gap-3 border-none transition-all duration-700 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_80px_rgba(255,255,255,0.2)]' : 'bg-white/5 text-white border border-white/10 hover:bg-white hover:text-black'}`}
               >
-                {scanning ? <Bluetooth className="w-12 h-12 animate-pulse" /> : <Scan className="w-12 h-12" />}
+                {scanning ? <Bluetooth className="w-14 h-14 animate-pulse" /> : <Scan className="w-14 h-14" />}
               </Button>
             </div>
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-headline font-bold">Pairing {selectedProduct?.name}</h2>
-              <p className="text-xs text-muted-foreground tracking-widest uppercase font-bold">
-                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Link'}
+            <div className="text-center space-y-5">
+              <h2 className="text-4xl font-headline font-bold tracking-tight">Pairing {selectedProduct?.name}</h2>
+              <p className="text-[10px] text-muted-foreground tracking-[0.4em] uppercase font-black opacity-40">
+                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Secure Link'}
               </p>
-              <p className="text-[10px] text-muted-foreground max-w-xs opacity-60">Maintain proximity to ensure an encrypted biometric connection.</p>
+              <p className="text-[10px] text-muted-foreground max-w-[240px] opacity-60 leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
             </div>
           </section>
         )}
 
         {step === 'plan' && (
-          <section className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <header className="text-center space-y-2">
-              <h2 className="text-3xl font-headline font-bold">Olfactory Intelligence</h2>
-              <p className="text-sm text-muted-foreground font-light">Select your level of biometric synchronization.</p>
+          <section className="space-y-12 animate-in slide-in-from-bottom-4 duration-500 pt-8">
+            <header className="text-center space-y-3">
+              <h2 className="text-4xl font-headline font-bold tracking-tight">Intelligence Tier</h2>
+              <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] font-bold opacity-40">Biometric Sync Level</p>
             </header>
-            <div className="space-y-4 pb-12">
+            <div className="space-y-5 pb-20">
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[2rem] ${plan.badge ? 'ring-1 ring-white/20 bg-white/5' : 'bg-card hover:bg-white/10'}`}
+                  className={`p-8 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[2.5rem] ${plan.badge ? 'bg-white/5 ring-1 ring-white/10 shadow-2xl' : 'bg-white/5 hover:bg-white/10'}`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  {plan.badge && <Badge className="absolute top-4 right-4 bg-white text-black text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}
-                  <div className="space-y-4">
+                  {plan.badge && <Badge className="absolute top-6 right-8 bg-white text-black text-[9px] uppercase tracking-widest font-black px-3">{plan.badge}</Badge>}
+                  <div className="space-y-6">
                     <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{plan.desc}</p>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed max-w-[180px] font-medium">{plan.desc}</p>
                       </div>
-                      <p className="text-lg font-black">{plan.price}</p>
+                      <p className="text-xl font-black tabular-nums">{plan.price}</p>
                     </div>
-                    <ul className="flex flex-wrap gap-3 pt-3 border-t border-white/5 mt-4">
+                    <ul className="flex flex-wrap gap-4 pt-4 border-t border-white/5">
                       {plan.features.map((f, i) => (
-                        <li key={i} className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-2 opacity-70">
-                          <Check className="w-3 h-3 text-white" /> {f}
+                        <li key={i} className="text-[9px] uppercase font-bold tracking-[0.2em] flex items-center gap-2 opacity-50">
+                          <Check className="w-3 h-3 text-accent" /> {f}
                         </li>
                       ))}
                     </ul>
@@ -294,7 +303,7 @@ export default function WelcomePage() {
         )}
 
         <footer className="text-center pt-8 border-t border-white/5 mt-auto">
-          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold">Omni-Scent Protocol v2.1.0</p>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-black opacity-30">Omni-Scent Protocol v2.1.0</p>
         </footer>
       </div>
       <Navigation />

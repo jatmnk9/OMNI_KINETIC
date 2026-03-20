@@ -31,6 +31,7 @@
 
   /* Apex Essence: #3D0A09 (Deep Burgundy) + Silver/Gold */
   .theme-apexessence {
+    --background: 1 74% 8%;
     --brand-primary: 1 74% 14%; /* #3D0A09 */
     --brand-accent: 45 60% 60%; /* Gold */
     --accent: 45 60% 60%;
@@ -39,6 +40,7 @@
 
   /* Synapse: #301540 (Deep Purple) + Gold */
   .theme-synapse {
+    --background: 278 51% 10%;
     --brand-primary: 278 51% 17%; /* #301540 */
     --brand-accent: 45 60% 60%; /* Gold */
     --accent: 45 60% 60%;
@@ -47,6 +49,7 @@
 
   /* Kinetic: #0097A9 (Deep Teal) + Silver */
   .theme-kinetic {
+    --background: 186 100% 15%;
     --brand-primary: 186 100% 33%; /* #0097A9 */
     --brand-accent: 0 0% 75%; /* Silver */
     --accent: 186 100% 45%;
