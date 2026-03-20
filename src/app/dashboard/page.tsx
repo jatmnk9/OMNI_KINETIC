@@ -1,8 +1,9 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Thermometer, Zap, Waves, BrainCircuit, Info, Heart, Gauge, Sparkles, LogOut } from 'lucide-react';
+import { Thermometer, Zap, Waves, BrainCircuit, Info, Heart, Gauge, Sparkles, LogOut, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -90,17 +91,17 @@ export default function DashboardPage() {
 
         <section className="grid grid-cols-3 gap-3">
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
-            <Heart className="w-4 h-4 text-accent" />
+            <Heart className="w-4 h-4 text-brand-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">HRV</span>
             <p className="text-xl font-bold font-body tabular-nums">{biometrics.hrv}ms</p>
           </Card>
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
-            <Gauge className="w-4 h-4 text-accent" />
+            <Gauge className="w-4 h-4 text-brand-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Stress</span>
             <p className="text-xl font-bold font-body">{biometrics.stress}</p>
           </Card>
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
-            <Thermometer className="w-4 h-4 text-accent" />
+            <Thermometer className="w-4 h-4 text-brand-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Temp</span>
             <p className="text-xl font-bold font-body tabular-nums">{biometrics.temp}°</p>
           </Card>
@@ -124,41 +125,50 @@ export default function DashboardPage() {
                   <h4 className="font-bold text-sm tracking-tight">{mode.name}</h4>
                   <p className="text-[10px] text-muted-foreground tracking-wide font-medium">{mode.desc}</p>
                 </div>
-                {selectedMode === mode.id && <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.5)]" />}
+                {selectedMode === mode.id && <div className="w-2 h-2 bg-brand-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.5)]" />}
               </Card>
             ))}
           </div>
         </section>
 
-        <Card className="relative overflow-hidden group border-none bg-card shadow-2xl rounded-[2rem]">
+        <Card 
+          className="relative overflow-hidden group border-none bg-card shadow-2xl rounded-[2rem] cursor-pointer hover:bg-white/5 transition-colors"
+          onClick={() => router.push('/refill')}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20 pointer-events-none" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2 font-headline font-bold tracking-tight">
-              <Sparkles className="w-5 h-5 text-accent" />
-              Smart Refill Tracker
-            </CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-lg flex items-center gap-2 font-headline font-bold tracking-tight">
+                <Droplets className="w-5 h-5 text-brand-accent" />
+                Smart Refill Tracker
+              </CardTitle>
+              <ChevronRight className="w-5 h-5 opacity-40 group-hover:translate-x-1 transition-transform" />
+            </div>
             <CardDescription className="text-[10px] uppercase tracking-widest font-bold opacity-60">NFC Synchronization: Verified Volume.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pb-10">
             <div className="space-y-4">
               <div className="flex justify-between text-[10px] font-bold tracking-[0.2em] uppercase">
                 <span className="opacity-40">Cartridge Volume</span>
-                <span className="text-accent">{cartridgeLevel.toFixed(1)}%</span>
+                <span className="text-brand-accent">{cartridgeLevel.toFixed(1)}%</span>
               </div>
               <Progress value={cartridgeLevel} className="h-2 bg-white/5" />
               <div className="flex justify-between items-center text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-bold">
-                <div className="flex items-center gap-1.5"><Info className="w-3 h-3" /> Estimate: 12 days left</div>
+                <div className="flex items-center gap-1.5"><Info className="w-3 h-3" /> Estimate: 18 days left</div>
                 <Badge variant="secondary" className="bg-white/5 text-white border-none text-[8px] tracking-widest">NFC Validated</Badge>
               </div>
             </div>
 
             <Button 
-              className={`w-full h-16 rounded-2xl font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative shadow-2xl ${firing ? 'bg-accent text-accent-foreground scale-95' : 'bg-accent text-accent-foreground hover:-translate-y-1'}`}
-              onClick={handleManualTrigger}
+              className={`w-full h-16 rounded-2xl font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative shadow-2xl ${firing ? 'bg-brand text-accent-foreground scale-95' : 'bg-brand text-accent-foreground hover:-translate-y-1'}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleManualTrigger();
+              }}
               disabled={firing}
             >
               {firing ? (
-                <span className="flex items-center gap-3 animate-pulse">
+                <span className="flex items-center gap-3 animate-pulse text-accent-foreground">
                   <Waves className="w-5 h-5" /> Releasing Dose
                 </span>
               ) : (
@@ -185,10 +195,10 @@ export default function DashboardPage() {
                 <Card key={idx} className="p-5 border-none bg-card rounded-2xl group hover:bg-white/5 transition-colors">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
-                      <Info className="w-5 h-5 text-accent" />
+                      <Info className="w-5 h-5 text-brand-accent" />
                     </div>
                     <div className="flex-1 space-y-1.5">
-                      <p className="text-[10px] font-bold uppercase text-accent tracking-[0.2em]">{insight.fragranceProfile} • {insight.biometricType}</p>
+                      <p className="text-[10px] font-bold uppercase text-brand-accent tracking-[0.2em]">{insight.fragranceProfile} • {insight.biometricType}</p>
                       <p className="text-xs leading-relaxed opacity-80 font-medium">{insight.insight}</p>
                     </div>
                   </div>

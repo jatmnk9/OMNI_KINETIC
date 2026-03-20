@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, BarChart3, Award, MapPin } from 'lucide-react';
+import { Home, BarChart3, Award, MapPin, Droplets } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/lib/device-context';
 
@@ -13,8 +14,8 @@ export function Navigation() {
   const navItems = [
     { icon: Home, label: 'Home', href: '/' },
     { icon: BarChart3, label: 'Wellness', href: '/dashboard' },
+    { icon: Droplets, label: 'Refill', href: '/refill' },
     { icon: MapPin, label: 'Locator', href: '/map' },
-    { icon: ShoppingBag, label: 'Boutique', href: '/boutique' },
     { icon: Award, label: 'Rewards', href: '/rewards' },
   ];
 
@@ -32,12 +33,12 @@ export function Navigation() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center gap-1 transition-all duration-300",
-                isActive ? "text-accent scale-110" : "text-muted-foreground hover:text-foreground"
+                isActive ? "text-brand-accent scale-110" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Icon className="w-5 h-5" />
               <span className="text-[8px] font-bold uppercase tracking-[0.2em]">{item.label}</span>
-              {isActive && <div className="w-1.5 h-1.5 bg-accent rounded-full mt-1 animate-pulse" />}
+              {isActive && <div className="w-1.5 h-1.5 bg-brand-accent rounded-full mt-1 animate-pulse" />}
             </Link>
           );
         })}
