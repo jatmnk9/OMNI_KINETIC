@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -46,16 +47,20 @@ const PLANS = [
 
 function OmniLogo() {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4">
-      <div className="relative w-48 h-20">
-        <svg viewBox="0 0 200 100" className="w-full h-full text-white fill-current">
-          <text x="50%" y="40%" textAnchor="middle" className="text-xl font-light tracking-[0.5em] uppercase">OMNI</text>
-          <path d="M40,75 C60,45 140,45 160,75" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-30" />
-          <text x="50%" y="75%" textAnchor="middle" className="text-4xl font-serif italic italic font-light tracking-tight">Kinetic</text>
-        </svg>
+    <div className="flex flex-col items-center justify-center space-y-8">
+      <div className="relative w-64 h-32">
+        <Image 
+          src="/logo_omni.PNG" 
+          alt="Omni Kinetic" 
+          fill 
+          className="object-contain"
+          priority
+        />
       </div>
-      <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-      <p className="text-[9px] tracking-[0.4em] uppercase opacity-60 font-medium">WHERE FRAGRANCE MEETS MOTION</p>
+      <div className="flex flex-col items-center space-y-3">
+        <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+        <p className="text-[10px] tracking-[0.4em] uppercase opacity-60 font-medium">WHERE FRAGRANCE MEETS MOTION</p>
+      </div>
     </div>
   );
 }
@@ -136,12 +141,12 @@ export default function WelcomePage() {
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-6">
         
         {step === 'intro' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-16 animate-in fade-in duration-1000">
             <OmniLogo />
             
-            <div className="max-w-[280px] text-center space-y-6">
-              <p className="text-white/60 text-xs leading-relaxed tracking-wide font-light">
-                Your biometric journey begins here. Connect your wearable to unlock a personalized fragrance experience powered by your body&apos;s own signals.
+            <div className="max-w-[280px] text-center">
+              <p className="text-white/40 text-[11px] leading-relaxed tracking-wide font-light">
+                Biometric synchronization for the modern avant-garde.
               </p>
             </div>
 
@@ -149,10 +154,10 @@ export default function WelcomePage() {
               <Button 
                 onClick={() => setStep('register')} 
                 variant="outline"
-                className="w-full h-16 border-white/20 bg-transparent text-white font-light tracking-[0.2em] uppercase rounded-none hover:bg-white/5 transition-all flex items-center justify-center gap-4"
+                className="w-full h-16 border-white/10 bg-white/5 text-white font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-4"
               >
                 <Fingerprint className="w-5 h-5 opacity-40" />
-                IDENTIFY YOUR DEVICE
+                Initialize Profile
               </Button>
             </div>
           </section>
@@ -161,8 +166,8 @@ export default function WelcomePage() {
         {step === 'register' && (
           <section className="flex-1 flex flex-col justify-center space-y-8 animate-in slide-in-from-right-4 duration-500">
             <header className="space-y-3 text-center">
-              <h2 className="text-4xl font-headline font-bold tracking-tight">Biographic Profile</h2>
-              <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold opacity-40">Initialize your identity</p>
+              <h2 className="text-4xl font-headline font-bold tracking-tight">Profile Setup</h2>
+              <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold opacity-40">Initialize your biometric identity</p>
             </header>
             <form onSubmit={handleRegister} className="space-y-6">
               <div className="space-y-2">
@@ -176,10 +181,10 @@ export default function WelcomePage() {
                 <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
-                  <Input id="email" name="email" type="email" placeholder="jane@kinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
+                  <Input id="email" name="email" type="email" placeholder="jane@omnokinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl mt-4">Create Profile</Button>
+              <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl mt-4 hover:scale-[1.02] active:scale-95 transition-transform">Create Identity</Button>
             </form>
           </section>
         )}
@@ -187,8 +192,8 @@ export default function WelcomePage() {
         {step === 'explore' && (
           <section className="flex-1 flex flex-col space-y-4 animate-in fade-in duration-700">
             <header className="text-center space-y-1">
-              <h2 className="text-[10px] uppercase tracking-[0.4em] font-black opacity-40">Choose Hardware Architecture</h2>
-              <p className="text-[10px] font-light italic opacity-60">Swipe to synchronize</p>
+              <h2 className="text-[10px] uppercase tracking-[0.4em] font-black opacity-40">Choose Architecture</h2>
+              <p className="text-[10px] font-light italic opacity-60">Swipe to synchronize hardware</p>
             </header>
 
             <div className="flex-1 flex flex-col relative">
