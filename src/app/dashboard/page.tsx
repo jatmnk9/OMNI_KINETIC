@@ -153,7 +153,7 @@ export default function DashboardPage() {
             </div>
 
             <Button 
-              className={`w-full h-16 rounded-2xl text-white font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative ${firing ? 'bg-accent text-black scale-95' : 'bg-brand shadow-2xl hover:-translate-y-1'}`}
+              className={`w-full h-16 rounded-2xl font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative ${firing ? 'bg-accent text-accent-foreground scale-95' : 'bg-brand text-accent-foreground shadow-2xl hover:-translate-y-1'}`}
               onClick={handleManualTrigger}
               disabled={firing}
             >
