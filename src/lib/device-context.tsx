@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export type DeviceType = 'none' | 'Prada' | 'YSL' | 'Biotherm';
 export type PlanType = 'Base' | 'Essential' | 'Premium';
@@ -15,7 +15,8 @@ interface DeviceContextType {
   currentPlan: PlanType;
   setCurrentPlan: (plan: PlanType) => void;
   userProfile: { name: string; email: string } | null;
-  setUserProfile: (profile: { name: string; email: string }) => void;
+  setUserProfile: (profile: { name: string; email: string } | null) => void;
+  logout: () => void;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -28,9 +29,17 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
 
   const triggerScent = () => {
-    const consumption = currentPlan === 'Premium' ? 0.3 : 0.5; // Premium is more precise
+    const consumption = currentPlan === 'Premium' ? 0.3 : 0.5;
     setCartridgeLevel(prev => Math.max(0, prev - (consumption / 10))); 
     setPoints(prev => prev + 5);
+  };
+
+  const logout = () => {
+    setActiveDevice('none');
+    setUserProfile(null);
+    setCurrentPlan('Base');
+    setCartridgeLevel(85);
+    setPoints(450);
   };
 
   return (
@@ -43,7 +52,8 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
       currentPlan, 
       setCurrentPlan,
       userProfile,
-      setUserProfile
+      setUserProfile,
+      logout
     }}>
       <div className={activeDevice !== 'none' ? `theme-${activeDevice.toLowerCase()}` : ''}>
         {children}

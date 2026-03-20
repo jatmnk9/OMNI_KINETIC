@@ -27,26 +27,23 @@
     --radius: 0.75rem;
   }
 
-  /* Prada Apex Theme: Dark Crimson */
   .theme-prada {
-    --brand-primary: 2 72% 14%; /* #3D0A09 */
-    --brand-accent: 0 0% 75%; /* Silver */
-    --brand-secondary: 45 60% 60%; /* Gold */
+    --brand-primary: 2 72% 14%; 
+    --brand-accent: 0 0% 75%; 
+    --brand-secondary: 45 60% 60%; 
     --accent: 2 72% 25%;
   }
 
-  /* YSL Synapse Theme: Dark Violet */
   .theme-ysl {
-    --brand-primary: 278 50% 17%; /* #301540 */
-    --brand-accent: 45 60% 60%; /* Gold */
+    --brand-primary: 278 50% 17%; 
+    --brand-accent: 45 60% 60%; 
     --brand-secondary: 278 50% 10%;
     --accent: 278 50% 30%;
   }
 
-  /* Biotherm Kinetic Theme: Cyan Blue */
   .theme-biotherm {
-    --brand-primary: 187 100% 33%; /* #0097A9 */
-    --brand-accent: 0 0% 75%; /* Silver */
+    --brand-primary: 187 100% 33%; 
+    --brand-accent: 0 0% 75%; 
     --brand-secondary: 187 100% 25%;
     --accent: 187 100% 45%;
   }
@@ -61,7 +58,20 @@
   }
 }
 
+.font-headline {
+  font-family: 'Cormorant Garamond', serif;
+}
+
 .bg-brand { background-color: hsl(var(--brand-primary)); }
 .text-brand { color: hsl(var(--brand-primary)); }
 .border-brand { border-color: hsl(var(--brand-primary)); }
 .accent-brand { color: hsl(var(--brand-accent)); }
+
+/* Custom Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

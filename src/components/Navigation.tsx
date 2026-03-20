@@ -22,7 +22,7 @@ export function Navigation() {
   if (activeDevice === 'none' && (pathname === '/' || pathname === '/map')) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t border-white/5 px-6 pb-safe-area-inset-bottom h-20">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-2xl border-t border-white/5 px-6 pb-safe-area-inset-bottom h-20">
       <div className="flex items-center justify-around h-full max-w-lg mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;

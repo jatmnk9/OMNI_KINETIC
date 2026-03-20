@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Zap, Scan, ArrowRight, ShieldCheck, Waves, Check, User, Mail } from 'lucide-react';
+import { Bluetooth, Zap, Scan, ArrowRight, ShieldCheck, Waves, Check, User, Mail, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,59 +20,72 @@ const DEVICES = [
     id: 'Prada' as DeviceType,
     name: 'Apex Essence',
     brand: 'Prada',
-    desc: 'Technical performance & HRV tracking.',
+    desc: 'Technical performance with HRV tracking for high-performance living.',
     img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl,
   },
   {
     id: 'YSL' as DeviceType,
     name: 'Synapse',
     brand: 'YSL',
-    desc: 'Emotional response & nocturnal elegance.',
+    desc: 'Emotional response synchronization with nocturnal elegance.',
     img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl,
   },
   {
     id: 'Biotherm' as DeviceType,
     name: 'Kinetic',
     brand: 'Biotherm',
-    desc: 'Aquatic metrics & organic recovery.',
+    desc: 'Aquatic metrics and organic recovery for wellness-centric users.',
     img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl,
   }
 ];
 
 const PLANS = [
-  { id: 'Base', name: 'Base', price: '$15/mo', desc: 'Control manual y funciones esenciales.', features: ['Manual Refill', 'Basic Metrics'] },
-  { id: 'Essential', name: 'Essential', price: '$29/mo', desc: 'IA que aprende tus rutinas diarias.', features: ['Predictive Refills', 'AI Routine Learning'], badge: 'Popular' },
-  { id: 'Premium', name: 'Premium', price: '$49/mo', desc: 'IA de hiper-personalización biométrica.', features: ['Real-time HRV Sync', 'Exclusive Fragrance Drops'], badge: 'Elite' },
+  { id: 'Base', name: 'Base', price: '$15/mo', desc: 'Manual control and essential hardware features.', features: ['Manual Refill', 'Basic Metrics'] },
+  { id: 'Essential', name: 'Essential', price: '$29/mo', desc: 'AI that learns your daily routines automatically.', features: ['Predictive Refills', 'AI Routine Learning'], badge: 'Popular' },
+  { id: 'Premium', name: 'Premium', price: '$49/mo', desc: 'Hyper-personalized biometric sync in real-time.', features: ['Real-time HRV Sync', 'Exclusive Fragrance Drops'], badge: 'Elite' },
 ];
+
+function OmniLogo() {
+  return (
+    <div className="flex flex-col items-center">
+      <h1 className="text-4xl font-headline tracking-[0.3em] font-light leading-none">OMNI</h1>
+      <h2 className="text-sm font-body tracking-[0.5em] font-bold opacity-40 -mt-1 uppercase">Kinetic</h2>
+    </div>
+  );
+}
 
 export default function WelcomePage() {
   const router = useRouter();
-  const { activeDevice, setActiveDevice, setCurrentPlan, setUserProfile, userProfile } = useDevice();
-  const [step, setStep] = useState<'intro' | 'register' | 'scan' | 'plan'>(userProfile ? 'scan' : 'intro');
+  const { activeDevice, setActiveDevice, setCurrentPlan, setUserProfile, userProfile, logout } = useDevice();
+  const [step, setStep] = useState<'intro' | 'register' | 'explore' | 'scan' | 'plan'>(userProfile ? 'explore' : 'intro');
   const [scanning, setScanning] = useState(false);
-  const [detectedDevices, setDetectedDevices] = useState<typeof DEVICES>([]);
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [selectedProduct, setSelectedProduct] = useState<typeof DEVICES[0] | null>(null);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    setUserProfile(formData);
-    setStep('scan');
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    setUserProfile({
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+    });
+    setStep('explore');
   };
 
   const handleScan = () => {
     setScanning(true);
     setTimeout(() => {
       setScanning(false);
-      setDetectedDevices(DEVICES);
+      setStep('plan');
     }, 2500);
   };
 
-  const selectDevice = (device: DeviceType) => {
-    setActiveDevice(device);
-    setStep('plan');
+  const startLinking = (device: (typeof DEVICES)[0]) => {
+    setSelectedProduct(device);
+    setActiveDevice(device.id);
+    setStep('scan');
   };
 
-  const selectPlan = (plan: PlanType) => {
+  const handlePlanSelection = (plan: PlanType) => {
     setCurrentPlan(plan);
     router.push('/dashboard');
   };
@@ -81,16 +94,21 @@ export default function WelcomePage() {
     return (
       <main className="min-h-screen pb-24">
         <div className="p-8 pt-16 space-y-8 max-w-lg mx-auto">
-          <header className="space-y-2">
-            <h1 className="text-3xl font-headline font-bold tracking-tight">Active Ecosytem</h1>
-            <p className="text-muted-foreground">Welcome back, {userProfile?.name}.</p>
+          <header className="flex justify-between items-start">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-headline font-bold">Active Ecosystem</h1>
+              <p className="text-muted-foreground">Welcome back, {userProfile?.name}.</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={logout}>
+              <LogOut className="w-5 h-5 opacity-40" />
+            </Button>
           </header>
-          <Card className="p-6 bg-brand overflow-hidden relative border-none group cursor-pointer" onClick={() => router.push('/dashboard')}>
+          <Card className="p-8 bg-brand overflow-hidden relative border-none group cursor-pointer" onClick={() => router.push('/dashboard')}>
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
             <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-widest font-bold opacity-80">{activeDevice}</p>
-                <h2 className="text-2xl font-bold">Manage Hub</h2>
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
+                <h2 className="text-2xl font-bold tracking-tight">Access Hub</h2>
               </div>
               <ArrowRight className="w-6 h-6" />
             </div>
@@ -102,147 +120,142 @@ export default function WelcomePage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-background text-foreground transition-all">
+    <main className="min-h-screen flex flex-col bg-background text-foreground">
       <div className="flex-1 flex flex-col p-8 pt-20 max-w-lg mx-auto w-full space-y-12">
         
         {step === 'intro' && (
-          <section className="space-y-8 text-center animate-in fade-in duration-700">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
-              <Zap className="w-10 h-10 text-black fill-black" />
-            </div>
-            <div className="space-y-2">
-              <h1 className="text-4xl font-headline font-bold tracking-tighter">OMNI-KINETIC</h1>
-              <p className="text-muted-foreground max-w-xs mx-auto text-sm leading-relaxed">
-                El futuro de la perfumería cinética. Tecnología minimalista para el máximo bienestar.
+          <section className="space-y-12 text-center animate-in fade-in duration-1000">
+            <OmniLogo />
+            <div className="space-y-4">
+              <p className="text-muted-foreground max-w-xs mx-auto text-sm leading-relaxed tracking-wide font-light">
+                The future of kinetic perfumery. Minimalist technology for maximal well-being.
               </p>
             </div>
-            <Button onClick={() => setStep('register')} className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-full hover:bg-neutral-200">
-              Comenzar Experiencia
-            </Button>
+            <div className="pt-8">
+              <Button onClick={() => setStep('register')} className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-full hover:bg-neutral-200 transition-all">
+                Begin Experience
+              </Button>
+            </div>
           </section>
         )}
 
         {step === 'register' && (
           <section className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tight">Onboarding de Lujo</h2>
-              <p className="text-muted-foreground text-sm">Crea tu perfil biográfico para sincronizar tus sentidos.</p>
-            </div>
-            <form onSubmit={handleRegister} className="space-y-4">
+            <header className="space-y-2">
+              <h2 className="text-4xl font-headline font-bold">Biographic Onboarding</h2>
+              <p className="text-muted-foreground text-sm">Create your biographical profile to synchronize your senses.</p>
+            </header>
+            <form onSubmit={handleRegister} className="space-y-6">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-[10px] uppercase tracking-widest opacity-60">Nombre Completo</Label>
+                <Label htmlFor="name" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 w-4 h-4 opacity-40" />
-                  <Input 
-                    id="name" 
-                    placeholder="Jane Doe" 
-                    className="pl-10 h-12 bg-card border-none" 
-                    required 
-                    value={formData.name}
-                    onChange={e => setFormData({...formData, name: e.target.value})}
-                  />
+                  <User className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
+                  <Input id="name" name="name" placeholder="Jane Doe" className="pl-10 h-14 bg-card border-none rounded-xl" required />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-[10px] uppercase tracking-widest opacity-60">Correo Electrónico</Label>
+                <Label htmlFor="email" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 opacity-40" />
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="jane@luxe.com" 
-                    className="pl-10 h-12 bg-card border-none" 
-                    required 
-                    value={formData.email}
-                    onChange={e => setFormData({...formData, email: e.target.value})}
-                  />
+                  <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
+                  <Input id="email" name="email" type="email" placeholder="jane@luxe.com" className="pl-10 h-14 bg-card border-none rounded-xl" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-12 bg-accent font-bold uppercase tracking-widest">Crear Cuenta</Button>
+              <Button type="submit" className="w-full h-14 bg-accent font-bold uppercase tracking-[0.2em] rounded-xl mt-4">Create Account</Button>
             </form>
+          </section>
+        )}
+
+        {step === 'explore' && (
+          <section className="flex-1 flex flex-col space-y-10 animate-in fade-in duration-700">
+            <header className="text-center space-y-2">
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-50">Select Your Hardware</h2>
+              <p className="text-sm font-light italic">Explore the kinetic collection</p>
+            </header>
+
+            <Carousel className="w-full flex-1">
+              <CarouselContent>
+                {DEVICES.map((device) => (
+                  <CarouselItem key={device.id}>
+                    <div className="flex flex-col items-center space-y-8 px-4">
+                      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-3xl group">
+                         <Image 
+                           src={device.img || ''} 
+                           alt={device.name} 
+                           fill 
+                           className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                           data-ai-hint="luxury perfume"
+                         />
+                         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+                      </div>
+                      <div className="text-center space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
+                        <h3 className="text-4xl font-headline font-bold tracking-tight">{device.name}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
+                        <Button 
+                          className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4"
+                          onClick={() => startLinking(device)}
+                        >
+                          Select Device
+                        </Button>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden" />
+              <CarouselNext className="hidden" />
+            </Carousel>
           </section>
         )}
 
         {step === 'scan' && (
           <section className="flex-1 flex flex-col items-center justify-center space-y-10 animate-in fade-in duration-500">
-            {!detectedDevices.length ? (
-              <>
-                <div className="relative">
-                  <div className={`absolute -inset-12 bg-accent/20 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-110 animate-pulse' : 'opacity-0 scale-90'}`} />
-                  <Button 
-                    onClick={handleScan}
-                    disabled={scanning}
-                    size="lg"
-                    className="relative h-28 w-28 rounded-full bg-white text-black hover:bg-white/90 shadow-[0_0_50px_rgba(255,255,255,0.3)] group transition-all"
-                  >
-                    {scanning ? <Bluetooth className="w-10 h-10 animate-pulse" /> : <Scan className="w-10 h-10 group-hover:scale-110 transition-transform" />}
-                  </Button>
-                </div>
-                <div className="text-center space-y-2">
-                  <p className="text-sm font-bold tracking-widest uppercase">
-                    {scanning ? 'Detección vía BLE 5.2...' : 'Sincronización Inteligente'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Coloca tu wearable cerca del sensor.</p>
-                </div>
-              </>
-            ) : (
-              <div className="w-full space-y-8">
-                <h2 className="text-center text-sm font-bold tracking-widest uppercase text-muted-foreground">Dispositivos Detectados</h2>
-                <Carousel className="w-full">
-                  <CarouselContent>
-                    {detectedDevices.map((device) => (
-                      <CarouselItem key={device.id}>
-                        <Card className="border-none bg-card/40 backdrop-blur-md overflow-hidden flex flex-col">
-                          <div className="aspect-[4/5] relative">
-                            <Image src={device.img || ''} alt={device.name} fill className="object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                            <div className="absolute bottom-6 left-6 right-6">
-                              <p className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">{device.brand}</p>
-                              <h3 className="text-3xl font-bold">{device.name}</h3>
-                            </div>
-                          </div>
-                          <div className="p-6 space-y-6">
-                            <p className="text-sm text-muted-foreground leading-relaxed">{device.desc}</p>
-                            <Button className="w-full bg-white text-black h-12 rounded-xl font-bold" onClick={() => selectDevice(device.id)}>
-                              Vincular Hardware
-                            </Button>
-                          </div>
-                        </Card>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="-left-4" />
-                  <CarouselNext className="-right-4" />
-                </Carousel>
-              </div>
-            )}
+            <div className="relative">
+              <div className={`absolute -inset-16 bg-accent/20 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
+              <Button 
+                onClick={handleScan}
+                disabled={scanning}
+                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-accent text-white scale-110' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
+              >
+                {scanning ? <Bluetooth className="w-10 h-10 animate-pulse" /> : <Scan className="w-10 h-10" />}
+              </Button>
+            </div>
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-headline font-bold">Pairing {selectedProduct?.name}</h2>
+              <p className="text-xs text-muted-foreground tracking-widest uppercase font-bold">
+                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Synchronize'}
+              </p>
+              <p className="text-[10px] text-muted-foreground max-w-xs opacity-60">Place your wearable near the mobile sensor to initialize the encrypted link.</p>
+            </div>
           </section>
         )}
 
         {step === 'plan' && (
           <section className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold tracking-tight">Niveles de Inteligencia</h2>
-              <p className="text-sm text-muted-foreground">Decide qué tan inteligente será tu rastro.</p>
-            </div>
+            <header className="text-center space-y-2">
+              <h2 className="text-3xl font-headline font-bold">Scent Intelligence Levels</h2>
+              <p className="text-sm text-muted-foreground font-light">Choose the depth of your olfactory intelligence.</p>
+            </header>
             <div className="space-y-4">
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`p-5 cursor-pointer transition-all border-none relative overflow-hidden ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card'}`}
-                  onClick={() => selectPlan(plan.id as PlanType)}
+                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card hover:bg-white/5'}`}
+                  onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px]">{plan.badge}</Badge>}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-end">
-                      <h3 className="text-xl font-bold">{plan.name}</h3>
+                  {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px] uppercase tracking-widest">{plan.badge}</Badge>}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                        <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{plan.desc}</p>
+                      </div>
                       <p className="text-lg font-black text-accent">{plan.price}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">{plan.desc}</p>
-                    <ul className="flex flex-wrap gap-2 pt-2">
+                    <ul className="flex flex-wrap gap-2 pt-2 border-t border-white/5 mt-4">
                       {plan.features.map((f, i) => (
-                        <li key={i} className="text-[9px] uppercase font-bold tracking-wider flex items-center gap-1 opacity-60">
-                          <Check className="w-2.5 h-2.5" /> {f}
+                        <li key={i} className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1 opacity-60">
+                          <Check className="w-3 h-3 text-accent" /> {f}
                         </li>
                       ))}
                     </ul>
@@ -253,8 +266,8 @@ export default function WelcomePage() {
           </section>
         )}
 
-        <footer className="text-center pt-8">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em]">Omni-Scent Core v1.0.4</p>
+        <footer className="text-center pt-8 border-t border-white/5">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold">Omni-Scent Core v1.0.4</p>
         </footer>
       </div>
       <Navigation />
