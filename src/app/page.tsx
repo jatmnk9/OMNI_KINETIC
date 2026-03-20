@@ -1,15 +1,14 @@
-
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Zap, Scan, ArrowRight, ShieldCheck, Waves, Check, User, Mail, LogOut } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, Check, User, Mail, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselApi } from '@/components/ui/carousel';
 import { useDevice, DeviceType, PlanType } from '@/lib/device-context';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Navigation } from '@/components/Navigation';
@@ -48,7 +47,7 @@ const PLANS = [
 function OmniLogo() {
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-4xl font-headline tracking-[0.3em] font-light leading-none">OMNI</h1>
+      <h1 className="text-4xl font-headline tracking-[0.3em] font-black leading-none">OMNI</h1>
       <h2 className="text-sm font-body tracking-[0.5em] font-bold opacity-40 -mt-1 uppercase">Kinetic</h2>
     </div>
   );
@@ -60,6 +59,16 @@ export default function WelcomePage() {
   const [step, setStep] = useState<'intro' | 'register' | 'explore' | 'scan' | 'plan'>(userProfile ? 'explore' : 'intro');
   const [scanning, setScanning] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<typeof DEVICES[0] | null>(null);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,45 +175,54 @@ export default function WelcomePage() {
         )}
 
         {step === 'explore' && (
-          <section className="flex-1 flex flex-col space-y-10 animate-in fade-in duration-700">
+          <section className="flex-1 flex flex-col space-y-6 animate-in fade-in duration-700">
             <header className="text-center space-y-2">
               <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-50">Select Your Hardware</h2>
               <p className="text-sm font-light italic">Explore the kinetic collection</p>
             </header>
 
-            <Carousel className="w-full flex-1">
-              <CarouselContent>
-                {DEVICES.map((device) => (
-                  <CarouselItem key={device.id}>
-                    <div className="flex flex-col items-center space-y-8 px-4">
-                      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-3xl group">
-                         <Image 
-                           src={device.img || ''} 
-                           alt={device.name} 
-                           fill 
-                           className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                           data-ai-hint="luxury perfume"
-                         />
-                         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+            <div className="relative flex-1 flex flex-col items-center">
+              <Carousel setApi={setApi} className="w-full h-full cursor-grab active:cursor-grabbing">
+                <CarouselContent className="h-full">
+                  {DEVICES.map((device) => (
+                    <CarouselItem key={device.id} className="h-full flex flex-col items-center">
+                      <div className="flex flex-col items-center space-y-8 px-4 w-full h-full">
+                        <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[2.5rem] group shadow-2xl">
+                           <Image 
+                             src={device.img || ''} 
+                             alt={device.name} 
+                             fill 
+                             className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                             data-ai-hint="luxury perfume"
+                           />
+                           <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
+                        </div>
+                        <div className="text-center space-y-3 pb-8">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
+                          <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
+                          <Button 
+                            className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4 shadow-lg hover:shadow-white/10"
+                            onClick={() => startLinking(device)}
+                          >
+                            Select Device
+                          </Button>
+                        </div>
                       </div>
-                      <div className="text-center space-y-3">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
-                        <h3 className="text-4xl font-headline font-bold tracking-tight">{device.name}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
-                        <Button 
-                          className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4"
-                          onClick={() => startLinking(device)}
-                        >
-                          Select Device
-                        </Button>
-                      </div>
-                    </div>
-                  </CarouselItem>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+              
+              <div className="flex gap-2 pb-4">
+                {DEVICES.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`h-1.5 rounded-full transition-all duration-300 ${current === i ? 'w-6 bg-accent' : 'w-1.5 bg-white/20'}`} 
+                  />
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden" />
-              <CarouselNext className="hidden" />
-            </Carousel>
+              </div>
+            </div>
           </section>
         )}
 
@@ -243,7 +261,7 @@ export default function WelcomePage() {
                   className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card hover:bg-white/5'}`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px] uppercase tracking-widest">{plan.badge}</Badge>}
+                  {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}
                   <div className="space-y-4">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
@@ -266,7 +284,7 @@ export default function WelcomePage() {
           </section>
         )}
 
-        <footer className="text-center pt-8 border-t border-white/5">
+        <footer className="text-center pt-8 border-t border-white/5 mt-auto">
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold">Omni-Scent Core v1.0.4</p>
         </footer>
       </div>
