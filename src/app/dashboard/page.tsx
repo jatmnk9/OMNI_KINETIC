@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Activity, Thermometer, Droplets, Zap, ShieldCheck, Waves, BrainCircuit, Info, Settings, Heart, Gauge, Sparkles, LogOut } from 'lucide-react';
+import { Thermometer, Zap, Waves, BrainCircuit, Info, Heart, Gauge, Sparkles, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -20,7 +20,7 @@ const FIRING_MODES = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, logout } = useDevice();
+  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics, logout } = useDevice();
   const [firing, setFiring] = useState(false);
   const [selectedMode, setSelectedMode] = useState('focus');
   const [insights, setInsights] = useState<BiometricScentInsightSummariesOutput | null>(null);
@@ -41,7 +41,7 @@ export default function DashboardPage() {
         biometricData: [
           { timestamp: new Date().toISOString(), type: 'stress', value: 72 },
           { timestamp: new Date().toISOString(), type: 'focus', value: 45 },
-          { timestamp: new Date().toISOString(), type: 'heart_rate', value: 85 },
+          { timestamp: new Date().toISOString(), type: 'heart_rate', value: biometrics.hrv },
         ],
         scentUsage: [
           { timestamp: new Date().toISOString(), fragranceProfile: 'Aether Bloom', applicationNotes: 'Automatic focus trigger' }
@@ -92,17 +92,17 @@ export default function DashboardPage() {
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Heart className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">HRV</span>
-            <p className="text-xl font-bold font-body">82ms</p>
+            <p className="text-xl font-bold font-body tabular-nums">{biometrics.hrv}ms</p>
           </Card>
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Gauge className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Stress</span>
-            <p className="text-xl font-bold font-body">Low</p>
+            <p className="text-xl font-bold font-body">{biometrics.stress}</p>
           </Card>
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Thermometer className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Temp</span>
-            <p className="text-xl font-bold font-body">36.6°</p>
+            <p className="text-xl font-bold font-body tabular-nums">{biometrics.temp}°</p>
           </Card>
         </section>
 
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             </div>
 
             <Button 
-              className={`w-full h-16 rounded-2xl font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative ${firing ? 'bg-accent text-accent-foreground scale-95' : 'bg-brand text-accent-foreground shadow-2xl hover:-translate-y-1'}`}
+              className={`w-full h-16 rounded-2xl font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative shadow-2xl ${firing ? 'bg-accent text-accent-foreground scale-95' : 'bg-accent text-accent-foreground hover:-translate-y-1'}`}
               onClick={handleManualTrigger}
               disabled={firing}
             >
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                   <Waves className="w-5 h-5" /> Releasing Dose
                 </span>
               ) : (
-                'Trigger Burst'
+                <span className="text-accent-foreground">Trigger Burst</span>
               )}
               {firing && <div className="absolute inset-0 bg-white/10 animate-ping" />}
             </Button>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
                       <Info className="w-5 h-5 text-accent" />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="flex-1 space-y-1.5">
                       <p className="text-[10px] font-bold uppercase text-accent tracking-[0.2em]">{insight.fragranceProfile} • {insight.biometricType}</p>
                       <p className="text-xs leading-relaxed opacity-80 font-medium">{insight.insight}</p>
                     </div>
