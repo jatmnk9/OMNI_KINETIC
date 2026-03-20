@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Scan, ArrowRight, Check, User, Mail, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, Check, User, Mail, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ const DEVICES = [
     id: 'Prada' as DeviceType,
     name: 'Apex Essence',
     brand: 'Prada',
-    desc: 'Technical performance with HRV tracking for high-performance living.',
+    desc: 'High-tech performance with HRV tracking for high-performance living.',
     img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl,
   },
   {
@@ -99,6 +99,7 @@ export default function WelcomePage() {
     router.push('/dashboard');
   };
 
+  // If already logged in, show access card
   if (activeDevice !== 'none' && step === 'intro') {
     return (
       <main className="min-h-screen pb-24">
@@ -112,7 +113,7 @@ export default function WelcomePage() {
               <LogOut className="w-5 h-5 opacity-40" />
             </Button>
           </header>
-          <Card className="p-8 bg-brand overflow-hidden relative border-none group cursor-pointer" onClick={() => router.push('/dashboard')}>
+          <Card className="p-10 bg-brand overflow-hidden relative border-none group cursor-pointer rounded-[2rem]" onClick={() => router.push('/dashboard')}>
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
             <div className="relative z-10 flex items-center justify-between">
               <div className="space-y-1">
@@ -181,21 +182,25 @@ export default function WelcomePage() {
               <p className="text-sm font-light italic">Explore the kinetic collection</p>
             </header>
 
-            <div className="relative flex-1 flex flex-col items-center">
-              <Carousel setApi={setApi} className="w-full h-full cursor-grab active:cursor-grabbing">
+            <div className="relative flex-1 flex flex-col items-center overflow-hidden">
+              <Carousel 
+                setApi={setApi} 
+                className="w-full h-full cursor-grab active:cursor-grabbing"
+                opts={{ loop: true }}
+              >
                 <CarouselContent className="h-full">
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="h-full flex flex-col items-center">
                       <div className="flex flex-col items-center space-y-8 px-4 w-full h-full">
-                        <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[2.5rem] group shadow-2xl">
+                        <div className="relative w-full aspect-[3/4] overflow-visible rounded-[3rem] transition-transform duration-700">
                            <Image 
                              src={device.img || ''} 
                              alt={device.name} 
                              fill 
-                             className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                             className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-1000"
                              data-ai-hint="luxury perfume"
+                             priority
                            />
-                           <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
                         </div>
                         <div className="text-center space-y-3 pb-8">
                           <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">{device.brand}</p>
@@ -214,7 +219,7 @@ export default function WelcomePage() {
                 </CarouselContent>
               </Carousel>
               
-              <div className="flex gap-2 pb-4">
+              <div className="flex gap-2 pb-4 mt-auto">
                 {DEVICES.map((_, i) => (
                   <div 
                     key={i} 
@@ -233,7 +238,7 @@ export default function WelcomePage() {
               <Button 
                 onClick={handleScan}
                 disabled={scanning}
-                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-accent text-white scale-110' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
+                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-accent text-white scale-110 shadow-[0_0_30px_rgba(var(--accent),0.4)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
               >
                 {scanning ? <Bluetooth className="w-10 h-10 animate-pulse" /> : <Scan className="w-10 h-10" />}
               </Button>
@@ -254,11 +259,11 @@ export default function WelcomePage() {
               <h2 className="text-3xl font-headline font-bold">Scent Intelligence Levels</h2>
               <p className="text-sm text-muted-foreground font-light">Choose the depth of your olfactory intelligence.</p>
             </header>
-            <div className="space-y-4">
+            <div className="space-y-4 pb-12">
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card hover:bg-white/5'}`}
+                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[1.5rem] ${plan.badge ? 'ring-2 ring-accent bg-accent/5' : 'bg-card hover:bg-white/5'}`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
                   {plan.badge && <Badge className="absolute top-4 right-4 bg-accent text-white text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}

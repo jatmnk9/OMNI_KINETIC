@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useContext, useState } from 'react';
@@ -29,6 +28,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
 
   const triggerScent = () => {
+    // Premium plan uses micro-doses, consuming less per burst but more frequently/intelligently
     const consumption = currentPlan === 'Premium' ? 0.3 : 0.5;
     setCartridgeLevel(prev => Math.max(0, prev - (consumption / 10))); 
     setPoints(prev => prev + 5);
@@ -55,7 +55,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
       setUserProfile,
       logout
     }}>
-      <div className={activeDevice !== 'none' ? `theme-${activeDevice.toLowerCase()}` : ''}>
+      <div className={`min-h-screen transition-all duration-1000 ${activeDevice !== 'none' ? `theme-${activeDevice.toLowerCase()}` : ''}`}>
         {children}
       </div>
     </DeviceContext.Provider>
