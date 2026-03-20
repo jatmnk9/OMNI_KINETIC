@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "device-prada",
+      "description": "Prada Apex Essence Device - High Tech Design",
+      "imageUrl": "https://picsum.photos/seed/prada-apex/600/800",
+      "imageHint": "perfume bottle technology"
+    },
+    {
+      "id": "device-ysl",
+      "description": "YSL Synapse Device - Sophisticated Night Design",
+      "imageUrl": "https://picsum.photos/seed/ysl-synapse/600/800",
+      "imageHint": "perfume bottle elegant"
+    },
+    {
+      "id": "device-biotherm",
+      "description": "Biotherm Kinetic Device - Refreshing Aquatic Design",
+      "imageUrl": "https://picsum.photos/seed/biotherm-kinetic/600/800",
+      "imageHint": "perfume bottle aquatic"
+    },
+    {
+      "id": "scent-cartridge",
+      "description": "Omni-Scent Fragrance Cartridge",
+      "imageUrl": "https://picsum.photos/seed/cartridge/400/400",
+      "imageHint": "fragrance cartridge"
+    }
+  ]
 }
