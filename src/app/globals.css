@@ -6,7 +6,7 @@
   :root {
     --background: 0 0% 0%; /* Pure Black */
     --foreground: 0 0% 100%; /* Pure White */
-    --card: 0 0% 7%; /* Dark Gray for depth */
+    --card: 0 0% 7%; /* Dark Gray */
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 0%;
     --popover-foreground: 0 0% 100%;
@@ -16,45 +16,41 @@
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 100%; /* Default to White/Silver */
+    --accent: 0 0% 100%; /* Default White */
     --accent-foreground: 0 0% 0%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
     --ring: 0 0% 100%;
-    --radius: 1rem;
+    --radius: 1.5rem;
     
-    /* Base Brand Colors (Monochrome) */
     --brand-primary: 0 0% 100%;
     --brand-accent: 0 0% 80%;
   }
 
-  /* Apex Essence: Deep Burgundy #3D0A09 + Silver/Gold */
-  .theme-prada {
-    --brand-primary: 2 72% 14%; /* #3D0A09 approx */
+  /* Apex Essence: #3D0A09 (Deep Burgundy) + Silver/Gold */
+  .theme-apexessence {
+    --brand-primary: 1 74% 14%; /* #3D0A09 */
     --brand-accent: 45 60% 60%; /* Gold */
-    --brand-secondary: 0 0% 75%; /* Silver */
     --accent: 45 60% 60%;
     --ring: 45 60% 60%;
   }
 
-  /* Synapse: Deep Purple #301540 + Gold */
-  .theme-ysl {
+  /* Synapse: #301540 (Deep Purple) + Gold */
+  .theme-synapse {
     --brand-primary: 278 51% 17%; /* #301540 */
     --brand-accent: 45 60% 60%; /* Gold */
-    --brand-secondary: 278 50% 10%;
     --accent: 45 60% 60%;
     --ring: 45 60% 60%;
   }
 
-  /* Kinetic: Deep Teal #0097A9 + Silver */
-  .theme-biotherm {
-    --brand-primary: 187 100% 33%; /* #0097A9 */
-    --brand-accent: 0 0% 85%; /* Silver */
-    --brand-secondary: 187 100% 25%;
-    --accent: 187 100% 45%;
-    --ring: 0 0% 85%;
+  /* Kinetic: #0097A9 (Deep Teal) + Silver */
+  .theme-kinetic {
+    --brand-primary: 186 100% 33%; /* #0097A9 */
+    --brand-accent: 0 0% 75%; /* Silver */
+    --accent: 186 100% 45%;
+    --ring: 0 0% 75%;
   }
 }
 
@@ -71,13 +67,11 @@
   @apply font-bold tracking-tight;
 }
 
-/* Custom Utilities for Dynamic Branding */
 .bg-brand { background-color: hsl(var(--brand-primary)); }
 .text-brand { color: hsl(var(--brand-primary)); }
 .border-brand { border-color: hsl(var(--brand-primary)); }
 .accent-brand { color: hsl(var(--brand-accent)); }
 
-/* Custom Hide Scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -86,7 +80,6 @@
   scrollbar-width: none;
 }
 
-/* Glassmorphism */
 .glass {
   @apply bg-white/5 backdrop-blur-xl border border-white/10;
 }

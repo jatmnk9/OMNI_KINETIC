@@ -16,24 +16,24 @@ import { Badge } from '@/components/ui/badge';
 
 const DEVICES = [
   {
-    id: 'Prada' as DeviceType,
+    id: 'ApexEssence' as DeviceType,
     name: 'Apex Essence',
-    brand: 'Prada',
-    desc: 'High-tech performance with HRV tracking for high-performance living.',
+    brand: 'Omni Kinetic',
+    desc: 'High-performance biometric synchronization for active living.',
     img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl,
   },
   {
-    id: 'YSL' as DeviceType,
+    id: 'Synapse' as DeviceType,
     name: 'Synapse',
-    brand: 'YSL',
-    desc: 'Emotional response synchronization with nocturnal elegance.',
+    brand: 'Omni Kinetic',
+    desc: 'Deep emotional response mapping with nocturnal elegance.',
     img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl,
   },
   {
-    id: 'Biotherm' as DeviceType,
+    id: 'Kinetic' as DeviceType,
     name: 'Kinetic',
-    brand: 'Biotherm',
-    desc: 'Aquatic metrics and organic recovery for wellness-centric users.',
+    brand: 'Omni Kinetic',
+    desc: 'Aquatic metrics and organic recovery for total well-being.',
     img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl,
   }
 ];
@@ -112,7 +112,7 @@ export default function WelcomePage() {
               <LogOut className="w-5 h-5 opacity-40" />
             </Button>
           </header>
-          <Card className="p-10 bg-white text-black overflow-hidden relative border-none group cursor-pointer rounded-[2rem]" onClick={() => router.push('/dashboard')}>
+          <Card className="p-10 bg-white text-black overflow-hidden relative border-none group cursor-pointer rounded-[2.5rem]" onClick={() => router.push('/dashboard')}>
             <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
             <div className="relative z-10 flex items-center justify-between">
               <div className="space-y-1">
@@ -129,7 +129,7 @@ export default function WelcomePage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-background text-foreground">
+    <main className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
       <div className="flex-1 flex flex-col p-8 pt-20 max-w-lg mx-auto w-full space-y-12">
         
         {step === 'intro' && (
@@ -151,25 +151,25 @@ export default function WelcomePage() {
         {step === 'register' && (
           <section className="space-y-8 animate-in slide-in-from-right-4 duration-500">
             <header className="space-y-2">
-              <h2 className="text-4xl font-headline font-bold">Biographic Onboarding</h2>
-              <p className="text-muted-foreground text-sm">Create your biographical profile to synchronize your senses.</p>
+              <h2 className="text-4xl font-headline font-bold">Biographic Profile</h2>
+              <p className="text-muted-foreground text-sm">Initialize your identity to synchronize with the ecosystem.</p>
             </header>
             <form onSubmit={handleRegister} className="space-y-6">
               <div className="space-y-1.5">
                 <Label htmlFor="name" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
-                  <Input id="name" name="name" placeholder="Jane Doe" className="pl-10 h-14 bg-card border-none rounded-xl" required />
+                  <Input id="name" name="name" placeholder="Jane Doe" className="pl-10 h-14 bg-card border-none rounded-2xl" required />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-40" />
-                  <Input id="email" name="email" type="email" placeholder="jane@luxe.com" className="pl-10 h-14 bg-card border-none rounded-xl" required />
+                  <Input id="email" name="email" type="email" placeholder="jane@luxe.com" className="pl-10 h-14 bg-card border-none rounded-2xl" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4">Create Account</Button>
+              <Button type="submit" className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-2xl mt-4">Create Account</Button>
             </form>
           </section>
         )}
@@ -177,27 +177,32 @@ export default function WelcomePage() {
         {step === 'explore' && (
           <section className="flex-1 flex flex-col space-y-6 animate-in fade-in duration-700">
             <header className="text-center space-y-2">
-              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-50">Select Your Hardware</h2>
-              <p className="text-sm font-light italic">Explore the kinetic collection</p>
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-50">Choose Your Kinetic Hardware</h2>
+              <p className="text-sm font-light italic">Swipe to explore the collection</p>
             </header>
 
             <div className="relative flex-1 flex flex-col items-center">
               <Carousel 
                 setApi={setApi} 
                 className="w-full"
-                opts={{ loop: true, align: "center", skipSnaps: false }}
+                opts={{ 
+                  loop: true, 
+                  align: "center", 
+                  skipSnaps: false,
+                  dragFree: false
+                }}
               >
-                <CarouselContent>
+                <CarouselContent className="-ml-0">
                   {DEVICES.map((device) => (
-                    <CarouselItem key={device.id}>
-                      <div className="flex flex-col items-center space-y-8 px-4 w-full h-full pb-10">
-                        <div className="relative w-full aspect-[3/4] overflow-visible transition-transform duration-700">
+                    <CarouselItem key={device.id} className="pl-0 flex flex-col items-center">
+                      <div className="flex flex-col items-center space-y-8 px-4 w-full pb-10">
+                        <div className="relative w-64 aspect-[3/4] overflow-visible">
                            <Image 
                              src={device.img || ''} 
                              alt={device.name} 
                              fill 
-                             className="object-contain drop-shadow-[0_35px_60px_rgba(255,255,255,0.1)] transition-transform duration-1000"
-                             data-ai-hint="luxury perfume"
+                             className="object-contain drop-shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-transform duration-1000 scale-110"
+                             data-ai-hint="perfume bottle technology"
                              priority
                            />
                         </div>
@@ -206,10 +211,10 @@ export default function WelcomePage() {
                           <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
                           <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{device.desc}</p>
                           <Button 
-                            className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl mt-4 shadow-lg hover:shadow-white/10"
+                            className="w-full h-12 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-2xl mt-4 shadow-xl hover:bg-neutral-200 transition-all"
                             onClick={() => startLinking(device)}
                           >
-                            Select Device
+                            Synchronize Device
                           </Button>
                         </div>
                       </div>
@@ -218,11 +223,11 @@ export default function WelcomePage() {
                 </CarouselContent>
               </Carousel>
               
-              <div className="flex gap-2 pb-4 mt-auto">
+              <div className="flex gap-3 pb-8 mt-auto">
                 {DEVICES.map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-1.5 rounded-full transition-all duration-300 ${current === i ? 'w-6 bg-white' : 'w-1.5 bg-white/20'}`} 
+                    className={`h-1 rounded-full transition-all duration-500 ${current === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`} 
                   />
                 ))}
               </div>
@@ -231,23 +236,23 @@ export default function WelcomePage() {
         )}
 
         {step === 'scan' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-10 animate-in fade-in duration-500">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500">
             <div className="relative">
-              <div className={`absolute -inset-16 bg-white/10 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
+              <div className={`absolute -inset-20 bg-white/10 rounded-full blur-3xl transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-125 animate-pulse' : 'opacity-0 scale-90'}`} />
               <Button 
                 onClick={handleScan}
                 disabled={scanning}
-                className={`relative h-32 w-32 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-500 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_30px_rgba(255,255,255,0.4)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
+                className={`relative h-36 w-36 rounded-full flex flex-col items-center justify-center gap-2 border-none transition-all duration-700 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_40px_rgba(255,255,255,0.3)]' : 'bg-white text-black shadow-2xl hover:scale-105'}`}
               >
-                {scanning ? <Bluetooth className="w-10 h-10 animate-pulse" /> : <Scan className="w-10 h-10" />}
+                {scanning ? <Bluetooth className="w-12 h-12 animate-pulse" /> : <Scan className="w-12 h-12" />}
               </Button>
             </div>
             <div className="text-center space-y-4">
-              <h2 className="text-2xl font-headline font-bold">Pairing {selectedProduct?.name}</h2>
+              <h2 className="text-3xl font-headline font-bold">Pairing {selectedProduct?.name}</h2>
               <p className="text-xs text-muted-foreground tracking-widest uppercase font-bold">
-                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Synchronize'}
+                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Link'}
               </p>
-              <p className="text-[10px] text-muted-foreground max-w-xs opacity-60">Place your wearable near the mobile sensor to initialize the encrypted link.</p>
+              <p className="text-[10px] text-muted-foreground max-w-xs opacity-60">Maintain proximity to ensure an encrypted biometric connection.</p>
             </div>
           </section>
         )}
@@ -255,14 +260,14 @@ export default function WelcomePage() {
         {step === 'plan' && (
           <section className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
             <header className="text-center space-y-2">
-              <h2 className="text-3xl font-headline font-bold">Scent Intelligence Levels</h2>
-              <p className="text-sm text-muted-foreground font-light">Choose the depth of your olfactory intelligence.</p>
+              <h2 className="text-3xl font-headline font-bold">Olfactory Intelligence</h2>
+              <p className="text-sm text-muted-foreground font-light">Select your level of biometric synchronization.</p>
             </header>
             <div className="space-y-4 pb-12">
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[1.5rem] ${plan.badge ? 'ring-2 ring-white bg-white/5' : 'bg-card hover:bg-white/5'}`}
+                  className={`p-6 cursor-pointer transition-all border-none relative overflow-hidden group rounded-[2rem] ${plan.badge ? 'ring-1 ring-white/20 bg-white/5' : 'bg-card hover:bg-white/10'}`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
                   {plan.badge && <Badge className="absolute top-4 right-4 bg-white text-black text-[10px] uppercase tracking-widest font-bold">{plan.badge}</Badge>}
@@ -274,9 +279,9 @@ export default function WelcomePage() {
                       </div>
                       <p className="text-lg font-black">{plan.price}</p>
                     </div>
-                    <ul className="flex flex-wrap gap-2 pt-2 border-t border-white/5 mt-4">
+                    <ul className="flex flex-wrap gap-3 pt-3 border-t border-white/5 mt-4">
                       {plan.features.map((f, i) => (
-                        <li key={i} className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1 opacity-60">
+                        <li key={i} className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-2 opacity-70">
                           <Check className="w-3 h-3 text-white" /> {f}
                         </li>
                       ))}
@@ -289,7 +294,7 @@ export default function WelcomePage() {
         )}
 
         <footer className="text-center pt-8 border-t border-white/5 mt-auto">
-          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold">Omni-Scent Core v1.0.4</p>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold">Omni-Scent Protocol v2.1.0</p>
         </footer>
       </div>
       <Navigation />

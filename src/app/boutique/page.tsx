@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,14 +14,14 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const PLANS = [
   { name: 'Base', price: '$15/mo', features: ['1 Manual Refill', 'Basic Metrics'] },
-  { name: 'Essential', price: '$29/mo', features: ['Predictive Refills', 'Advanced AI Insights', '10% Shop Discount'], badge: 'Popular' },
-  { name: 'Elite', price: '$49/mo', features: ['Unlimited Refills', 'Biometric Correlated Scents', 'VIP Lounge Access'], badge: 'Premium' },
+  { name: 'Essential', price: '$29/mo', features: ['Predictive Refills', 'AI Learning Insights', '10% Discount'], badge: 'Popular' },
+  { name: 'Elite', price: '$49/mo', features: ['Unlimited Refills', 'Live Biometric Sync', 'VIP Access'], badge: 'Elite' },
 ];
 
 const STARTER_KITS = [
-  { name: 'Apex Starter Kit', brand: 'Prada', price: 231.02, img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl },
-  { name: 'Synapse Night Kit', brand: 'YSL', price: 260.26, img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl },
-  { name: 'Kinetic Wellness Kit', brand: 'Biotherm', price: 286.58, img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl },
+  { name: 'Apex Starter Kit', brand: 'Omni Kinetic', price: 231.02, img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl },
+  { name: 'Synapse Night Kit', brand: 'Omni Kinetic', price: 260.26, img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl },
+  { name: 'Kinetic Wellness Kit', brand: 'Omni Kinetic', price: 286.58, img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl },
 ];
 
 export default function BoutiquePage() {
@@ -35,7 +34,7 @@ export default function BoutiquePage() {
       setLoading(true);
       try {
         const result = await personalizedScentRecommendations({
-          deviceType: activeDevice === 'none' ? 'Prada' : activeDevice as any,
+          deviceType: activeDevice === 'none' ? 'ApexEssence' : (activeDevice === 'ApexEssence' ? 'Prada' : (activeDevice === 'Synapse' ? 'YSL' : 'Biotherm')) as any,
           pastScentUsage: ['Bergamot', 'Sandalwood']
         });
         setRecommendations(result);
@@ -49,7 +48,7 @@ export default function BoutiquePage() {
   }, [activeDevice]);
 
   return (
-    <main className="min-h-screen pb-24">
+    <main className="min-h-screen pb-24 bg-background">
       <div className="p-6 pt-12 space-y-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-headline font-bold">Boutique</h1>
@@ -60,24 +59,24 @@ export default function BoutiquePage() {
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-             <h2 className="text-sm font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
-               <Sparkles className="w-4 h-4 text-accent" /> AI Recommendations
+             <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
+               <Sparkles className="w-4 h-4 text-accent" /> AI Recommended
              </h2>
           </div>
           <div className="flex overflow-x-auto pb-4 gap-4 no-scrollbar">
             {loading ? (
-              [1, 2].map(i => <div key={i} className="min-w-[280px] h-48 bg-card animate-pulse rounded-xl" />)
+              [1, 2].map(i => <div key={i} className="min-w-[280px] h-48 bg-card animate-pulse rounded-[2rem]" />)
             ) : recommendations?.recommendations.map((rec, idx) => (
-              <Card key={idx} className="min-w-[280px] bg-card border-none overflow-hidden group">
-                <div className="p-4 space-y-3">
+              <Card key={idx} className="min-w-[280px] bg-card border-none overflow-hidden rounded-[2rem] group hover:bg-white/5 transition-colors">
+                <div className="p-6 space-y-4">
                   <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-lg">{rec.scentName}</h3>
-                    <Badge variant="secondary" className="bg-brand/20 text-brand border-brand/30">New</Badge>
+                    <h3 className="font-bold text-lg tracking-tight">{rec.scentName}</h3>
+                    <Badge variant="outline" className="text-[8px] uppercase tracking-widest border-white/20">New</Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{rec.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{rec.description}</p>
                   <div className="pt-2 flex items-center justify-between">
-                    <span className="font-bold text-accent">$45.00</span>
-                    <Button size="sm" variant="outline" className="text-[10px] h-7 uppercase tracking-widest font-bold">Add Refill</Button>
+                    <span className="font-bold text-lg text-accent">$45.00</span>
+                    <Button size="sm" variant="outline" className="text-[9px] h-8 uppercase tracking-widest font-bold rounded-xl px-4 border-white/10">Add Refill</Button>
                   </div>
                 </div>
               </Card>
@@ -86,26 +85,26 @@ export default function BoutiquePage() {
         </section>
 
         <Tabs defaultValue="kits" className="w-full">
-          <TabsList className="w-full bg-card h-12">
-            <TabsTrigger value="kits" className="flex-1">Starter Kits</TabsTrigger>
-            <TabsTrigger value="subs" className="flex-1">Subscriptions</TabsTrigger>
+          <TabsList className="w-full bg-card h-14 rounded-2xl p-1.5">
+            <TabsTrigger value="kits" className="flex-1 rounded-xl text-xs font-bold uppercase tracking-widest">Starter Kits</TabsTrigger>
+            <TabsTrigger value="subs" className="flex-1 rounded-xl text-xs font-bold uppercase tracking-widest">Intelligence</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="kits" className="pt-4 space-y-4">
+          <TabsContent value="kits" className="pt-6 space-y-4">
             {STARTER_KITS.map((kit, idx) => (
-              <Card key={idx} className="bg-card border-none overflow-hidden flex h-32 group cursor-pointer hover:bg-white/5 transition-colors">
-                <div className="w-32 relative">
-                  <Image src={kit.img || ''} alt={kit.name} fill className="object-cover transition-transform group-hover:scale-110" />
+              <Card key={idx} className="bg-card border-none overflow-hidden flex h-36 group cursor-pointer hover:bg-white/5 transition-colors rounded-[2rem]">
+                <div className="w-32 relative bg-white/5">
+                  <Image src={kit.img || ''} alt={kit.name} fill className="object-contain p-4 transition-transform group-hover:scale-110" />
                 </div>
-                <div className="flex-1 p-4 flex flex-col justify-between">
+                <div className="flex-1 p-5 flex flex-col justify-between">
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest font-bold opacity-60">{kit.brand}</p>
-                    <h3 className="font-bold text-sm">{kit.name}</h3>
+                    <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-40">{kit.brand}</p>
+                    <h3 className="font-bold text-base tracking-tight">{kit.name}</h3>
                   </div>
                   <div className="flex justify-between items-end">
-                    <span className="font-headline font-bold text-accent">${kit.price}</span>
-                    <Button size="icon" className="h-8 w-8 bg-brand rounded-full">
-                      <ChevronRight className="w-4 h-4" />
+                    <span className="font-headline font-black text-xl text-accent">${kit.price}</span>
+                    <Button size="icon" className="h-10 w-10 bg-white text-black rounded-full shadow-lg">
+                      <ChevronRight className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
@@ -113,23 +112,23 @@ export default function BoutiquePage() {
             ))}
           </TabsContent>
 
-          <TabsContent value="subs" className="pt-4 space-y-4">
+          <TabsContent value="subs" className="pt-6 space-y-4">
             {PLANS.map((plan, idx) => (
-              <Card key={idx} className={`p-5 relative overflow-hidden transition-all ${plan.badge ? 'border-brand/40 bg-brand/5' : 'bg-card border-none'}`}>
-                {plan.badge && <Badge className="absolute top-4 right-4 bg-brand text-white">{plan.badge}</Badge>}
-                <div className="space-y-4">
+              <Card key={idx} className={`p-6 relative overflow-hidden transition-all rounded-[2rem] ${plan.badge ? 'border-white/20 bg-white/5' : 'bg-card border-none'}`}>
+                {plan.badge && <Badge className="absolute top-6 right-6 bg-white text-black font-bold uppercase tracking-widest text-[9px]">{plan.badge}</Badge>}
+                <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
-                    <p className="text-2xl font-black text-accent">{plan.price}</p>
+                    <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
+                    <p className="text-3xl font-black text-accent mt-1">{plan.price}</p>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {plan.features.map((f, fi) => (
-                      <li key={fi} className="text-xs text-muted-foreground flex items-center gap-2">
-                        <Check className="w-3 h-3 text-brand" /> {f}
+                      <li key={fi} className="text-xs text-muted-foreground flex items-center gap-3">
+                        <Check className="w-4 h-4 text-white" /> {f}
                       </li>
                     ))}
                   </ul>
-                  <Button className={`w-full ${plan.badge ? 'bg-brand' : 'bg-white text-black'}`}>Select Plan</Button>
+                  <Button className={`w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs ${plan.badge ? 'bg-white text-black' : 'bg-neutral-800 text-white'}`}>Choose Intelligence</Button>
                 </div>
               </Card>
             ))}

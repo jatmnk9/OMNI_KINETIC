@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const FIRING_MODES = [
   { id: 'focus', name: 'Focus Mode', icon: BrainCircuit, color: 'text-blue-400', desc: 'Cognitive Sync 0.3µL' },
-  { id: 'energy', name: 'Energy Boost', icon: Zap, color: 'text-yellow-400', desc: 'Physical HRV Stimulation' },
+  { id: 'energy', name: 'Energy Boost', icon: Zap, color: 'text-yellow-400', desc: 'Physical Stimulation' },
   { id: 'sensual', name: 'Sensual Night', icon: Sparkles, color: 'text-purple-400', desc: 'Deep GSR Relaxation' },
 ];
 
@@ -45,7 +44,7 @@ export default function DashboardPage() {
           { timestamp: new Date().toISOString(), type: 'heart_rate', value: 85 },
         ],
         scentUsage: [
-          { timestamp: new Date().toISOString(), fragranceProfile: 'Bergamot Bloom', applicationNotes: 'Automatic focus trigger' }
+          { timestamp: new Date().toISOString(), fragranceProfile: 'Aether Bloom', applicationNotes: 'Automatic focus trigger' }
         ]
       });
       setInsights(result);
@@ -67,18 +66,20 @@ export default function DashboardPage() {
     router.push('/');
   };
 
+  const deviceLabel = activeDevice === 'ApexEssence' ? 'Apex Essence' : activeDevice;
+
   return (
     <main className="min-h-screen pb-24 transition-colors duration-700">
       <div className="p-6 pt-12 space-y-6 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-headline font-bold tracking-tight">{activeDevice} Hub</h1>
+            <h1 className="text-3xl font-headline font-bold tracking-tight">{deviceLabel} Hub</h1>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-brand/40 text-brand font-bold">
-                {currentPlan} Plan
+                {currentPlan} Intelligence
               </Badge>
               {currentPlan === 'Premium' && (
-                <Badge className="bg-accent text-white text-[9px] uppercase tracking-widest animate-pulse font-bold">Live Bio-Sync</Badge>
+                <Badge className="bg-accent text-accent-foreground text-[9px] uppercase tracking-widest animate-pulse font-bold">Live Bio-Sync</Badge>
               )}
             </div>
           </div>
@@ -88,17 +89,17 @@ export default function DashboardPage() {
         </header>
 
         <section className="grid grid-cols-3 gap-3">
-          <Card className="p-4 bg-brand/5 border-white/5 flex flex-col items-center gap-2 rounded-2xl">
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Heart className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">HRV</span>
             <p className="text-xl font-bold font-body">82ms</p>
           </Card>
-          <Card className="p-4 bg-brand/5 border-white/5 flex flex-col items-center gap-2 rounded-2xl">
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Gauge className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Stress</span>
             <p className="text-xl font-bold font-body">Low</p>
           </Card>
-          <Card className="p-4 bg-brand/5 border-white/5 flex flex-col items-center gap-2 rounded-2xl">
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-2xl">
             <Thermometer className="w-4 h-4 text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Temp</span>
             <p className="text-xl font-bold font-body">36.6°</p>
@@ -123,42 +124,42 @@ export default function DashboardPage() {
                   <h4 className="font-bold text-sm tracking-tight">{mode.name}</h4>
                   <p className="text-[10px] text-muted-foreground tracking-wide font-medium">{mode.desc}</p>
                 </div>
-                {selectedMode === mode.id && <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(51,153,204,0.5)]" />}
+                {selectedMode === mode.id && <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.5)]" />}
               </Card>
             ))}
           </div>
         </section>
 
-        <Card className="relative overflow-hidden group border-none bg-card shadow-2xl rounded-3xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-brand/20 to-transparent opacity-30 pointer-events-none" />
+        <Card className="relative overflow-hidden group border-none bg-card shadow-2xl rounded-[2rem]">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20 pointer-events-none" />
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 font-headline font-bold tracking-tight">
               <Sparkles className="w-5 h-5 text-accent" />
               Smart Refill Tracker
             </CardTitle>
-            <CardDescription className="text-[10px] uppercase tracking-widest font-bold opacity-60">NFC Chip: Exact Volume Synchronization.</CardDescription>
+            <CardDescription className="text-[10px] uppercase tracking-widest font-bold opacity-60">NFC Synchronization: Verified Volume.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pb-10">
             <div className="space-y-4">
               <div className="flex justify-between text-[10px] font-bold tracking-[0.2em] uppercase">
-                <span className="opacity-40">Fragrance Volume</span>
+                <span className="opacity-40">Cartridge Volume</span>
                 <span className="text-accent">{cartridgeLevel.toFixed(1)}%</span>
               </div>
               <Progress value={cartridgeLevel} className="h-2 bg-white/5" />
               <div className="flex justify-between items-center text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-bold">
-                <div className="flex items-center gap-1.5"><Info className="w-3 h-3" /> Prediction: 12 days remaining</div>
-                <Badge variant="secondary" className="bg-brand/10 text-brand border-none text-[8px] tracking-widest">NFC Verified</Badge>
+                <div className="flex items-center gap-1.5"><Info className="w-3 h-3" /> Estimate: 12 days left</div>
+                <Badge variant="secondary" className="bg-white/5 text-white border-none text-[8px] tracking-widest">NFC Validated</Badge>
               </div>
             </div>
 
             <Button 
-              className={`w-full h-16 rounded-2xl text-white font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative ${firing ? 'bg-accent scale-95 shadow-inner' : 'bg-brand shadow-xl hover:shadow-brand/40 hover:-translate-y-1'}`}
+              className={`w-full h-16 rounded-2xl text-white font-bold tracking-[0.3em] uppercase transition-all duration-700 overflow-hidden relative ${firing ? 'bg-accent text-black scale-95' : 'bg-brand shadow-2xl hover:-translate-y-1'}`}
               onClick={handleManualTrigger}
               disabled={firing}
             >
               {firing ? (
                 <span className="flex items-center gap-3 animate-pulse">
-                  <Waves className="w-5 h-5" /> Releasing Micro-Dose
+                  <Waves className="w-5 h-5" /> Releasing Dose
                 </span>
               ) : (
                 'Trigger Burst'
@@ -183,7 +184,7 @@ export default function DashboardPage() {
               {insights.insights.map((insight, idx) => (
                 <Card key={idx} className="p-5 border-none bg-card rounded-2xl group hover:bg-white/5 transition-colors">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
                       <Info className="w-5 h-5 text-accent" />
                     </div>
                     <div className="space-y-1.5">

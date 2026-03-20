@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -21,63 +20,64 @@ export default function RewardsPage() {
   ];
 
   return (
-    <main className="min-h-screen pb-24">
+    <main className="min-h-screen pb-24 bg-background">
       <div className="p-6 pt-12 space-y-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-headline font-bold">Rewards</h1>
-          <div className="flex items-center gap-2 bg-brand/10 border border-brand/20 px-4 py-2 rounded-full">
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
             <Award className="w-5 h-5 text-accent" />
             <span className="font-bold tabular-nums">{points}</span>
           </div>
         </header>
 
-        <Card className="bg-brand border-none relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -translate-y-12 translate-x-12" />
+        <Card className="bg-white text-black border-none relative overflow-hidden rounded-[2.5rem]">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full blur-3xl -translate-y-12 translate-x-12" />
           <CardHeader>
-            <CardTitle>Elite Status</CardTitle>
-            <CardDescription className="text-white/70">You are 550 points away from Platinum.</CardDescription>
+            <CardTitle className="font-black text-2xl tracking-tight">Elite Status</CardTitle>
+            <CardDescription className="text-black/60 font-medium">You are {nextTier - points} points away from Platinum.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress value={progress} className="h-3 bg-white/20" />
-            <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-white/80">
-              <span>Current: Gold</span>
+          <CardContent className="space-y-6">
+            <Progress value={progress} className="h-3 bg-black/10" />
+            <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-black/80">
+              <span>Tier: Gold</span>
               <span>Next: Platinum</span>
             </div>
-            <Button className="w-full bg-white text-black hover:bg-white/90 gap-2">
-              <QrCode className="w-4 h-4" /> Scan NFC at Store
+            <Button className="w-full bg-black text-white hover:bg-black/90 gap-2 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">
+              <QrCode className="w-4 h-4" /> Scan NFC at Boutique
             </Button>
           </CardContent>
         </Card>
 
         <section className="space-y-4">
-          <h2 className="text-sm font-bold tracking-widest uppercase text-muted-foreground">Active Missions</h2>
+          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground">Active Missions</h2>
           <div className="space-y-4">
             {missions.map((m, idx) => (
-              <Card key={idx} className="p-4 bg-card border-none flex items-center gap-4">
-                <div className="w-12 h-12 bg-brand/20 rounded-xl flex items-center justify-center">
-                  <m.icon className="w-6 h-6 text-brand" />
+              <Card key={idx} className="p-5 bg-card border-none flex items-center gap-5 rounded-[1.5rem] group hover:bg-white/5 transition-colors">
+                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center shrink-0">
+                  <m.icon className="w-7 h-7 text-accent" />
                 </div>
-                <div className="flex-1 space-y-2">
+                <div className="flex-1 space-y-2.5">
                   <div className="flex justify-between">
-                    <h3 className="font-bold text-sm">{m.title}</h3>
-                    <span className="text-[10px] font-bold text-accent uppercase">{m.reward}</span>
+                    <h3 className="font-bold text-sm tracking-tight">{m.title}</h3>
+                    <span className="text-[10px] font-black text-accent uppercase tracking-widest">{m.reward}</span>
                   </div>
-                  <Progress value={(m.progress / m.total) * 100} className="h-1.5" />
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{m.progress} / {m.total} Completed</p>
+                  <Progress value={(m.progress / m.total) * 100} className="h-1.5 bg-white/5" />
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{m.progress} / {m.total} Completed</p>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
               </Card>
             ))}
           </div>
         </section>
 
-        <Card className="bg-card border-none p-6 text-center space-y-4">
-          <Recycle className="w-12 h-12 mx-auto text-brand opacity-80" />
-          <div className="space-y-1">
-            <h3 className="font-bold">Sustainable Gamification</h3>
-            <p className="text-sm text-muted-foreground">Return your empty cartridges to any L'Oréal boutique to unlock exclusive limited-edition aromas.</p>
+        <Card className="bg-card border-none p-8 text-center space-y-6 rounded-[2rem] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+          <Recycle className="w-14 h-14 mx-auto text-accent opacity-40 animate-pulse" />
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg">Circular Loyalty</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px] mx-auto">Return empty cartridges to any flagship boutique to unlock limited edition aromas.</p>
           </div>
-          <Button variant="outline" className="w-full">Locate Nearest Boutique</Button>
+          <Button variant="outline" className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[10px] border-white/10">Find Nearest Station</Button>
         </Card>
       </div>
       <Navigation />
