@@ -45,8 +45,8 @@ const PLANS = [
 
 function OmniTopLogo() {
   return (
-    <div className="w-full flex justify-center pt-8 pb-4 animate-in fade-in duration-700">
-      <div className="relative w-32 h-16">
+    <div className="w-full flex justify-center pt-6 pb-2 animate-in fade-in duration-700 shrink-0">
+      <div className="relative w-28 h-12">
         <Image 
           src="/logo_omni.PNG" 
           alt="Omni Kinetic" 
@@ -105,7 +105,6 @@ export default function WelcomePage() {
     router.push('/dashboard');
   };
 
-  // Persistent header for connection screens
   const showHeaderLogo = step !== 'intro';
 
   if (activeDevice !== 'none' && step === 'intro') {
@@ -137,10 +136,10 @@ export default function WelcomePage() {
     <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden">
       {showHeaderLogo && <OmniTopLogo />}
       
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-4 relative">
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 relative overflow-hidden">
         
         {step === 'intro' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-16 animate-in fade-in duration-1000">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000">
              <div className="relative w-64 h-32">
               <Image 
                 src="/logo_omni.PNG" 
@@ -162,7 +161,7 @@ export default function WelcomePage() {
             <div className="w-full">
               <Button 
                 onClick={() => setStep('register')} 
-                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none"
+                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-2xl"
               >
                 <Fingerprint className="w-5 h-5 opacity-40" />
                 Initialize Profile
@@ -198,13 +197,13 @@ export default function WelcomePage() {
         )}
 
         {step === 'explore' && (
-          <section className="flex-1 flex flex-col animate-in fade-in duration-700">
-            <header className="text-center space-y-1 mb-6">
+          <section className="flex-1 flex flex-col animate-in fade-in duration-700 overflow-hidden">
+            <header className="text-center space-y-1 mb-2 shrink-0">
               <h2 className="text-[11px] uppercase tracking-[0.4em] font-black opacity-80">CHOOSE ARCHITECTURE</h2>
               <p className="text-[10px] font-light italic opacity-40">Swipe to synchronize hardware</p>
             </header>
 
-            <div className="flex-1 flex flex-col relative overflow-hidden">
+            <div className="flex-1 flex flex-col relative overflow-hidden min-h-0">
               <Carousel 
                 setApi={setApi} 
                 className="w-full h-full"
@@ -216,11 +215,11 @@ export default function WelcomePage() {
               >
                 <CarouselContent className="-ml-0 h-full">
                   {DEVICES.map((device) => (
-                    <CarouselItem key={device.id} className="pl-0 h-full flex flex-col items-center">
-                      <div className="flex flex-col items-center justify-between h-full w-full py-4">
-                        {/* Image Container - scaled to match reference */}
-                        <div className="relative w-full flex-1 flex items-center justify-center">
-                          <div className="relative w-full max-w-[300px] aspect-square">
+                    <CarouselItem key={device.id} className="pl-0 h-full">
+                      <div className="flex flex-col items-center justify-between h-full w-full py-2">
+                        {/* Image Container - Grows to fill space but remains flexible */}
+                        <div className="relative w-full flex-1 flex items-center justify-center min-h-0">
+                          <div className="relative w-full max-w-[280px] aspect-square">
                             <Image 
                               src={device.img} 
                               alt={device.name} 
@@ -231,17 +230,17 @@ export default function WelcomePage() {
                           </div>
                         </div>
 
-                        {/* Text Container - matching reference image hierarchy */}
-                        <div className="text-center space-y-2 px-4 pb-4">
-                          <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
-                          <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
-                          <p className="text-[12px] text-white/50 leading-relaxed max-w-[260px] mx-auto font-medium">
+                        {/* Text Container - Compact spacing for mobile */}
+                        <div className="text-center space-y-1 px-4 pb-2 shrink-0">
+                          <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
+                          <h3 className="text-3xl font-headline font-black tracking-tight">{device.name}</h3>
+                          <p className="text-[11px] text-white/50 leading-relaxed max-w-[240px] mx-auto font-medium">
                             {device.desc}
                           </p>
                           
-                          <div className="pt-4">
+                          <div className="pt-3">
                             <Button 
-                              className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl active:scale-[0.98] transition-transform"
+                              className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl active:scale-[0.98] transition-transform border-none"
                               onClick={() => startLinking(device)}
                             >
                               Synchronize
@@ -253,16 +252,16 @@ export default function WelcomePage() {
                   ))}
                 </CarouselContent>
               </Carousel>
-              
-              {/* Custom indicators */}
-              <div className="flex justify-center gap-3 py-2">
-                {DEVICES.map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-10 bg-white' : 'w-2 bg-white/20'}`} 
-                  />
-                ))}
-              </div>
+            </div>
+            
+            {/* Custom indicators */}
+            <div className="flex justify-center gap-2 py-4 shrink-0">
+              {DEVICES.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`} 
+                />
+              ))}
             </div>
           </section>
         )}
@@ -293,21 +292,21 @@ export default function WelcomePage() {
         )}
 
         {step === 'plan' && (
-          <section className="flex-1 flex flex-col justify-center space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+          <section className="flex-1 flex flex-col justify-center space-y-6 animate-in slide-in-from-bottom-4 duration-500">
             <header className="text-center space-y-2">
               <h2 className="text-3xl font-headline font-bold tracking-tight">Intelligence Tier</h2>
               <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold opacity-40">Biometric Sync Level</p>
             </header>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {PLANS.map((plan) => (
                 <button 
                   key={plan.id} 
-                  className={`w-full text-left p-6 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-white/10 ring-1 ring-white/10 shadow-xl`}
+                  className={`w-full text-left p-5 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-white/10 ring-1 ring-white/10 shadow-xl`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                      <h3 className="text-xl font-bold tracking-tight text-white">{plan.name}</h3>
+                      <h3 className="text-lg font-bold tracking-tight text-white">{plan.name}</h3>
                       <p className="text-[9px] text-muted-foreground leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
                     </div>
                     <div className="flex flex-col items-end">
@@ -316,7 +315,7 @@ export default function WelcomePage() {
                           {plan.badge}
                         </Badge>
                       )}
-                      <p className="text-lg font-black tabular-nums text-white">{plan.price}</p>
+                      <p className="text-base font-black tabular-nums text-white">{plan.price}</p>
                     </div>
                   </div>
                 </button>
@@ -325,7 +324,7 @@ export default function WelcomePage() {
           </section>
         )}
 
-        <footer className="text-center pt-2 pb-2">
+        <footer className="text-center pb-4 shrink-0">
           <p className="text-[8px] text-muted-foreground uppercase tracking-[0.4em] font-black opacity-30">Omni-Scent Protocol v2.1.0</p>
         </footer>
       </div>
