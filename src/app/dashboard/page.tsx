@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Thermometer, Zap, Waves, BrainCircuit, Info, Heart, Gauge, Sparkles, LogOut, ChevronRight } from 'lucide-react';
+import { Thermometer, Zap, Waves, BrainCircuit, Info, Heart, Gauge, Sparkles, LogOut, ChevronRight, Droplets } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
