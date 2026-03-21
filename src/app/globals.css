@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,7 +36,7 @@
     --brand-primary: 1 74% 14%; /* #3D0A09 */
     --brand-accent: 45 60% 60%; /* Gold */
     --accent: 45 60% 60%;
-    --accent-foreground: 0 0% 0%;
+    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
     --ring: 45 60% 60%;
   }
 
@@ -45,7 +46,7 @@
     --brand-primary: 278 51% 17%; /* #301540 */
     --brand-accent: 45 60% 60%; /* Gold */
     --accent: 45 60% 60%;
-    --accent-foreground: 0 0% 0%;
+    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
     --ring: 45 60% 60%;
   }
 
@@ -55,7 +56,7 @@
     --brand-primary: 186 100% 33%; /* #0097A9 */
     --brand-accent: 0 0% 75%; /* Silver */
     --accent: 186 100% 33%;
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
     --ring: 0 0% 75%;
   }
 }

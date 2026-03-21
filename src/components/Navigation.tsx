@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart3, Award, MapPin, Droplets } from 'lucide-react';
+import { Home, BarChart3, Award, MapPin, Droplets, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/lib/device-context';
 
@@ -12,11 +12,11 @@ export function Navigation() {
   const { activeDevice } = useDevice();
 
   const navItems = [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: BarChart3, label: 'Wellness', href: '/dashboard' },
+    { icon: Home, label: 'Home', href: '/dashboard' },
     { icon: Droplets, label: 'Refill', href: '/refill' },
     { icon: MapPin, label: 'Locator', href: '/map' },
     { icon: Award, label: 'Rewards', href: '/rewards' },
+    { icon: User, label: 'Profile', href: '/profile' },
   ];
 
   const isIntroPage = pathname === '/' && activeDevice === 'none';

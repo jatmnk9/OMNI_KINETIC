@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,10 +43,10 @@ const PLANS = [
   { id: 'Premium', name: 'Premium', price: '$49/mo', desc: 'Hyper-personalized biometric sync in real-time.', features: ['Real-time HRV Sync', 'Exclusive Fragrance Drops'], badge: 'Elite' },
 ];
 
-function OmniLogo() {
+function OmniTopLogo() {
   return (
-    <div className="flex flex-col items-center justify-center space-y-8">
-      <div className="relative w-64 h-32">
+    <div className="w-full flex justify-center pt-8 pb-4 animate-in fade-in duration-700">
+      <div className="relative w-32 h-16">
         <Image 
           src="/logo_omni.PNG" 
           alt="Omni Kinetic" 
@@ -54,10 +54,6 @@ function OmniLogo() {
           className="object-contain"
           priority
         />
-      </div>
-      <div className="flex flex-col items-center space-y-3">
-        <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-        <p className="text-[10px] tracking-[0.4em] uppercase opacity-60 font-medium text-center">WHERE FRAGRANCE MEETS MOTION</p>
       </div>
     </div>
   );
@@ -109,11 +105,14 @@ export default function WelcomePage() {
     router.push('/dashboard');
   };
 
+  // Persistent header for connection screens
+  const showHeaderLogo = step !== 'intro';
+
   if (activeDevice !== 'none' && step === 'intro') {
     return (
       <main className="h-svh flex flex-col bg-background overflow-hidden">
         <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-12 max-w-lg mx-auto text-center">
-          <OmniLogo />
+          <OmniTopLogo />
           <div className="w-full space-y-6">
              <p className="text-muted-foreground text-sm font-light">Welcome back, {userProfile?.name}.</p>
              <button 
@@ -136,14 +135,26 @@ export default function WelcomePage() {
 
   return (
     <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden">
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-6">
+      {showHeaderLogo && <OmniTopLogo />}
+      
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-6 relative">
         
         {step === 'intro' && (
           <section className="flex-1 flex flex-col items-center justify-center space-y-16 animate-in fade-in duration-1000">
-            <OmniLogo />
+             <div className="relative w-64 h-32">
+              <Image 
+                src="/logo_omni.PNG" 
+                alt="Omni Kinetic" 
+                fill 
+                className="object-contain"
+                priority
+              />
+            </div>
             
             <div className="max-w-[280px] text-center">
-              <p className="text-white/40 text-[11px] leading-relaxed tracking-wide font-light">
+              <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-4" />
+              <p className="text-white/60 text-[10px] tracking-[0.4em] uppercase font-medium mb-2">WHERE FRAGRANCE MEETS MOTION</p>
+              <p className="text-white/30 text-[11px] leading-relaxed tracking-wide font-light italic">
                 Biometric synchronization for the modern avant-garde.
               </p>
             </div>
@@ -151,8 +162,7 @@ export default function WelcomePage() {
             <div className="w-full">
               <Button 
                 onClick={() => setStep('register')} 
-                variant="outline"
-                className="w-full h-16 border-white/10 bg-white/5 text-white font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-4"
+                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none"
               >
                 <Fingerprint className="w-5 h-5 opacity-40" />
                 Initialize Profile
@@ -171,18 +181,18 @@ export default function WelcomePage() {
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
-                  <Input id="name" name="name" placeholder="E.g. Jane Doe" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
+                  <User className="absolute left-4 top-4 w-4 h-4 opacity-20" />
+                  <Input id="name" name="name" placeholder="E.g. Jane Doe" className="pl-12 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
-                  <Input id="email" name="email" type="email" placeholder="jane@omnokinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
+                  <Mail className="absolute left-4 top-4 w-4 h-4 opacity-20" />
+                  <Input id="email" name="email" type="email" placeholder="jane@omnokinetic.com" className="pl-12 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl mt-4 hover:scale-[1.02] active:scale-95 transition-transform">Create Identity</Button>
+              <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl mt-4 hover:bg-neutral-200 transition-transform">Create Identity</Button>
             </form>
           </section>
         )}
@@ -268,6 +278,9 @@ export default function WelcomePage() {
               </p>
               <p className="text-[10px] text-muted-foreground max-w-[220px] mx-auto opacity-60 leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
             </div>
+            <Button variant="ghost" onClick={() => setStep('explore')} className="text-[10px] uppercase font-bold tracking-widest opacity-40">
+               <ChevronLeft className="w-4 h-4 mr-2" /> Select Different Hardware
+            </Button>
           </section>
         )}
 
@@ -286,7 +299,7 @@ export default function WelcomePage() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                      <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
+                      <h3 className="text-xl font-bold tracking-tight text-white">{plan.name}</h3>
                       <p className="text-[9px] text-muted-foreground leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
                     </div>
                     <div className="flex flex-col items-end">
@@ -295,7 +308,7 @@ export default function WelcomePage() {
                           {plan.badge}
                         </Badge>
                       )}
-                      <p className="text-lg font-black tabular-nums">{plan.price}</p>
+                      <p className="text-lg font-black tabular-nums text-white">{plan.price}</p>
                     </div>
                   </div>
                 </button>
