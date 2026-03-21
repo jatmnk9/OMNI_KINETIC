@@ -38,9 +38,9 @@ const DEVICES = [
 ];
 
 const PLANS = [
-  { id: 'Base', name: 'Base', price: '$15/mo', desc: 'Manual control and essential hardware features.', features: ['Manual Refill', 'Basic Metrics'] },
-  { id: 'Essential', name: 'Essential', price: '$29/mo', desc: 'AI that learns your daily routines automatically.', features: ['Predictive Refills', 'AI Routine Learning'], badge: 'Popular' },
-  { id: 'Premium', name: 'Premium', price: '$49/mo', desc: 'Hyper-personalized biometric sync in real-time.', features: ['Real-time HRV Sync', 'Exclusive Fragrance Drops'], badge: 'Elite' },
+  { id: 'Base', name: 'Functional Luxury', price: '$0/mo', desc: 'Essential hardware sync and basic motion triggers.', features: ['App Core Access', 'NFC Status Check', 'Basic Triggers'] },
+  { id: 'Essential', name: 'Essential', price: '$76.03/mo', desc: 'The intelligent ecosystem. Learns your daily rhythms.', features: ['2 Smart Refills', 'AI Routine Learning', 'Predictive Refills'], badge: 'Popular' },
+  { id: 'Premium', name: 'Premium', price: '$114.05/mo', desc: 'The gold standard of luxury technology.', features: ['4 Smart Refills', 'Biometric Deep Sync', 'Exclusive LTD Drops'], badge: 'Elite' },
 ];
 
 function OmniTopLogo() {
@@ -217,7 +217,6 @@ export default function WelcomePage() {
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="pl-0 h-full">
                       <div className="flex flex-col items-center justify-between h-full w-full py-2">
-                        {/* Image Container - Grows to fill space but remains flexible */}
                         <div className="relative w-full flex-1 flex items-center justify-center min-h-0">
                           <div className="relative w-full max-w-[280px] aspect-square">
                             <Image 
@@ -230,7 +229,6 @@ export default function WelcomePage() {
                           </div>
                         </div>
 
-                        {/* Text Container - Compact spacing for mobile */}
                         <div className="text-center space-y-1 px-4 pb-2 shrink-0">
                           <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
                           <h3 className="text-3xl font-headline font-black tracking-tight">{device.name}</h3>
@@ -254,7 +252,6 @@ export default function WelcomePage() {
               </Carousel>
             </div>
             
-            {/* Custom indicators */}
             <div className="flex justify-center gap-2 py-4 shrink-0">
               {DEVICES.map((_, i) => (
                 <div 

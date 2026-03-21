@@ -11,10 +11,10 @@ import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
 
 export default function RefillPage() {
-  const { activeDevice, cartridgeLevel } = useDevice();
+  const { activeDevice, cartridgeLevel, currentPlan } = useDevice();
 
-  const deviceName = activeDevice === 'ApexEssence' ? 'Apex' : activeDevice;
-  const price = activeDevice === 'ApexEssence' ? '$52.64' : (activeDevice === 'Synapse' ? '$58.20' : '$49.95');
+  const deviceName = activeDevice === 'ApexEssence' ? 'Apex' : (activeDevice === 'Synapse' ? 'Synapse' : 'Kinetic');
+  const price = activeDevice === 'ApexEssence' ? '$52.64' : (activeDevice === 'Synapse' ? '$58.49' : '$70.18');
 
   return (
     <main className="min-h-screen pb-24 bg-background text-foreground">

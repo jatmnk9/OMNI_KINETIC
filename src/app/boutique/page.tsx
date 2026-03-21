@@ -14,9 +14,9 @@ import { Header } from '@/components/Header';
 import { personalizedScentRecommendations, PersonalizedScentRecommendationsOutput } from '@/ai/flows/personalized-scent-recommendations-flow';
 
 const PLANS = [
-  { name: 'Base', price: '$15/mo', features: ['1 Manual Refill', 'Basic Metrics'] },
-  { name: 'Essential', price: '$29/mo', features: ['Predictive Refills', 'AI Learning Insights', '10% Discount'], badge: 'Popular' },
-  { name: 'Elite', price: '$49/mo', features: ['Unlimited Refills', 'Live Biometric Sync', 'VIP Access'], badge: 'Elite' },
+  { name: 'Functional Luxury', price: '$0/mo', features: ['Functional Luxury', 'NFC Sync', 'Wearable Link'] },
+  { name: 'Essential', price: '$76.03/mo', features: ['2 Smart Refills', 'AI Pattern Learning', 'Predictive Refill'], badge: 'Popular' },
+  { name: 'Premium', price: '$114.05/mo', features: ['4 Smart Refills', 'Hiper-Personalization', 'LTD Collections'], badge: 'Elite' },
 ];
 
 const STARTER_KITS = [
@@ -48,6 +48,8 @@ export default function BoutiquePage() {
     loadRecs();
   }, [activeDevice]);
 
+  const individualPrice = activeDevice === 'ApexEssence' ? '$52.64' : (activeDevice === 'Synapse' ? '$58.49' : '$70.18');
+
   return (
     <main className="min-h-screen pb-24 bg-background">
       <Header />
@@ -78,7 +80,7 @@ export default function BoutiquePage() {
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{rec.description}</p>
                   <div className="pt-2 flex items-center justify-between">
-                    <span className="font-bold text-lg text-accent">$45.00</span>
+                    <span className="font-bold text-lg text-accent">{individualPrice}</span>
                     <Button size="sm" variant="outline" className="text-[9px] h-8 uppercase tracking-widest font-bold rounded-xl px-4 border-white/10">Add Refill</Button>
                   </div>
                 </div>
