@@ -17,7 +17,7 @@ export function Header() {
     router.push('/');
   };
 
-  const brilliantHover = "hover:bg-white/20 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:border-white/40 transition-all duration-300";
+  const brilliantHover = "hover:bg-white/30 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.8)] hover:border-white/50 transition-all duration-300";
 
   return (
     <header className="relative flex items-center justify-center h-20 px-6 max-w-lg mx-auto w-full z-50 shrink-0">
@@ -26,7 +26,7 @@ export function Header() {
            variant="ghost" 
            size="icon" 
            onClick={() => router.push('/profile')} 
-           className={`rounded-full h-11 w-11 bg-white/5 border border-white/5 shadow-xl ${brilliantHover}`}
+           className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
          >
             <User className="w-5 h-5 opacity-90" />
          </Button>
@@ -47,7 +47,7 @@ export function Header() {
           variant="ghost" 
           size="icon" 
           onClick={handleLogout} 
-          className={`rounded-full h-11 w-11 bg-white/5 border border-white/5 shadow-xl ${brilliantHover}`}
+          className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
         >
            <LogOut className="w-5 h-5 opacity-90 text-red-400 hover:text-red-300" />
         </Button>

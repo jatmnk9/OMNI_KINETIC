@@ -36,7 +36,7 @@ export default function ProfilePage() {
           <div className="relative group">
             <div className="absolute -inset-4 bg-brand-accent/20 rounded-full blur-2xl animate-pulse" />
             <Avatar className="h-32 w-32 border-4 border-white/10 relative z-10 shadow-2xl transition-transform duration-500 group-hover:scale-105">
-              <AvatarImage src={`https://picsum.photos/seed/${userProfile?.name || 'user'}/400`} />
+              <AvatarImage src="/perfil.jpg" alt="Profile" className="object-cover" />
               <AvatarFallback className="bg-neutral-800 text-3xl font-bold">
                 {userProfile?.name?.charAt(0) || 'U'}
               </AvatarFallback>
