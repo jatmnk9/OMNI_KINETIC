@@ -17,21 +17,21 @@ const DEVICES = [
   {
     id: 'ApexEssence' as DeviceType,
     name: 'Apex Essence',
-    brand: 'Omni Kinetic',
+    brand: 'OMNI KINETIC',
     desc: 'High-performance biometric synchronization for active living.',
     img: '/apex.PNG',
   },
   {
     id: 'Synapse' as DeviceType,
     name: 'Synapse',
-    brand: 'Omni Kinetic',
+    brand: 'OMNI KINETIC',
     desc: 'Deep emotional response mapping with nocturnal elegance.',
     img: '/synapse.PNG',
   },
   {
     id: 'Kinetic' as DeviceType,
     name: 'Kinetic',
-    brand: 'Omni Kinetic',
+    brand: 'OMNI KINETIC',
     desc: 'Aquatic metrics and organic recovery for total well-being.',
     img: '/kinetic.PNG',
   }
@@ -137,7 +137,7 @@ export default function WelcomePage() {
     <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden">
       {showHeaderLogo && <OmniTopLogo />}
       
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-6 relative">
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 py-4 relative">
         
         {step === 'intro' && (
           <section className="flex-1 flex flex-col items-center justify-center space-y-16 animate-in fade-in duration-1000">
@@ -198,48 +198,55 @@ export default function WelcomePage() {
         )}
 
         {step === 'explore' && (
-          <section className="flex-1 flex flex-col space-y-4 animate-in fade-in duration-700">
-            <header className="text-center space-y-1">
-              <h2 className="text-[10px] uppercase tracking-[0.4em] font-black opacity-40">Choose Architecture</h2>
-              <p className="text-[10px] font-light italic opacity-60">Swipe to synchronize hardware</p>
+          <section className="flex-1 flex flex-col animate-in fade-in duration-700">
+            <header className="text-center space-y-1 mb-6">
+              <h2 className="text-[11px] uppercase tracking-[0.4em] font-black opacity-80">CHOOSE ARCHITECTURE</h2>
+              <p className="text-[10px] font-light italic opacity-40">Swipe to synchronize hardware</p>
             </header>
 
-            <div className="flex-1 flex flex-col relative">
+            <div className="flex-1 flex flex-col relative overflow-hidden">
               <Carousel 
                 setApi={setApi} 
-                className="w-full flex-1"
+                className="w-full h-full"
                 opts={{ 
                   loop: true, 
                   align: "center", 
                   skipSnaps: false,
-                  dragFree: true
                 }}
               >
                 <CarouselContent className="-ml-0 h-full">
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="pl-0 h-full flex flex-col items-center">
-                      <div className="flex flex-col items-center h-full w-full">
-                        <div className="flex-1 relative w-full flex items-center justify-center p-4">
-                           <div className="relative w-full max-w-[240px] aspect-[3/4]">
-                             <Image 
-                               src={device.img} 
-                               alt={device.name} 
-                               fill 
-                               className="object-contain drop-shadow-[0_20px_50px_rgba(255,255,255,0.1)] transition-transform duration-1000 scale-105"
-                               priority
-                             />
-                           </div>
+                      <div className="flex flex-col items-center justify-between h-full w-full py-4">
+                        {/* Image Container - scaled to match reference */}
+                        <div className="relative w-full flex-1 flex items-center justify-center">
+                          <div className="relative w-full max-w-[300px] aspect-square">
+                            <Image 
+                              src={device.img} 
+                              alt={device.name} 
+                              fill 
+                              className="object-contain transition-transform duration-1000 hover:scale-105"
+                              priority
+                            />
+                          </div>
                         </div>
-                        <div className="text-center space-y-3 pb-4">
-                          <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
+
+                        {/* Text Container - matching reference image hierarchy */}
+                        <div className="text-center space-y-2 px-4 pb-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
                           <h3 className="text-4xl font-headline font-black tracking-tight">{device.name}</h3>
-                          <p className="text-[11px] text-muted-foreground leading-relaxed max-w-[240px] mx-auto font-medium">{device.desc}</p>
-                          <Button 
-                            className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl mt-4 shadow-2xl active:scale-[0.98] transition-transform"
-                            onClick={() => startLinking(device)}
-                          >
-                            Synchronize
-                          </Button>
+                          <p className="text-[12px] text-white/50 leading-relaxed max-w-[260px] mx-auto font-medium">
+                            {device.desc}
+                          </p>
+                          
+                          <div className="pt-4">
+                            <Button 
+                              className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl active:scale-[0.98] transition-transform"
+                              onClick={() => startLinking(device)}
+                            >
+                              Synchronize
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CarouselItem>
@@ -247,11 +254,12 @@ export default function WelcomePage() {
                 </CarouselContent>
               </Carousel>
               
-              <div className="flex justify-center gap-3 pt-2 pb-4">
+              {/* Custom indicators */}
+              <div className="flex justify-center gap-3 py-2">
                 {DEVICES.map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-0.5 transition-all duration-700 rounded-full ${current === i ? 'w-10 bg-white' : 'w-1.5 bg-white/20'}`} 
+                    className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-10 bg-white' : 'w-2 bg-white/20'}`} 
                   />
                 ))}
               </div>
@@ -317,7 +325,7 @@ export default function WelcomePage() {
           </section>
         )}
 
-        <footer className="text-center pt-4 border-t border-white/5">
+        <footer className="text-center pt-2 pb-2">
           <p className="text-[8px] text-muted-foreground uppercase tracking-[0.4em] font-black opacity-30">Omni-Scent Protocol v2.1.0</p>
         </footer>
       </div>
