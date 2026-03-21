@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -32,7 +33,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [currentPlan, setCurrentPlan] = useState<PlanType>('Base');
   const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
   
-  // Real-time biometric simulation
+  // Real-time biometric simulation with more dynamic jitter
   const [biometrics, setBiometrics] = useState({
     hrv: 82,
     stress: 'Low',
@@ -43,12 +44,23 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
     if (activeDevice === 'none') return;
     
     const interval = setInterval(() => {
-      setBiometrics(prev => ({
-        hrv: Math.max(60, Math.min(110, prev.hrv + (Math.random() > 0.5 ? 1 : -1))),
-        stress: Math.random() > 0.9 ? (Math.random() > 0.5 ? 'Medium' : 'Low') : prev.stress,
-        temp: parseFloat((prev.temp + (Math.random() > 0.5 ? 0.05 : -0.05)).toFixed(1))
-      }));
-    }, 3000);
+      setBiometrics(prev => {
+        const nextHrv = Math.max(60, Math.min(110, prev.hrv + (Math.random() > 0.5 ? Math.floor(Math.random() * 3) : -Math.floor(Math.random() * 3))));
+        const stressLevels = ['Low', 'Medium', 'High'];
+        let nextStress = prev.stress;
+        
+        // Correlate stress with HRV jitter for realism
+        if (nextHrv < 70) nextStress = 'High';
+        else if (nextHrv < 85) nextStress = 'Medium';
+        else nextStress = 'Low';
+
+        return {
+          hrv: nextHrv,
+          stress: nextStress,
+          temp: parseFloat((36.5 + (Math.random() * 0.4)).toFixed(1))
+        };
+      });
+    }, 2000); // Faster updates for "real-time" feel
 
     return () => clearInterval(interval);
   }, [activeDevice]);
