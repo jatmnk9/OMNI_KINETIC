@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   Thermometer, 
   Zap, 
@@ -16,7 +17,8 @@ import {
   ChevronRight, 
   Droplets,
   Activity,
-  Wind
+  Wind,
+  User
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +38,7 @@ const FIRING_MODES = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics, logout } = useDevice();
+  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics, logout, userProfile } = useDevice();
   const [firing, setFiring] = useState(false);
   const [selectedMode, setSelectedMode] = useState('focus');
   const [moodPulse, setMoodPulse] = useState(false);
@@ -51,7 +53,6 @@ export default function DashboardPage() {
     }
   }, [activeDevice, router]);
 
-  // Trigger a "mood flash" animation whenever the mode changes
   useEffect(() => {
     setMoodPulse(true);
     const timer = setTimeout(() => setMoodPulse(false), 800);
@@ -104,7 +105,6 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen pb-24 relative overflow-hidden transition-colors duration-1000">
       
-      {/* Mood Pulse Background Effect */}
       <div 
         className={cn(
           "fixed inset-0 pointer-events-none z-0 transition-opacity duration-700",
@@ -113,25 +113,44 @@ export default function DashboardPage() {
         )} 
       />
 
-      <div className="relative z-10 p-6 pt-12 space-y-8 max-w-lg mx-auto">
-        <header className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-headline font-bold tracking-tight">{deviceLabel} Hub</h1>
-            <div className="flex items-center gap-2">
+      <div className="relative z-10 p-6 pt-8 space-y-8 max-w-lg mx-auto">
+        {/* New Centered Logo Header with Logout */}
+        <header className="relative flex items-center justify-center h-16">
+          <div className="absolute left-0">
+             <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-white/5 rounded-full h-10 w-10">
+                <User className="w-5 h-5 opacity-40" />
+             </Button>
+          </div>
+          
+          <div className="relative w-28 h-10">
+            <Image 
+              src="/logo_omni.PNG" 
+              alt="Omni Kinetic" 
+              fill 
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div className="absolute right-0">
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-white/5 rounded-full h-10 w-10 transition-all">
+               <LogOut className="w-5 h-5 opacity-40" />
+            </Button>
+          </div>
+        </header>
+
+        <section className="space-y-1 text-center">
+            <h1 className="text-3xl font-headline font-black tracking-tight uppercase italic">{deviceLabel} WELLNESS</h1>
+            <div className="flex items-center justify-center gap-2">
               <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-brand/40 text-brand font-bold">
-                {currentPlan} Intelligence
+                {currentPlan} Tier
               </Badge>
               {currentPlan === 'Premium' && (
                 <Badge className="bg-accent text-accent-foreground text-[9px] uppercase tracking-widest animate-pulse font-bold">Live Bio-Sync</Badge>
               )}
             </div>
-          </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-white/5 rounded-full h-12 w-12 transition-all">
-             <LogOut className="w-5 h-5 opacity-40" />
-          </Button>
-        </header>
+        </section>
 
-        {/* Enhanced Biometric Cards with Vibrant Colors */}
         <section className="grid grid-cols-3 gap-4">
           <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg border border-white/5">
             <div className="absolute inset-0 bg-red-500/10 opacity-40 group-hover:opacity-60 transition-opacity" />
@@ -161,7 +180,6 @@ export default function DashboardPage() {
           </Card>
         </section>
 
-        {/* Firing Modes */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
@@ -199,7 +217,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Smart Refill Tracker */}
         <Card 
           className="relative overflow-hidden group border-none bg-card shadow-2xl rounded-[2.5rem] cursor-pointer hover:bg-white/5 transition-all duration-700"
           onClick={() => router.push('/refill')}
@@ -254,7 +271,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* AI Well-being Insights Section */}
         <section className="space-y-6 pb-8">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-[10px] tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
