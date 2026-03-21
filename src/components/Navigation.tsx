@@ -19,12 +19,11 @@ export function Navigation() {
     { icon: Award, label: 'Rewards', href: '/rewards' },
   ];
 
-  // We show navigation even if activeDevice is none on certain pages for better prototype flow
   const isIntroPage = pathname === '/' && activeDevice === 'none';
   if (isIntroPage) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background/80 backdrop-blur-3xl border-t border-white/10 px-6 pb-safe-area-inset-bottom h-24">
+    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur-3xl border-t border-white/10 px-6 pb-safe-area-inset-bottom h-24">
       <div className="flex items-center justify-around h-full max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -35,7 +34,7 @@ export function Navigation() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center gap-1.5 transition-all duration-300 relative px-3 py-1",
-                isActive ? "text-brand-accent scale-110" : "text-muted-foreground hover:text-foreground"
+                isActive ? "text-brand-accent scale-110" : "text-muted-foreground/60 hover:text-foreground"
               )}
             >
               <Icon className={cn("w-6 h-6", isActive && "drop-shadow-[0_0_8px_hsl(var(--brand-accent))]")} />

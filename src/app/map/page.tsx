@@ -62,6 +62,18 @@ const REFILL_LOCATIONS = [
     rating: 4.8,
     coords: { x: 35, y: 65 },
     color: "bg-brand-accent"
+  },
+  {
+    id: 4,
+    name: "Omni Kinetic - Retiro",
+    brand: "Experience Center",
+    status: "Available",
+    stock: 45,
+    distance: "3.2 km",
+    address: "Calle de Alfonso XII, 14",
+    rating: 5.0,
+    coords: { x: 72, y: 45 },
+    color: "bg-brand-accent"
   }
 ];
 
@@ -93,10 +105,6 @@ export default function RefillLocatorPage() {
               <pattern id="dotGrid" width="40" height="40" patternUnits="userSpaceOnUse">
                 <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.15)" />
               </pattern>
-              <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(var(--brand-primary))" stopOpacity="0.1" />
-                <stop offset="100%" stopColor="transparent" />
-              </linearGradient>
             </defs>
             <rect width="100%" height="100%" fill="url(#dotGrid)" />
             
@@ -138,22 +146,18 @@ export default function RefillLocatorPage() {
               }}
             >
               <div className="relative group">
-                {/* Visual Ping */}
                 <div className={cn(
                   "absolute inset-[-12px] rounded-full animate-ping opacity-25 duration-[2000ms]",
                   selectedLocation?.id === f.id ? "bg-white" : "bg-brand-accent"
                 )} />
                 
-                {/* Marker Design */}
                 <div className={cn(
                   "relative h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)] border",
                   selectedLocation?.id === f.id 
-                    ? "bg-brand-accent text-black scale-125 border-white ring-4 ring-brand-accent/20" 
+                    ? "bg-brand-accent text-background scale-125 border-white ring-4 ring-brand-accent/20" 
                     : "bg-card text-brand-accent border-white/10 hover:scale-110 hover:border-brand-accent/50"
                 )}>
                   <MapPin className="w-6 h-6" />
-                  
-                  {/* Stock Tooltip Indicator */}
                   <div className="absolute -top-3 -right-3 bg-white text-black text-[8px] font-black px-1.5 py-0.5 rounded-full border border-black shadow-lg">
                     {f.stock}
                   </div>
@@ -199,7 +203,6 @@ export default function RefillLocatorPage() {
         )}
       >
         <div className="h-full bg-card/95 backdrop-blur-3xl rounded-t-[3rem] p-6 shadow-[0_-30px_60px_rgba(0,0,0,1)] border-t border-white/10 flex flex-col">
-          {/* Handle for dragging feel */}
           <div 
             className="w-16 h-1.5 bg-white/10 rounded-full mx-auto mb-6 cursor-pointer hover:bg-white/20 transition-colors shrink-0"
             onClick={() => {
@@ -223,7 +226,7 @@ export default function RefillLocatorPage() {
                   <div className="space-y-2">
                      <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-black tracking-tight">{selectedLocation.name}</h2>
-                        <Badge className="bg-brand-accent text-black border-none font-black text-[10px] h-6 px-3">
+                        <Badge className="bg-brand-accent text-background border-none font-black text-[10px] h-6 px-3">
                           {selectedLocation.rating} <Star className="w-3 h-3 ml-1 fill-current" />
                         </Badge>
                      </div>
@@ -249,14 +252,14 @@ export default function RefillLocatorPage() {
                 </div>
 
                 <div className="space-y-3 pt-2">
-                   <Button className="w-full h-16 bg-brand-accent text-black font-black uppercase tracking-[0.3em] rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-xs">
+                   <Button className="w-full h-16 bg-brand-accent text-background font-black uppercase tracking-[0.3em] rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-xs">
                      RESERVE REFILL
                    </Button>
                    <div className="flex gap-3">
-                      <Button variant="outline" className="flex-1 h-12 rounded-xl border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest">
+                      <Button variant="outline" className="flex-1 h-12 rounded-xl border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest text-foreground">
                         DIRECTIONS
                       </Button>
-                      <Button variant="outline" className="flex-1 h-12 rounded-xl border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest">
+                      <Button variant="outline" className="flex-1 h-12 rounded-xl border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest text-foreground">
                         CALL HUB
                       </Button>
                    </div>
