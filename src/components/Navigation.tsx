@@ -19,11 +19,13 @@ export function Navigation() {
     { icon: Award, label: 'Rewards', href: '/rewards' },
   ];
 
-  if (activeDevice === 'none' && (pathname === '/' || pathname === '/map')) return null;
+  // We show navigation even if activeDevice is none on certain pages for better prototype flow
+  const isIntroPage = pathname === '/' && activeDevice === 'none';
+  if (isIntroPage) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-2xl border-t border-white/5 px-6 pb-safe-area-inset-bottom h-20">
-      <div className="flex items-center justify-around h-full max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background/80 backdrop-blur-3xl border-t border-white/10 px-6 pb-safe-area-inset-bottom h-24">
+      <div className="flex items-center justify-around h-full max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -32,13 +34,15 @@ export function Navigation() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 transition-all duration-300",
+                "flex flex-col items-center gap-1.5 transition-all duration-300 relative px-3 py-1",
                 isActive ? "text-brand-accent scale-110" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[8px] font-bold uppercase tracking-[0.2em]">{item.label}</span>
-              {isActive && <div className="w-1.5 h-1.5 bg-brand-accent rounded-full mt-1 animate-pulse" />}
+              <Icon className={cn("w-6 h-6", isActive && "drop-shadow-[0_0_8px_hsl(var(--brand-accent))]")} />
+              <span className="text-[8px] font-black uppercase tracking-[0.2em]">{item.label}</span>
+              {isActive && (
+                <div className="absolute -bottom-2 w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse shadow-[0_0_10px_hsl(var(--brand-accent))]" />
+              )}
             </Link>
           );
         })}
