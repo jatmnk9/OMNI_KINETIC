@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -28,9 +29,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const FIRING_MODES = [
-  { id: 'focus', name: 'Focus Mode', icon: BrainCircuit, color: 'text-blue-400', desc: 'Cognitive Sync 0.3µL' },
-  { id: 'energy', name: 'Energy Boost', icon: Zap, color: 'text-yellow-400', desc: 'Physical Stimulation' },
-  { id: 'sensual', name: 'Sensual Night', icon: Sparkles, color: 'text-purple-400', desc: 'Deep GSR Relaxation' },
+  { id: 'focus', name: 'Focus Mode', icon: BrainCircuit, color: 'text-blue-400', glow: 'bg-blue-500/20', desc: 'Cognitive Sync 0.3µL' },
+  { id: 'energy', name: 'Energy Boost', icon: Zap, color: 'text-yellow-400', glow: 'bg-yellow-500/20', desc: 'Physical Stimulation' },
+  { id: 'sensual', name: 'Sensual Night', icon: Sparkles, color: 'text-purple-400', glow: 'bg-purple-500/20', desc: 'Deep GSR Relaxation' },
 ];
 
 export default function DashboardPage() {
@@ -38,6 +39,7 @@ export default function DashboardPage() {
   const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics, logout } = useDevice();
   const [firing, setFiring] = useState(false);
   const [selectedMode, setSelectedMode] = useState('focus');
+  const [moodPulse, setMoodPulse] = useState(false);
   const [insights, setInsights] = useState<BiometricScentInsightSummariesOutput | null>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
 
@@ -45,18 +47,20 @@ export default function DashboardPage() {
     if (activeDevice === 'none') {
       router.push('/');
     } else {
-      // Delay fetching insights to simulate analysis
-      const timer = setTimeout(() => {
-        fetchInsights();
-      }, 1500);
-      return () => clearTimeout(timer);
+      fetchInsights();
     }
   }, [activeDevice, router]);
+
+  // Trigger a "mood flash" animation whenever the mode changes
+  useEffect(() => {
+    setMoodPulse(true);
+    const timer = setTimeout(() => setMoodPulse(false), 800);
+    return () => clearTimeout(timer);
+  }, [selectedMode]);
 
   const fetchInsights = async () => {
     setLoadingInsights(true);
     try {
-      // Use the Genkit flow with mock historical data
       const result = await biometricScentInsightSummaries({
         biometricData: [
           { timestamp: new Date(Date.now() - 3600000).toISOString(), type: 'stress', value: 72 },
@@ -71,7 +75,6 @@ export default function DashboardPage() {
       setInsights(result);
     } catch (e) {
       console.error("Failed to fetch AI insights:", e);
-      // Fallback to static mock data if AI fails
       setInsights({
         overallSummary: "Your biometric patterns suggest a productive morning with elevated focus. The current regimen is effectively balancing your cortisol levels.",
         insights: [
@@ -95,11 +98,22 @@ export default function DashboardPage() {
     router.push('/');
   };
 
+  const currentMood = FIRING_MODES.find(m => m.id === selectedMode);
   const deviceLabel = activeDevice === 'ApexEssence' ? 'Apex Essence' : activeDevice;
 
   return (
-    <main className="min-h-screen pb-24 transition-colors duration-700">
-      <div className="p-6 pt-12 space-y-8 max-w-lg mx-auto">
+    <main className="min-h-screen pb-24 relative overflow-hidden transition-colors duration-1000">
+      
+      {/* Mood Pulse Background Effect */}
+      <div 
+        className={cn(
+          "fixed inset-0 pointer-events-none z-0 transition-opacity duration-700",
+          moodPulse ? "opacity-30" : "opacity-0",
+          currentMood?.glow
+        )} 
+      />
+
+      <div className="relative z-10 p-6 pt-12 space-y-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-headline font-bold tracking-tight">{deviceLabel} Hub</h1>
@@ -117,10 +131,10 @@ export default function DashboardPage() {
           </Button>
         </header>
 
-        {/* Enhanced Biometric Cards */}
+        {/* Enhanced Biometric Cards with Vibrant Colors */}
         <section className="grid grid-cols-3 gap-4">
-          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg">
-            <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg border border-white/5">
+            <div className="absolute inset-0 bg-red-500/10 opacity-40 group-hover:opacity-60 transition-opacity" />
             <div className="relative z-10 flex flex-col items-center gap-1">
               <Heart className={cn("w-6 h-6 text-red-500 transition-transform duration-300", biometrics.hrv > 85 ? "animate-bounce" : "animate-pulse")} />
               <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">HRV</span>
@@ -128,8 +142,8 @@ export default function DashboardPage() {
             </div>
           </Card>
           
-          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg">
-            <div className={cn("absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity", biometrics.stress === 'High' ? 'bg-orange-500' : 'bg-green-500')} />
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg border border-white/5">
+            <div className={cn("absolute inset-0 opacity-20 transition-all duration-500", biometrics.stress === 'High' ? 'bg-orange-500' : 'bg-green-500')} />
             <div className="relative z-10 flex flex-col items-center gap-1">
               <Gauge className={cn("w-6 h-6 transition-colors duration-500", biometrics.stress === 'High' ? 'text-orange-500' : 'text-green-400')} />
               <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">Stress</span>
@@ -137,8 +151,8 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg">
-            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Card className="p-4 bg-white/5 border-none flex flex-col items-center gap-2 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 hover:bg-white/10 shadow-lg border border-white/5">
+            <div className="absolute inset-0 bg-blue-500/10 opacity-40 group-hover:opacity-60 transition-opacity" />
             <div className="relative z-10 flex flex-col items-center gap-1">
               <Thermometer className="w-6 h-6 text-blue-400 animate-pulse" />
               <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">Temp</span>
@@ -159,19 +173,27 @@ export default function DashboardPage() {
               <Card 
                 key={mode.id} 
                 className={cn(
-                  "p-5 cursor-pointer transition-all duration-500 border-none flex items-center gap-4 rounded-[1.8rem]",
-                  selectedMode === mode.id ? 'bg-white/10 ring-1 ring-white/10 shadow-2xl' : 'bg-card hover:bg-white/5'
+                  "p-5 cursor-pointer transition-all duration-500 border-none flex items-center gap-4 rounded-[1.8rem] relative overflow-hidden",
+                  selectedMode === mode.id ? 'bg-white/10 ring-1 ring-white/10 shadow-2xl scale-[1.02]' : 'bg-card hover:bg-white/5'
                 )}
                 onClick={() => setSelectedMode(mode.id)}
               >
-                <div className={cn("p-3 rounded-2xl bg-white/5 transition-transform duration-500", mode.color, selectedMode === mode.id && "scale-110")}>
+                {selectedMode === mode.id && (
+                  <div className={cn("absolute inset-0 opacity-10 animate-pulse", mode.glow)} />
+                )}
+                <div className={cn("p-3 rounded-2xl bg-white/5 transition-transform duration-500 relative z-10", mode.color, selectedMode === mode.id && "scale-110")}>
                   <mode.icon className="w-6 h-6" />
                 </div>
-                <div className="flex-1 space-y-0.5">
+                <div className="flex-1 space-y-0.5 relative z-10">
                   <h4 className="font-bold text-sm tracking-tight">{mode.name}</h4>
                   <p className="text-[10px] text-muted-foreground tracking-wide font-medium">{mode.desc}</p>
                 </div>
-                {selectedMode === mode.id && <div className="w-2.5 h-2.5 bg-brand-accent rounded-full animate-pulse shadow-[0_0_15px_rgba(255,255,255,0.5)]" />}
+                {selectedMode === mode.id && (
+                  <div className="relative z-10 flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 bg-brand-accent rounded-full animate-ping absolute" />
+                    <div className="w-2.5 h-2.5 bg-brand-accent rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+                  </div>
+                )}
               </Card>
             ))}
           </div>
@@ -215,14 +237,19 @@ export default function DashboardPage() {
             >
               {firing ? (
                 <span className="flex items-center gap-4 animate-pulse">
-                  <Wind className="w-6 h-6" /> Releasing Dose
+                  <Wind className="w-6 h-6 animate-spin duration-[3000ms]" /> Releasing Dose
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <Activity className="w-5 h-5 opacity-60" /> Trigger Burst
                 </span>
               )}
-              {firing && <div className="absolute inset-0 bg-white/20 animate-ping" />}
+              {firing && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-full h-full bg-white/20 animate-ping absolute rounded-full" />
+                  <div className="w-full h-full bg-white/10 scale-150 animate-pulse absolute rounded-full" />
+                </div>
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -245,7 +272,7 @@ export default function DashboardPage() {
             </div>
           ) : insights ? (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              <Card className="p-8 bg-gradient-to-br from-brand-primary/20 to-transparent border-none italic text-sm leading-relaxed rounded-[2.5rem] font-light shadow-xl relative overflow-hidden group">
+              <Card className="p-8 bg-gradient-to-br from-brand-primary/20 to-transparent border-none italic text-sm leading-relaxed rounded-[2.5rem] font-light shadow-xl relative overflow-hidden group border border-white/5">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                   <Wind className="w-20 h-20 -rotate-12" />
                 </div>
@@ -253,7 +280,7 @@ export default function DashboardPage() {
               </Card>
 
               {insights.insights.map((insight, idx) => (
-                <Card key={idx} className="p-6 border-none bg-card rounded-[2rem] group hover:bg-white/10 transition-all duration-500">
+                <Card key={idx} className="p-6 border-none bg-card rounded-[2rem] group hover:bg-white/10 transition-all duration-500 border border-white/5">
                   <div className="flex items-start gap-5">
                     <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 shadow-inner">
                       {insight.biometricType === 'stress' && <Gauge className="w-6 h-6 text-orange-400" />}
