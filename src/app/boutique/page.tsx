@@ -1,16 +1,16 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ShoppingCart, Star, Sparkles, Filter, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { personalizedScentRecommendations, PersonalizedScentRecommendationsOutput } from '@/ai/flows/personalized-scent-recommendations-flow';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const PLANS = [
   { name: 'Base', price: '$15/mo', features: ['1 Manual Refill', 'Basic Metrics'] },
@@ -19,9 +19,9 @@ const PLANS = [
 ];
 
 const STARTER_KITS = [
-  { name: 'Apex Starter Kit', brand: 'Omni Kinetic', price: 231.02, img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl },
-  { name: 'Synapse Night Kit', brand: 'Omni Kinetic', price: 260.26, img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl },
-  { name: 'Kinetic Wellness Kit', brand: 'Omni Kinetic', price: 286.58, img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl },
+  { name: 'Apex Starter Kit', brand: 'Omni Kinetic', price: 231.02, img: '/apex.PNG' },
+  { name: 'Synapse Night Kit', brand: 'Omni Kinetic', price: 260.26, img: '/synapse.PNG' },
+  { name: 'Kinetic Wellness Kit', brand: 'Omni Kinetic', price: 286.58, img: '/kinetic.PNG' },
 ];
 
 export default function BoutiquePage() {
@@ -94,7 +94,7 @@ export default function BoutiquePage() {
             {STARTER_KITS.map((kit, idx) => (
               <Card key={idx} className="bg-card border-none overflow-hidden flex h-36 group cursor-pointer hover:bg-white/5 transition-colors rounded-[2rem]">
                 <div className="w-32 relative bg-white/5">
-                  <Image src={kit.img || ''} alt={kit.name} fill className="object-contain p-4 transition-transform group-hover:scale-110" />
+                  <Image src={kit.img} alt={kit.name} fill className="object-contain p-4 transition-transform group-hover:scale-110" />
                 </div>
                 <div className="flex-1 p-5 flex flex-col justify-between">
                   <div>

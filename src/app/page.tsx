@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from '@/components/ui/carousel';
 import { useDevice, DeviceType, PlanType } from '@/lib/device-context';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Navigation } from '@/components/Navigation';
 import { Badge } from '@/components/ui/badge';
 
@@ -21,21 +20,21 @@ const DEVICES = [
     name: 'Apex Essence',
     brand: 'Omni Kinetic',
     desc: 'High-performance biometric synchronization for active living.',
-    img: PlaceHolderImages.find(i => i.id === 'device-prada')?.imageUrl,
+    img: '/apex.PNG',
   },
   {
     id: 'Synapse' as DeviceType,
     name: 'Synapse',
     brand: 'Omni Kinetic',
     desc: 'Deep emotional response mapping with nocturnal elegance.',
-    img: PlaceHolderImages.find(i => i.id === 'device-ysl')?.imageUrl,
+    img: '/synapse.PNG',
   },
   {
     id: 'Kinetic' as DeviceType,
     name: 'Kinetic',
     brand: 'Omni Kinetic',
     desc: 'Aquatic metrics and organic recovery for total well-being.',
-    img: PlaceHolderImages.find(i => i.id === 'device-biotherm')?.imageUrl,
+    img: '/kinetic.PNG',
   }
 ];
 
@@ -59,7 +58,7 @@ function OmniLogo() {
       </div>
       <div className="flex flex-col items-center space-y-3">
         <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-        <p className="text-[10px] tracking-[0.4em] uppercase opacity-60 font-medium">WHERE FRAGRANCE MEETS MOTION</p>
+        <p className="text-[10px] tracking-[0.4em] uppercase opacity-60 font-medium text-center">WHERE FRAGRANCE MEETS MOTION</p>
       </div>
     </div>
   );
@@ -174,14 +173,14 @@ export default function WelcomePage() {
                 <Label htmlFor="name" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
-                  <Input id="name" name="name" placeholder="E.g. Jane Doe" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
+                  <Input id="name" name="name" placeholder="E.g. Jane Doe" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.3em] opacity-40 font-black">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3.5 w-4 h-4 opacity-20" />
-                  <Input id="email" name="email" type="email" placeholder="jane@omnokinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20" required />
+                  <Input id="email" name="email" type="email" placeholder="jane@omnokinetic.com" className="pl-10 h-14 bg-white/5 border-none rounded-2xl placeholder:opacity-20 text-white" required />
                 </div>
               </div>
               <Button type="submit" className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl mt-4 hover:scale-[1.02] active:scale-95 transition-transform">Create Identity</Button>
@@ -214,11 +213,10 @@ export default function WelcomePage() {
                         <div className="flex-1 relative w-full flex items-center justify-center p-4">
                            <div className="relative w-full max-w-[240px] aspect-[3/4]">
                              <Image 
-                               src={device.img || ''} 
+                               src={device.img} 
                                alt={device.name} 
                                fill 
                                className="object-contain drop-shadow-[0_20px_50px_rgba(255,255,255,0.1)] transition-transform duration-1000 scale-105"
-                               data-ai-hint="perfume bottle technology"
                                priority
                              />
                            </div>
