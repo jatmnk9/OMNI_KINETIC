@@ -3,15 +3,14 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Info, ShoppingBag, Droplets, Zap } from 'lucide-react';
+import { Droplets } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
+import { Header } from '@/components/Header';
 
 export default function RefillPage() {
-  const router = useRouter();
   const { activeDevice, cartridgeLevel } = useDevice();
 
   const deviceName = activeDevice === 'ApexEssence' ? 'Apex' : activeDevice;
@@ -19,16 +18,15 @@ export default function RefillPage() {
 
   return (
     <main className="min-h-screen pb-24 bg-background text-foreground">
-      <div className="max-w-lg mx-auto p-6 pt-12 space-y-8">
-        <header className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
-            <ChevronLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-headline font-bold uppercase tracking-widest">Cartridge Management</h1>
+      <Header />
+      
+      <div className="max-w-lg mx-auto p-6 space-y-8">
+        <header>
+          <h1 className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground">Cartridge Status</h1>
         </header>
 
-        {/* Status Card (Design inspired by screenshot) */}
-        <Card className="relative overflow-hidden aspect-[4/5] border-none rounded-[2.5rem] bg-neutral-900">
+        {/* Status Card */}
+        <Card className="relative overflow-hidden aspect-[4/5] border-none rounded-[2.5rem] bg-neutral-900 shadow-2xl">
           <div className="absolute inset-0 flex">
             <div className="flex-1 bg-black/40" />
             <div className="flex-1 bg-brand opacity-40" />
@@ -97,7 +95,7 @@ export default function RefillPage() {
             </div>
           </Card>
 
-          <Button className="w-full h-20 bg-brand text-accent-foreground font-black uppercase tracking-[0.3em] rounded-[1.5rem] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          <Button className="w-full h-20 bg-brand text-accent-foreground font-black uppercase tracking-[0.3em] rounded-[1.8rem] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-sm">
             Buy Refill
           </Button>
         </section>

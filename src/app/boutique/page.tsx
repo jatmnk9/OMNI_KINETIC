@@ -3,13 +3,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ShoppingCart, Star, Sparkles, Filter, ChevronRight, Check } from 'lucide-react';
+import { ShoppingCart, Sparkles, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
+import { Header } from '@/components/Header';
 import { personalizedScentRecommendations, PersonalizedScentRecommendationsOutput } from '@/ai/flows/personalized-scent-recommendations-flow';
 
 const PLANS = [
@@ -49,11 +50,13 @@ export default function BoutiquePage() {
 
   return (
     <main className="min-h-screen pb-24 bg-background">
-      <div className="p-6 pt-12 space-y-8 max-w-lg mx-auto">
+      <Header />
+      
+      <div className="p-6 space-y-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-headline font-bold">Boutique</h1>
-          <Button variant="ghost" size="icon">
-            <ShoppingCart className="w-6 h-6" />
+          <Button variant="ghost" size="icon" className="rounded-full bg-white/5 h-11 w-11 shadow-xl hover:bg-white/20 transition-all">
+            <ShoppingCart className="w-5 h-5" />
           </Button>
         </header>
 
@@ -115,11 +118,13 @@ export default function BoutiquePage() {
           <TabsContent value="subs" className="pt-6 space-y-4">
             {PLANS.map((plan, idx) => (
               <Card key={idx} className={`p-6 relative overflow-hidden transition-all rounded-[2rem] ${plan.badge ? 'border-white/20 bg-white/5' : 'bg-card border-none'}`}>
-                {plan.badge && <Badge className="absolute top-6 right-6 bg-white text-black font-bold uppercase tracking-widest text-[9px]">{plan.badge}</Badge>}
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
-                    <p className="text-3xl font-black text-accent mt-1">{plan.price}</p>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
+                      <p className="text-3xl font-black text-accent mt-1">{plan.price}</p>
+                    </div>
+                    {plan.badge && <Badge className="bg-white text-black font-bold uppercase tracking-widest text-[9px] shadow-xl">{plan.badge}</Badge>}
                   </div>
                   <ul className="space-y-3">
                     {plan.features.map((f, fi) => (
@@ -128,7 +133,7 @@ export default function BoutiquePage() {
                       </li>
                     ))}
                   </ul>
-                  <Button className={`w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs ${plan.badge ? 'bg-white text-black' : 'bg-neutral-800 text-white'}`}>Choose Intelligence</Button>
+                  <Button className={`w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-2xl ${plan.badge ? 'bg-white text-black' : 'bg-neutral-800 text-white'}`}>Choose Intelligence</Button>
                 </div>
               </Card>
             ))}

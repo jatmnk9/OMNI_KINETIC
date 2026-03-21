@@ -3,22 +3,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { 
   Thermometer, 
   Zap, 
-  Waves, 
   BrainCircuit, 
-  Info, 
   Heart, 
   Gauge, 
   Sparkles, 
-  LogOut, 
   ChevronRight, 
   Droplets,
   Activity,
-  Wind,
-  User
+  Wind
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
+import { Header } from '@/components/Header';
 import { biometricScentInsightSummaries, BiometricScentInsightSummariesOutput } from '@/ai/flows/biometric-scent-insight-summaries';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -38,7 +34,7 @@ const FIRING_MODES = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics, logout, userProfile } = useDevice();
+  const { activeDevice, cartridgeLevel, triggerScent, currentPlan, biometrics } = useDevice();
   const [firing, setFiring] = useState(false);
   const [selectedMode, setSelectedMode] = useState('focus');
   const [moodPulse, setMoodPulse] = useState(false);
@@ -94,11 +90,6 @@ export default function DashboardPage() {
     setTimeout(() => setFiring(false), 2000);
   };
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
-
   const currentMood = FIRING_MODES.find(m => m.id === selectedMode);
   const deviceLabel = activeDevice === 'ApexEssence' ? 'Apex Essence' : activeDevice;
 
@@ -113,32 +104,9 @@ export default function DashboardPage() {
         )} 
       />
 
-      <div className="relative z-10 p-6 pt-8 space-y-8 max-w-lg mx-auto">
-        {/* New Centered Logo Header with Logout */}
-        <header className="relative flex items-center justify-center h-16">
-          <div className="absolute left-0">
-             <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-white/5 rounded-full h-10 w-10">
-                <User className="w-5 h-5 opacity-40" />
-             </Button>
-          </div>
-          
-          <div className="relative w-28 h-10">
-            <Image 
-              src="/logo_omni.PNG" 
-              alt="Omni Kinetic" 
-              fill 
-              className="object-contain"
-              priority
-            />
-          </div>
+      <Header />
 
-          <div className="absolute right-0">
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-white/5 rounded-full h-10 w-10 transition-all">
-               <LogOut className="w-5 h-5 opacity-40" />
-            </Button>
-          </div>
-        </header>
-
+      <div className="relative z-10 p-6 space-y-8 max-w-lg mx-auto">
         <section className="space-y-1 text-center">
             <h1 className="text-3xl font-headline font-black tracking-tight uppercase italic">{deviceLabel} WELLNESS</h1>
             <div className="flex items-center justify-center gap-2">

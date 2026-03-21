@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
+import { Header } from '@/components/Header';
 
 export default function RewardsPage() {
   const { points } = useDevice();
@@ -21,16 +23,18 @@ export default function RewardsPage() {
 
   return (
     <main className="min-h-screen pb-24 bg-background">
-      <div className="p-6 pt-12 space-y-8 max-w-lg mx-auto">
+      <Header />
+      
+      <div className="p-6 space-y-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-headline font-bold">Rewards</h1>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full shadow-xl">
             <Award className="w-5 h-5 text-accent" />
             <span className="font-bold tabular-nums">{points}</span>
           </div>
         </header>
 
-        <Card className="bg-white text-black border-none relative overflow-hidden rounded-[2.5rem]">
+        <Card className="bg-white text-black border-none relative overflow-hidden rounded-[2.5rem] shadow-2xl">
           <div className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full blur-3xl -translate-y-12 translate-x-12" />
           <CardHeader>
             <CardTitle className="font-black text-2xl tracking-tight">Elite Status</CardTitle>
@@ -42,18 +46,18 @@ export default function RewardsPage() {
               <span>Tier: Gold</span>
               <span>Next: Platinum</span>
             </div>
-            <Button className="w-full bg-black text-white hover:bg-black/90 gap-2 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">
+            <Button className="w-full bg-black text-white hover:bg-black/90 gap-2 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-xl">
               <QrCode className="w-4 h-4" /> Scan NFC at Boutique
             </Button>
           </CardContent>
         </Card>
 
         <section className="space-y-4">
-          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground">Active Missions</h2>
+          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground px-2">Active Missions</h2>
           <div className="space-y-4">
             {missions.map((m, idx) => (
-              <Card key={idx} className="p-5 bg-card border-none flex items-center gap-5 rounded-[1.5rem] group hover:bg-white/5 transition-colors">
-                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center shrink-0">
+              <Card key={idx} className="p-5 bg-card border-none flex items-center gap-5 rounded-[1.8rem] group hover:bg-white/5 transition-colors shadow-lg">
+                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 border border-white/5">
                   <m.icon className="w-7 h-7 text-accent" />
                 </div>
                 <div className="flex-1 space-y-2.5">
@@ -70,14 +74,14 @@ export default function RewardsPage() {
           </div>
         </section>
 
-        <Card className="bg-card border-none p-8 text-center space-y-6 rounded-[2rem] relative overflow-hidden">
+        <Card className="bg-card border border-white/5 p-8 text-center space-y-6 rounded-[2.5rem] relative overflow-hidden shadow-xl">
           <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
           <Recycle className="w-14 h-14 mx-auto text-accent opacity-40 animate-pulse" />
           <div className="space-y-2">
             <h3 className="font-bold text-lg">Circular Loyalty</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px] mx-auto">Return empty cartridges to any flagship boutique to unlock limited edition aromas.</p>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px] mx-auto opacity-70">Return empty cartridges to any flagship boutique to unlock limited edition aromas.</p>
           </div>
-          <Button variant="outline" className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[10px] border-white/10">Find Nearest Station</Button>
+          <Button variant="outline" className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[10px] border-white/10 hover:bg-white/5">Find Nearest Station</Button>
         </Card>
       </div>
       <Navigation />
