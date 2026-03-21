@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from '@/components/ui/carousel';
@@ -203,7 +202,7 @@ export default function WelcomePage() {
                   loop: true, 
                   align: "center", 
                   skipSnaps: false,
-                  dragFree: false
+                  dragFree: true
                 }}
               >
                 <CarouselContent className="-ml-0 h-full">
@@ -282,16 +281,20 @@ export default function WelcomePage() {
               {PLANS.map((plan) => (
                 <button 
                   key={plan.id} 
-                  className={`w-full text-left p-6 transition-all border-none relative overflow-hidden group rounded-[2rem] ${plan.badge ? 'bg-white/5 ring-1 ring-white/10 shadow-xl' : 'bg-white/5 hover:bg-white/10'}`}
+                  className={`w-full text-left p-6 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-white/10 ring-1 ring-white/10 shadow-xl`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  {plan.badge && <Badge className="absolute top-4 right-6 bg-white text-black text-[8px] uppercase tracking-widest font-black px-2">{plan.badge}</Badge>}
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
-                        <p className="text-[9px] text-muted-foreground leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
-                      </div>
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-bold tracking-tight">{plan.name}</h3>
+                      <p className="text-[9px] text-muted-foreground leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      {plan.badge && (
+                        <Badge className="bg-white text-black text-[8px] uppercase tracking-widest font-black px-2 mb-1">
+                          {plan.badge}
+                        </Badge>
+                      )}
                       <p className="text-lg font-black tabular-nums">{plan.price}</p>
                     </div>
                   </div>
