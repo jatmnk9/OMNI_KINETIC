@@ -75,7 +75,7 @@ export default function BoutiquePage() {
           <div className="flex overflow-x-auto pb-4 gap-4 no-scrollbar">
             {loading ? (
               [1, 2].map(i => <div key={i} className="min-w-[280px] h-48 bg-card animate-pulse rounded-[2rem]" />)
-            ) : recommendations?.recommendations.map((rec, idx) => (
+            ) : recommendations?.recommendations.map((rec: any, idx: number) => (
               <Card key={idx} className="min-w-[280px] bg-card border-none overflow-hidden rounded-[2rem] group hover:bg-white/5 transition-colors">
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-start">

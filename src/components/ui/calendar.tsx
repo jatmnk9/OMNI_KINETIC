@@ -54,12 +54,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
+        // Reverting IconLeft and IconRight explicitly since they cause TS errors in V9 Shadcn configs
       }}
       {...props}
     />

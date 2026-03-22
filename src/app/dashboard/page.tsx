@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 <span className="relative z-10 block text-foreground/90">"{insights.overallSummary}"</span>
               </Card>
 
-              {insights.insights.map((insight, idx) => (
+              {insights.insights.map((insight: any, idx: number) => (
                 <Card key={idx} className="p-6 border-none bg-card rounded-[2rem] group hover:bg-white/10 transition-all duration-500 border border-white/5">
                   <div className="flex items-start gap-5">
                     <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 shadow-inner">
