@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft, ArrowLeft } from 'lucide-react';
@@ -68,6 +68,14 @@ export default function WelcomePage() {
   const [selectedProduct, setSelectedProduct] = useState<typeof DEVICES[0] | null>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if ((step === 'intro' || step === 'register') && videoRef.current) {
+      videoRef.current.play().catch(e => console.error("Autoplay thwarted", e));
+    }
+  }, [step]);
 
   useEffect(() => {
     if (!api) return;
@@ -164,11 +172,13 @@ export default function WelcomePage() {
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-1000">
           <div className="absolute inset-0 bg-black/60 z-10" />
           <video 
+            ref={videoRef}
             autoPlay 
             loop 
             muted 
             playsInline
             className="w-full h-full object-cover"
+            poster="/logo_omni.PNG"
           >
             <source src="/bg.mp4" type="video/mp4" />
           </video>
@@ -182,10 +192,11 @@ export default function WelcomePage() {
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 relative overflow-hidden z-10">
         
         {step === 'intro' && (
-          <section className="flex-1 flex flex-col items-center justify-between pb-28 pt-16 animate-in fade-in duration-1000">
+          <section className="flex-1 flex flex-col items-center justify-between py-10 sm:py-16 w-full animate-in fade-in duration-1000 min-h-0">
              
-             <div className="flex flex-col items-center space-y-6">
-               <div className="relative w-72 h-36">
+             {/* Dynamic Top Block */}
+             <div className="flex flex-col items-center justify-center flex-1 min-h-0 w-full shrink-0">
+               <div className="relative w-56 h-28 sm:w-72 sm:h-36 mb-6">
                 <Image 
                   src="/logo_omni.PNG" 
                   alt="Omni Kinetic" 
@@ -196,27 +207,32 @@ export default function WelcomePage() {
                 />
               </div>
               
-              <div className="max-w-[300px] text-center">
-                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-6" />
-                <p className="text-white/80 text-[11px] tracking-[0.5em] uppercase font-bold mb-3">WHERE FRAGRANCE MEETS MOTION</p>
-                <p className="text-white/40 text-[12px] leading-relaxed tracking-wide font-light italic">
+              <div className="max-w-[300px] text-center px-4">
+                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-4 sm:mb-6" />
+                <p className="text-white/80 text-[10px] sm:text-[11px] tracking-[0.4em] sm:tracking-[0.5em] uppercase font-bold mb-2 sm:mb-3">
+                  WHERE FRAGRANCE MEETS MOTION
+                </p>
+                <p className="text-white/40 text-[10px] sm:text-[12px] leading-relaxed tracking-wide font-light italic">
                   Biometric synchronization for the modern avant-garde.
                 </p>
               </div>
             </div>
 
-            <div className="w-full mt-auto flex flex-col items-center space-y-12 mb-8">
-              <Button 
-                onClick={() => setStep('register')} 
-                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95"
-              >
-                <Fingerprint className="w-5 h-5 opacity-40" />
-                Start Journey
-              </Button>
+            {/* Dynamic Bottom Block */}
+            <div className="w-full flex flex-col items-center justify-end shrink-0 pt-6">
+              <div className="w-full mb-6 sm:mb-8">
+                <Button 
+                  onClick={() => setStep('register')} 
+                  className="w-full h-14 sm:h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-xl sm:rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95"
+                >
+                  <Fingerprint className="w-5 h-5 opacity-40 shrink-0" />
+                  <span className="text-[11px] sm:text-xs">Start Journey</span>
+                </Button>
+              </div>
 
-              <div className="flex flex-col items-center space-y-4 opacity-80">
-                <span className="text-[9px] uppercase tracking-[0.5em] font-black text-white/40">BY</span>
-                <div className="relative w-28 h-6">
+              <div className="flex flex-col items-center space-y-2 sm:space-y-4 opacity-80 pb-2">
+                <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.5em] font-black text-white/40">BY</span>
+                <div className="relative w-20 h-4 sm:w-28 sm:h-6">
                   <Image 
                     src="/loreal_logo.png" 
                     alt="L'Oréal Luxe" 
