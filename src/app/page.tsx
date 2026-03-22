@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft, ArrowLeft } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -64,12 +64,19 @@ export default function WelcomePage() {
   const router = useRouter();
   const { activeDevice, setActiveDevice, setCurrentPlan, setUserProfile, userProfile, logout } = useDevice();
   const [step, setStep] = useState<'intro' | 'register' | 'explore' | 'scan' | 'plan'>(userProfile ? 'explore' : 'intro');
-  const [scanning, setScanning] = useState(false);
+  const [scanState, setScanState] = useState<'idle' | 'detecting' | 'preparing' | 'ready'>('idle');
   const [selectedProduct, setSelectedProduct] = useState<typeof DEVICES[0] | null>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach(clearTimeout);
+    };
+  }, []);
 
   useEffect(() => {
     if ((step === 'intro' || step === 'register') && videoRef.current) {
@@ -95,18 +102,25 @@ export default function WelcomePage() {
     setStep('explore');
   };
 
-  const handleScan = () => {
-    setScanning(true);
-    setTimeout(() => {
-      setScanning(false);
-      setStep('plan');
-    }, 2500);
+  const clearAllTimeouts = () => {
+    timeoutRefs.current.forEach(clearTimeout);
+    timeoutRefs.current = [];
   };
 
   const startLinking = (device: (typeof DEVICES)[0]) => {
     setSelectedProduct(device);
     setActiveDevice(device.id);
     setStep('scan');
+    setScanState('detecting');
+    
+    clearAllTimeouts();
+
+    timeoutRefs.current.push(setTimeout(() => setScanState('preparing'), 1500));
+    timeoutRefs.current.push(setTimeout(() => setScanState('ready'), 3500));
+    timeoutRefs.current.push(setTimeout(() => {
+      setScanState('idle');
+      setStep('plan');
+    }, 5000));
   };
 
   const handlePlanSelection = (plan: PlanType) => {
@@ -120,7 +134,7 @@ export default function WelcomePage() {
   const handleBack = () => {
     if (step === 'register') setStep('intro');
     else if (step === 'explore') setStep('intro'); // Always allow backing out to the beautiful welcome screen
-    else if (step === 'scan') { setActiveDevice('none'); setStep('explore'); }
+    else if (step === 'scan') { clearAllTimeouts(); setActiveDevice('none'); setStep('explore'); }
     else if (step === 'plan') { setActiveDevice('none'); setStep('explore'); }
   };
 
@@ -349,30 +363,28 @@ export default function WelcomePage() {
         )}
 
         {step === 'scan' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500 relative z-10">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500 relative z-10 px-4">
             <div className="relative">
-              <div className={`absolute -inset-24 bg-brand/40 rounded-full blur-[80px] transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-150 animate-pulse' : 'opacity-0 scale-90'}`} />
-              <button 
-                onClick={handleScan}
-                disabled={scanning}
-                className={`relative h-40 w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 ${
-                  scanning 
-                    ? 'bg-brand text-accent-foreground scale-110 shadow-[0_0_80px_hsl(var(--brand-primary)/0.5)]' 
-                    : 'bg-white/5 text-white border border-white/10 hover:bg-brand/20 hover:border-brand/40'
-                }`}
-              >
-                {scanning ? <Bluetooth className="w-12 h-12 animate-pulse text-white" /> : <Scan className="w-12 h-12" />}
-              </button>
+              <div className={`absolute -inset-24 bg-brand/40 rounded-full blur-[80px] transition-opacity duration-1000 opacity-100 scale-150 animate-pulse`} />
+              <div className={`relative h-40 w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 bg-brand text-accent-foreground scale-110 shadow-[0_0_80px_hsl(var(--brand-primary)/0.5)]`}>
+                {scanState === 'ready' ? <CheckCircle2 className="w-12 h-12 text-white animate-in zoom-in duration-500" /> : <Bluetooth className="w-12 h-12 animate-pulse text-white" />}
+              </div>
             </div>
-            <div className="text-center space-y-5">
-              <h2 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">Pairing {selectedProduct?.name}</h2>
-              <p className="text-[10px] text-brand-accent tracking-[0.4em] uppercase font-black opacity-80">
-                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Link'}
-              </p>
+            <div className="text-center space-y-6">
+              <h2 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">
+                {scanState === 'ready' ? 'Link Established' : `Pairing ${selectedProduct?.name}`}
+              </h2>
+              <div className="h-12 flex items-center justify-center px-4 w-full">
+                <p className="text-[10px] sm:text-[11px] text-brand-accent tracking-[0.3em] sm:tracking-[0.4em] uppercase font-black opacity-80 animate-in fade-in slide-in-from-bottom-2 duration-500 text-center" key={scanState}>
+                  {scanState === 'detecting' && 'Detecting via BLE 5.2...'}
+                  {scanState === 'preparing' && 'Preparing Omni Kinetic Environment...'}
+                  {scanState === 'ready' && 'Omni Kinetic is ready for you.'}
+                </p>
+              </div>
               <p className="text-[10px] text-white/50 max-w-[220px] mx-auto leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
             </div>
-            <Button variant="ghost" onClick={() => { setActiveDevice('none'); setStep('explore'); }} className="text-[10px] uppercase font-bold tracking-widest opacity-40 hover:text-brand-accent hover:opacity-100">
-               <ChevronLeft className="w-4 h-4 mr-2" /> Select Different Hardware
+            <Button variant="ghost" onClick={() => { clearAllTimeouts(); setActiveDevice('none'); setStep('explore'); }} className="text-[10px] uppercase font-bold tracking-widest opacity-40 hover:text-brand-accent hover:opacity-100">
+               <ChevronLeft className="w-4 h-4 mr-2" /> Cancel Synchronization
             </Button>
           </section>
         )}
