@@ -363,27 +363,35 @@ export default function WelcomePage() {
         )}
 
         {step === 'scan' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500 relative z-10 px-4">
-            <div className="relative">
-              <div className={`absolute -inset-24 bg-brand/40 rounded-full blur-[80px] transition-opacity duration-1000 opacity-100 scale-150 animate-pulse`} />
-              <div className={`relative h-40 w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 bg-brand text-accent-foreground scale-110 shadow-[0_0_80px_hsl(var(--brand-primary)/0.5)]`}>
-                {scanState === 'ready' ? <CheckCircle2 className="w-12 h-12 text-white animate-in zoom-in duration-500" /> : <Bluetooth className="w-12 h-12 animate-pulse text-white" />}
+          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in zoom-in-95 duration-500 relative z-10 px-4">
+            <div className="relative z-20">
+              {/* Optimized Background Glow: No constant pulse on giant blurs to prevent mobile GPU hang */}
+              <div className={`absolute -inset-16 bg-brand/30 rounded-full blur-2xl transition-all duration-1000 opacity-100 scale-125`} />
+              
+              <div className={`relative h-32 w-32 sm:h-40 sm:w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 bg-brand text-accent-foreground scale-110 shadow-[0_0_40px_hsl(var(--brand-primary)/0.4)]`}>
+                {scanState === 'ready' ? <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-white animate-in zoom-in duration-500" /> : <Bluetooth className="w-10 h-10 sm:w-12 sm:h-12 animate-pulse text-white" />}
               </div>
             </div>
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">
+
+            <div className="text-center space-y-6 relative z-30">
+              <h2 className="text-2xl sm:text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">
                 {scanState === 'ready' ? 'Link Established' : `Pairing ${selectedProduct?.name}`}
               </h2>
-              <div className="h-12 flex items-center justify-center px-4 w-full">
-                <p className="text-[10px] sm:text-[11px] text-brand-accent tracking-[0.3em] sm:tracking-[0.4em] uppercase font-black opacity-80 animate-in fade-in slide-in-from-bottom-2 duration-500 text-center" key={scanState}>
+              
+              <div className="h-10 sm:h-12 flex items-center justify-center px-4 w-full">
+                <p className="text-[10px] sm:text-[11px] text-brand-accent tracking-[0.2em] sm:tracking-[0.4em] uppercase font-black opacity-90 animate-in fade-in slide-in-from-bottom-2 duration-500 text-center" key={scanState}>
                   {scanState === 'detecting' && 'Detecting via BLE 5.2...'}
                   {scanState === 'preparing' && 'Preparing Omni Kinetic Environment...'}
                   {scanState === 'ready' && 'Omni Kinetic is ready for you.'}
                 </p>
               </div>
-              <p className="text-[10px] text-white/50 max-w-[220px] mx-auto leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
+              
+              <p className="text-[9px] sm:text-[10px] text-white/60 max-w-[240px] mx-auto leading-relaxed font-medium">
+                Maintain proximity to ensure an encrypted biometric connection.
+              </p>
             </div>
-            <Button variant="ghost" onClick={() => { clearAllTimeouts(); setActiveDevice('none'); setStep('explore'); }} className="text-[10px] uppercase font-bold tracking-widest opacity-40 hover:text-brand-accent hover:opacity-100">
+            
+            <Button variant="ghost" onClick={() => { clearAllTimeouts(); setActiveDevice('none'); setStep('explore'); }} className="relative z-30 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest opacity-50 hover:text-brand-accent hover:opacity-100 mt-8">
                <ChevronLeft className="w-4 h-4 mr-2" /> Cancel Synchronization
             </Button>
           </section>
