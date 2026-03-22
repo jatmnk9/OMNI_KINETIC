@@ -30,34 +30,47 @@
     --brand-accent: 0 0% 80%;
   }
 
-  /* Apex Essence: #3D0A09 (Deep Burgundy) + Silver/Gold */
+  /* Apex Essence: #3D0A09 / Red */
   .theme-apexessence {
-    --background: 1 74% 8%;
-    --brand-primary: 1 74% 14%; /* #3D0A09 */
+    --background: 0 0% 0%;
+    --card: 1 72% 6%;
+    --border: 1 72% 20%;
+    --muted: 1 72% 10%;
+    --brand-primary: 1 80% 30%;
     --brand-accent: 45 60% 60%; /* Gold */
+    --brand-secondary: 0 0% 75%; /* Silver */
     --accent: 45 60% 60%;
-    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
+    --accent-foreground: 0 0% 0%; 
     --ring: 45 60% 60%;
+    --glow: radial-gradient(ellipse at top, hsl(1 80% 25% / 0.7) 0%, hsl(1 80% 10% / 0.4) 40%, hsl(0 0% 0%) 80%);
   }
 
-  /* Synapse: #301540 (Deep Purple) + Gold */
+  /* Synapse: Purple */
   .theme-synapse {
-    --background: 278 51% 10%;
-    --brand-primary: 278 51% 17%; /* #301540 */
+    --background: 0 0% 0%;
+    --card: 278 51% 6%;
+    --border: 278 51% 25%;
+    --muted: 278 51% 10%;
+    --brand-primary: 278 70% 35%; 
     --brand-accent: 45 60% 60%; /* Gold */
     --accent: 45 60% 60%;
-    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
+    --accent-foreground: 0 0% 0%; 
     --ring: 45 60% 60%;
+    --glow: radial-gradient(ellipse at top, hsl(278 70% 30% / 0.7) 0%, hsl(278 70% 15% / 0.4) 40%, hsl(0 0% 0%) 80%);
   }
 
-  /* Kinetic: #0097A9 (Deep Teal) + Silver */
+  /* Kinetic: Teal */
   .theme-kinetic {
-    --background: 186 100% 15%;
-    --brand-primary: 186 100% 33%; /* #0097A9 */
+    --background: 0 0% 0%;
+    --card: 186 100% 6%;
+    --border: 186 100% 25%;
+    --muted: 186 100% 10%;
+    --brand-primary: 186 100% 33%; 
     --brand-accent: 0 0% 75%; /* Silver */
-    --accent: 186 100% 33%;
-    --accent-foreground: 0 0% 100%; /* WHITE TEXT FOR CONTRAST */
+    --accent: 0 0% 75%;
+    --accent-foreground: 0 0% 0%; 
     --ring: 0 0% 75%;
+    --glow: radial-gradient(ellipse at top, hsl(186 100% 25% / 0.7) 0%, hsl(186 100% 12% / 0.4) 40%, hsl(0 0% 0%) 80%);
   }
 }
 

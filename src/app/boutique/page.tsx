@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDevice } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
-import { personalizedScentRecommendations, PersonalizedScentRecommendationsOutput } from '@/ai/flows/personalized-scent-recommendations-flow';
+// Removed AI import
 
 const PLANS = [
   { name: 'Functional Luxury', price: '$0/mo', features: ['Functional Luxury', 'NFC Sync', 'Wearable Link'] },
@@ -27,21 +27,25 @@ const STARTER_KITS = [
 
 export default function BoutiquePage() {
   const { activeDevice } = useDevice();
-  const [recommendations, setRecommendations] = useState<PersonalizedScentRecommendationsOutput | null>(null);
+  const [recommendations, setRecommendations] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadRecs() {
       setLoading(true);
       try {
-        const result = await personalizedScentRecommendations({
-          deviceType: activeDevice === 'none' ? 'ApexEssence' : (activeDevice === 'ApexEssence' ? 'Prada' : (activeDevice === 'Synapse' ? 'YSL' : 'Biotherm')) as any,
-          pastScentUsage: ['Bergamot', 'Sandalwood']
-        });
-        setRecommendations(result);
+        // Removed AI call, using static recommendations
+        setTimeout(() => {
+          setRecommendations({
+            recommendations: [
+              { scentName: 'Vanguard Spirit', description: 'Enhances cognitive sharpness.' },
+              { scentName: 'Ethereal Calm', description: 'Reduces cortisol levels.' }
+            ]
+          });
+          setLoading(false);
+        }, 1500);
       } catch (e) {
         console.error(e);
-      } finally {
         setLoading(false);
       }
     }

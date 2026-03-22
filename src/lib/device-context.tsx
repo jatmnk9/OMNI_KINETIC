@@ -79,7 +79,14 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
     setPoints(450);
   };
 
-  const themeClass = activeDevice === 'none' ? '' : `theme-${activeDevice.toLowerCase()}`;
+  // Map device to tailwind theme class
+  const themeMap: Record<DeviceType, string> = {
+    none: '',
+    ApexEssence: 'theme-apexessence',
+    Synapse: 'theme-synapse',
+    Kinetic: 'theme-kinetic',
+  };
+  const themeClass = themeMap[activeDevice] || '';
 
   return (
     <DeviceContext.Provider value={{ 
@@ -95,8 +102,19 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
       biometrics,
       logout
     }}>
-      <div className={`min-h-screen transition-all duration-1000 ${themeClass}`}>
-        {children}
+      <div className={['min-h-screen', 'transition-colors', 'duration-1000', 'bg-background', 'text-foreground', themeClass].filter(Boolean).join(' ')}>
+        
+        {/* Animated luxury ambient background */}
+        {activeDevice !== 'none' && (
+          <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute -top-[15%] -left-[10%] w-[70vw] h-[70vh] rounded-full bg-brand/30 blur-[120px] mix-blend-screen animate-slow-drift" />
+            <div className="absolute top-[25%] -right-[15%] w-[60vw] h-[60vh] rounded-full bg-brand-accent/20 blur-[130px] mix-blend-screen animate-slow-drift-reverse" />
+          </div>
+        )}
+
+        <div className="relative z-10">
+          {children}
+        </div>
       </div>
     </DeviceContext.Provider>
   );

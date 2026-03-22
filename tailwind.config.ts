@@ -6,6 +6,7 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -15,11 +16,12 @@ export default {
         code: ['monospace'],
       },
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        background: 'hsl(var(--background) / <alpha-value>)',
+        foreground: 'hsl(var(--foreground) / <alpha-value>)',
         brand: {
-          primary: 'hsl(var(--brand-primary))',
-          accent: 'hsl(var(--brand-accent))',
+          DEFAULT: 'hsl(var(--brand-primary) / <alpha-value>)',
+          primary: 'hsl(var(--brand-primary) / <alpha-value>)',
+          accent: 'hsl(var(--brand-accent) / <alpha-value>)',
         },
         card: {
           DEFAULT: 'hsl(var(--card))',
@@ -77,25 +79,27 @@ export default {
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+        'slow-drift': {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.6' },
+          '50%': { transform: 'translate(4%, 6%) scale(1.05)', opacity: '0.8' },
+        },
+        'slow-drift-reverse': {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
+          '50%': { transform: 'translate(-4%, -5%) scale(0.95)', opacity: '0.9' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'slow-drift': 'slow-drift 18s ease-in-out infinite',
+        'slow-drift-reverse': 'slow-drift-reverse 22s ease-in-out infinite',
       },
     },
   },

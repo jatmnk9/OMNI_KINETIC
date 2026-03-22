@@ -19,8 +19,7 @@ export function Navigation() {
     { icon: User, label: 'Profile', href: '/profile' },
   ];
 
-  const isIntroPage = pathname === '/' && activeDevice === 'none';
-  if (isIntroPage) return null;
+  if (pathname === '/') return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur-3xl border-t border-white/10 px-6 pb-safe-area-inset-bottom h-24">

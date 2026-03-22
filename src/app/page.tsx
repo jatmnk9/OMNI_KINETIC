@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft } from 'lucide-react';
+import { Bluetooth, Scan, ArrowRight, User, Mail, Fingerprint, ChevronLeft, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +51,7 @@ function OmniTopLogo() {
           src="/logo_omni.PNG" 
           alt="Omni Kinetic" 
           fill 
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="object-contain"
           priority
         />
@@ -107,9 +108,23 @@ export default function WelcomePage() {
 
   const showHeaderLogo = step !== 'intro';
 
+  // Universal Back Button Handler
+  const handleBack = () => {
+    if (step === 'register') setStep('intro');
+    else if (step === 'explore') setStep('intro'); // Always allow backing out to the beautiful welcome screen
+    else if (step === 'scan') { setActiveDevice('none'); setStep('explore'); }
+    else if (step === 'plan') { setActiveDevice('none'); setStep('explore'); }
+  };
+
   if (activeDevice !== 'none' && step === 'intro') {
     return (
-      <main className="h-svh flex flex-col bg-background overflow-hidden">
+      <main className="h-svh flex flex-col bg-background overflow-hidden relative">
+        <div className="absolute top-6 left-6 z-50">
+           <Button variant="ghost" size="icon" onClick={() => setActiveDevice('none')} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
+             <ArrowLeft className="w-6 h-6" />
+           </Button>
+        </div>
+        
         <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-12 max-w-lg mx-auto text-center">
           <OmniTopLogo />
           <div className="w-full space-y-6">
@@ -133,39 +148,84 @@ export default function WelcomePage() {
   }
 
   return (
-    <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden">
-      {showHeaderLogo && <OmniTopLogo />}
+    <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden relative">
       
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 relative overflow-hidden">
+      {/* Universal Floating Back Button */}
+      {step !== 'intro' && (
+        <div className="absolute top-6 left-6 z-50 animate-in fade-in zoom-in duration-500 delay-300 fill-mode-both">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full w-12 h-12">
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+        </div>
+      )}
+
+      {/* Background Video for Intro and Register Steps */}
+      {(step === 'intro' || step === 'register') && (
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-1000">
+          <div className="absolute inset-0 bg-black/60 z-10" />
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="/bg.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
+
+      <div className="relative z-10 w-full">
+        {showHeaderLogo && <OmniTopLogo />}
+      </div>
+      
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 relative overflow-hidden z-10">
         
         {step === 'intro' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000">
-             <div className="relative w-64 h-32">
-              <Image 
-                src="/logo_omni.PNG" 
-                alt="Omni Kinetic" 
-                fill 
-                className="object-contain"
-                priority
-              />
-            </div>
-            
-            <div className="max-w-[280px] text-center">
-              <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-4" />
-              <p className="text-white/60 text-[10px] tracking-[0.4em] uppercase font-medium mb-2">WHERE FRAGRANCE MEETS MOTION</p>
-              <p className="text-white/30 text-[11px] leading-relaxed tracking-wide font-light italic">
-                Biometric synchronization for the modern avant-garde.
-              </p>
+          <section className="flex-1 flex flex-col items-center justify-between pb-28 pt-16 animate-in fade-in duration-1000">
+             
+             <div className="flex flex-col items-center space-y-6">
+               <div className="relative w-72 h-36">
+                <Image 
+                  src="/logo_omni.PNG" 
+                  alt="Omni Kinetic" 
+                  fill 
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              
+              <div className="max-w-[300px] text-center">
+                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-6" />
+                <p className="text-white/80 text-[11px] tracking-[0.5em] uppercase font-bold mb-3">WHERE FRAGRANCE MEETS MOTION</p>
+                <p className="text-white/40 text-[12px] leading-relaxed tracking-wide font-light italic">
+                  Biometric synchronization for the modern avant-garde.
+                </p>
+              </div>
             </div>
 
-            <div className="w-full">
+            <div className="w-full mt-auto flex flex-col items-center space-y-12 mb-8">
               <Button 
                 onClick={() => setStep('register')} 
-                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-2xl"
+                className="w-full h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95"
               >
                 <Fingerprint className="w-5 h-5 opacity-40" />
-                Initialize Profile
+                Start Journey
               </Button>
+
+              <div className="flex flex-col items-center space-y-4 opacity-80">
+                <span className="text-[9px] uppercase tracking-[0.5em] font-black text-white/40">BY</span>
+                <div className="relative w-28 h-6">
+                  <Image 
+                    src="/loreal_logo.png" 
+                    alt="L'Oréal Luxe" 
+                    fill 
+                    sizes="120px"
+                    className="object-contain" 
+                  />
+                </div>
+              </div>
             </div>
           </section>
         )}
@@ -197,13 +257,20 @@ export default function WelcomePage() {
         )}
 
         {step === 'explore' && (
-          <section className="flex-1 flex flex-col animate-in fade-in duration-700 overflow-hidden">
-            <header className="text-center space-y-1 mb-2 shrink-0">
+          <section className={`flex-1 flex flex-col animate-in fade-in duration-700 overflow-hidden theme-${DEVICES[current].id.toLowerCase()}`}>
+            
+            {/* Ambient Animated Orbs for the Carousel Preview */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 transition-opacity duration-1000">
+              <div className="absolute -top-[15%] -left-[10%] w-[70vw] h-[70vh] rounded-full bg-brand/30 blur-[120px] mix-blend-screen animate-slow-drift" />
+              <div className="absolute top-[25%] -right-[15%] w-[60vw] h-[60vh] rounded-full bg-brand-accent/20 blur-[130px] mix-blend-screen animate-slow-drift-reverse" />
+            </div>
+
+            <header className="text-center space-y-1 mb-2 shrink-0 relative z-10">
               <h2 className="text-[11px] uppercase tracking-[0.4em] font-black opacity-80">CHOOSE ARCHITECTURE</h2>
               <p className="text-[10px] font-light italic opacity-40">Swipe to synchronize hardware</p>
             </header>
 
-            <div className="flex-1 flex flex-col relative overflow-hidden min-h-0">
+            <div className="flex-1 flex flex-col relative overflow-hidden min-h-0 z-10 w-full max-w-[420px] mx-auto">
               <Carousel 
                 setApi={setApi} 
                 className="w-full h-full"
@@ -216,29 +283,31 @@ export default function WelcomePage() {
                 <CarouselContent className="-ml-0 h-full">
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="pl-0 h-full">
-                      <div className="flex flex-col items-center justify-between h-full w-full py-2">
-                        <div className="relative w-full flex-1 flex items-center justify-center min-h-0">
-                          <div className="relative w-full max-w-[280px] aspect-square">
-                            <Image 
-                              src={device.img} 
-                              alt={device.name} 
-                              fill 
-                              className="object-contain transition-transform duration-1000 hover:scale-105"
-                              priority
-                            />
-                          </div>
+                      <div className="flex flex-col items-center justify-between h-full w-full py-4">
+                        
+                        <div className="relative w-full flex-1 min-h-[30vh] max-h-[50vh] my-4 transition-transform duration-1000 md:hover:scale-105 active:scale-95">
+                          <Image 
+                            src={device.img} 
+                            alt={device.name} 
+                            fill 
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className="object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]"
+                            priority
+                          />
                         </div>
 
-                        <div className="text-center space-y-1 px-4 pb-2 shrink-0">
+                        <div className="text-center space-y-2 px-4 shrink-0">
                           <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{device.brand}</p>
-                          <h3 className="text-3xl font-headline font-black tracking-tight">{device.name}</h3>
-                          <p className="text-[11px] text-white/50 leading-relaxed max-w-[240px] mx-auto font-medium">
+                          <h3 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">
+                            {device.name}
+                          </h3>
+                          <p className="text-[11px] text-white/60 leading-relaxed max-w-[260px] mx-auto font-medium">
                             {device.desc}
                           </p>
                           
-                          <div className="pt-3">
+                          <div className="pt-4">
                             <Button 
-                              className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl active:scale-[0.98] transition-transform border-none"
+                              className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-[0.98] transition-transform border-none hover:bg-neutral-200"
                               onClick={() => startLinking(device)}
                             >
                               Synchronize
@@ -252,7 +321,7 @@ export default function WelcomePage() {
               </Carousel>
             </div>
             
-            <div className="flex justify-center gap-2 py-4 shrink-0">
+            <div className="flex justify-center gap-2 py-4 shrink-0 relative z-10 mb-4">
               {DEVICES.map((_, i) => (
                 <div 
                   key={i} 
@@ -264,51 +333,56 @@ export default function WelcomePage() {
         )}
 
         {step === 'scan' && (
-          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500">
+          <section className="flex-1 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-500 relative z-10">
             <div className="relative">
-              <div className={`absolute -inset-24 bg-white/5 rounded-full blur-[100px] transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-150 animate-pulse' : 'opacity-0 scale-90'}`} />
+              <div className={`absolute -inset-24 bg-brand/40 rounded-full blur-[80px] transition-opacity duration-1000 ${scanning ? 'opacity-100 scale-150 animate-pulse' : 'opacity-0 scale-90'}`} />
               <button 
                 onClick={handleScan}
                 disabled={scanning}
-                className={`relative h-40 w-40 rounded-full flex flex-col items-center justify-center gap-3 border-none transition-all duration-700 ${scanning ? 'bg-white text-black scale-110 shadow-[0_0_80px_rgba(255,255,255,0.2)]' : 'bg-white/5 text-white border border-white/10 hover:bg-white hover:text-black'}`}
+                className={`relative h-40 w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 ${
+                  scanning 
+                    ? 'bg-brand text-accent-foreground scale-110 shadow-[0_0_80px_hsl(var(--brand-primary)/0.5)]' 
+                    : 'bg-white/5 text-white border border-white/10 hover:bg-brand/20 hover:border-brand/40'
+                }`}
               >
-                {scanning ? <Bluetooth className="w-12 h-12 animate-pulse" /> : <Scan className="w-12 h-12" />}
+                {scanning ? <Bluetooth className="w-12 h-12 animate-pulse text-white" /> : <Scan className="w-12 h-12" />}
               </button>
             </div>
             <div className="text-center space-y-5">
-              <h2 className="text-3xl font-headline font-bold tracking-tight">Pairing {selectedProduct?.name}</h2>
-              <p className="text-[10px] text-muted-foreground tracking-[0.4em] uppercase font-black opacity-40">
-                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Secure Link'}
+              <h2 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">Pairing {selectedProduct?.name}</h2>
+              <p className="text-[10px] text-brand-accent tracking-[0.4em] uppercase font-black opacity-80">
+                {scanning ? 'Detecting via BLE 5.2...' : 'Tap to Initialize Link'}
               </p>
-              <p className="text-[10px] text-muted-foreground max-w-[220px] mx-auto opacity-60 leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
+              <p className="text-[10px] text-white/50 max-w-[220px] mx-auto leading-relaxed font-medium">Maintain proximity to ensure an encrypted biometric connection.</p>
             </div>
-            <Button variant="ghost" onClick={() => setStep('explore')} className="text-[10px] uppercase font-bold tracking-widest opacity-40">
+            <Button variant="ghost" onClick={() => { setActiveDevice('none'); setStep('explore'); }} className="text-[10px] uppercase font-bold tracking-widest opacity-40 hover:text-brand-accent hover:opacity-100">
                <ChevronLeft className="w-4 h-4 mr-2" /> Select Different Hardware
             </Button>
           </section>
         )}
 
         {step === 'plan' && (
-          <section className="flex-1 flex flex-col justify-center space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+          <section className="flex-1 flex flex-col justify-center space-y-6 animate-in slide-in-from-bottom-4 duration-500 relative z-10">
             <header className="text-center space-y-2">
-              <h2 className="text-3xl font-headline font-bold tracking-tight">Intelligence Tier</h2>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold opacity-40">Biometric Sync Level</p>
+              <h2 className="text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">Intelligence Tier</h2>
+              <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Biometric Sync Level</p>
             </header>
             <div className="space-y-3">
               {PLANS.map((plan) => (
                 <button 
                   key={plan.id} 
-                  className={`w-full text-left p-5 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-white/10 ring-1 ring-white/10 shadow-xl`}
+                  className={`w-full text-left p-5 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-brand/10 ring-1 ring-white/10 hover:ring-brand/40 hover:shadow-[0_0_30px_hsl(var(--brand-primary)/0.2)]`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="flex justify-between items-start relative z-10">
                     <div className="space-y-1">
-                      <h3 className="text-lg font-bold tracking-tight text-white">{plan.name}</h3>
-                      <p className="text-[9px] text-muted-foreground leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
+                      <h3 className="text-lg font-bold tracking-tight text-white group-hover:text-brand-accent transition-colors">{plan.name}</h3>
+                      <p className="text-[9px] text-white/50 leading-relaxed max-w-[160px] font-medium">{plan.desc}</p>
                     </div>
                     <div className="flex flex-col items-end">
                       {plan.badge && (
-                        <Badge className="bg-white text-black text-[8px] uppercase tracking-widest font-black px-2 mb-1">
+                        <Badge className="bg-brand-accent text-accent-foreground text-[8px] uppercase tracking-widest font-black px-2 mb-1 shadow-[0_0_10px_hsl(var(--brand-accent)/0.5)] border-none">
                           {plan.badge}
                         </Badge>
                       )}
