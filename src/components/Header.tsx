@@ -20,38 +20,43 @@ export function Header() {
   const brilliantHover = "hover:bg-white/30 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.8)] hover:border-white/50 transition-all duration-300";
 
   return (
-    <header className="relative flex items-center justify-center h-20 px-6 max-w-lg mx-auto w-full z-50 shrink-0">
-      <div className="absolute left-6">
-         <Button 
-           variant="ghost" 
-           size="icon" 
-           onClick={() => router.push('/profile')} 
-           className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
-         >
-            <User className="w-5 h-5 opacity-90" />
-         </Button>
-      </div>
-      
-      <div className="relative w-32 h-12 cursor-pointer" onClick={() => router.push('/dashboard')}>
-        <Image 
-          src="/logo_omni.PNG" 
-          alt="Omni Kinetic" 
-          fill 
-          className="object-contain"
-          priority
-        />
-      </div>
+    <>
+      <div className="h-20 w-full shrink-0" aria-hidden="true" />
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md">
+        <header className="relative flex items-center justify-center h-20 px-6 max-w-lg mx-auto w-full shrink-0">
+        <div className="absolute left-6">
+           <Button 
+             variant="ghost" 
+             size="icon" 
+             onClick={() => router.push('/profile')} 
+             className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
+           >
+              <User className="w-5 h-5 opacity-90" />
+           </Button>
+        </div>
+        
+        <div className="relative w-32 h-12 cursor-pointer" onClick={() => router.push('/dashboard')}>
+          <Image 
+            src="/logo_omni.PNG" 
+            alt="Omni Kinetic" 
+            fill 
+            className="object-contain"
+            priority
+          />
+        </div>
 
-      <div className="absolute right-6">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleLogout} 
-          className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
-        >
-           <LogOut className="w-5 h-5 opacity-90 text-red-400 hover:text-red-300" />
-        </Button>
-      </div>
-    </header>
+        <div className="absolute right-6">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleLogout} 
+            className={`rounded-full h-11 w-11 bg-white/10 border border-white/10 shadow-xl ${brilliantHover}`}
+          >
+             <LogOut className="w-5 h-5 opacity-90 text-red-400 hover:text-red-300" />
+          </Button>
+        </div>
+      </header>
+    </div>
+    </>
   );
 }

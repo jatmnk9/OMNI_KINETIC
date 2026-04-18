@@ -136,10 +136,8 @@ export default function RefillLocatorPage() {
   return (
     <main className="h-screen w-full bg-background text-foreground overflow-hidden relative font-body">
       
-      {/* Header overlay */}
-      <div className="absolute top-0 left-0 right-0 z-[100] bg-background/50 backdrop-blur-md">
-        <Header />
-      </div>
+      {/* Global sticky header */}
+      <Header />
 
       {/* === FULL SCREEN LEAFLET MAP === */}
       <LeafletMap 

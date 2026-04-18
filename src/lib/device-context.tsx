@@ -209,8 +209,13 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [musicConnected, setMusicConnected] = useState(false);
   const [musicAIMode, setMusicAIMode] = useState(true);
   const [selectedService, setSelectedServiceState] = useState<MusicService>('spotify');
-  const [auraConnected, setAuraConnected] = useState(false);
-  const [nearbyUser, setNearbyUser] = useState<NearbyUser | null>(null);
+  const [auraConnected, setAuraConnected] = useState(true);
+  const [nearbyUser, setNearbyUser] = useState<NearbyUser | null>({ 
+    name: 'Alejandro M.', 
+    device: 'Synapse', 
+    distance: '2.4m', 
+    variant: 'Amber Night' 
+  });
   const [scheduledDoses, setScheduledDoses] = useState<ScheduledDose[]>(DEFAULT_SCHEDULED_DOSES);
   const [burstHistory, setBurstHistory] = useState<BurstRecord[]>([]);
 
