@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart3, Award, MapPin, Droplets, User } from 'lucide-react';
+import { Home, Droplets, MapPin, Award, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/lib/device-context';
 
@@ -16,7 +16,7 @@ export function Navigation() {
     { icon: Droplets, label: 'Refill', href: '/refill' },
     { icon: MapPin, label: 'Locator', href: '/map' },
     { icon: Award, label: 'Rewards', href: '/rewards' },
-    { icon: User, label: 'Profile', href: '/profile' },
+    { icon: Radio, label: 'Aura', href: '/aura' },
   ];
 
   if (pathname === '/') return null;

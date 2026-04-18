@@ -28,6 +28,9 @@
     
     --brand-primary: 0 0% 100%;
     --brand-accent: 0 0% 80%;
+
+    /* Omni Orange for Cartridge Gauge */
+    --omni-orange: 21 91% 54%; /* #F37021 */
   }
 
   /* Apex Essence: #3D0A09 / Red */
@@ -102,4 +105,64 @@
 
 .glass {
   @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+/* === NEW: Premium Glass === */
+.glass-premium {
+  @apply backdrop-blur-3xl border border-white/10;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+/* === NEW: Orange Glow Ring for CartridgeGauge === */
+.ring-glow-orange {
+  filter: drop-shadow(0 0 12px hsl(var(--omni-orange) / 0.6)) drop-shadow(0 0 30px hsl(var(--omni-orange) / 0.3));
+}
+
+/* === NEW: Keyframe Animations === */
+@keyframes heartbeat-sync {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  15% { transform: scale(1.06); opacity: 1; }
+  30% { transform: scale(0.98); opacity: 0.85; }
+  45% { transform: scale(1.03); opacity: 0.95; }
+}
+
+@keyframes aura-detect {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+@keyframes wave-expand {
+  0% { transform: scale(0.5); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes scale-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes eq-bar {
+  0%, 100% { height: 20%; }
+  25% { height: 80%; }
+  50% { height: 40%; }
+  75% { height: 90%; }
+}
+
+@keyframes float-particle {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+  33% { transform: translateY(-20px) translateX(10px) scale(1.2); opacity: 0.9; }
+  66% { transform: translateY(-10px) translateX(-15px) scale(0.8); opacity: 0.4; }
+  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(var(--orbit-radius, 80px)) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(var(--orbit-radius, 80px)) rotate(-360deg); }
+}
+
+/* EQ Visualizer bars */
+.eq-bar {
+  animation: eq-bar var(--eq-speed, 0.8s) ease-in-out infinite;
+  animation-delay: var(--eq-delay, 0s);
 }
