@@ -84,7 +84,7 @@ export function DigitalTwin({ hrv, stress, temp, bpm, controlMode, isPlaying, co
       video.removeEventListener('play', onPlay);
       video.removeEventListener('loadeddata', onLoaded);
     };
-  }, []);
+  }, [isPlaying]);
 
   return (
     <div className="relative w-full aspect-square max-w-[290px] mx-auto">
@@ -160,8 +160,9 @@ export function DigitalTwin({ hrv, stress, temp, bpm, controlMode, isPlaying, co
         >
           {/* Hidden source video */}
           <video
+            key={isPlaying ? "dancing" : "idle"}
             ref={videoRef}
-            src="/character.mp4"
+            src={isPlaying ? "/character_dancing.mp4" : "/character.mp4"}
             autoPlay
             loop
             muted

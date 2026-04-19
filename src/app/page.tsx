@@ -47,10 +47,10 @@ function OmniTopLogo() {
   return (
     <div className="w-full flex justify-center pt-6 pb-2 animate-in fade-in duration-700 shrink-0">
       <div className="relative w-28 h-12">
-        <Image 
-          src="/logo_omni.PNG" 
-          alt="Omni Kinetic" 
-          fill 
+        <Image
+          src="/logo_omni.PNG"
+          alt="Omni Kinetic"
+          fill
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-contain"
           priority
@@ -112,7 +112,7 @@ export default function WelcomePage() {
     setActiveDevice(device.id);
     setStep('scan');
     setScanState('detecting');
-    
+
     clearAllTimeouts();
 
     timeoutRefs.current.push(setTimeout(() => setScanState('preparing'), 1500));
@@ -142,26 +142,26 @@ export default function WelcomePage() {
     return (
       <main className="h-svh flex flex-col bg-background overflow-hidden relative">
         <div className="absolute top-6 left-6 z-50">
-           <Button variant="ghost" size="icon" onClick={() => setActiveDevice('none')} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
-             <ArrowLeft className="w-6 h-6" />
-           </Button>
+          <Button variant="ghost" size="icon" onClick={() => setActiveDevice('none')} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
         </div>
-        
+
         <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-12 max-w-lg mx-auto text-center">
           <OmniTopLogo />
           <div className="w-full space-y-6">
-             <p className="text-muted-foreground text-sm font-light">Welcome back, {userProfile?.name}.</p>
-             <button 
-               className="w-full p-10 bg-white text-black overflow-hidden relative border-none group rounded-[2.5rem] transition-transform active:scale-95 text-left flex items-center justify-between" 
-               onClick={() => router.push('/dashboard')}
-             >
-               <div className="space-y-1">
-                 <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
-                 <h2 className="text-2xl font-bold tracking-tight">Enter Hub</h2>
-               </div>
-               <ArrowRight className="w-6 h-6" />
-             </button>
-             <Button variant="ghost" size="sm" onClick={logout} className="opacity-40 text-[9px] uppercase tracking-widest font-bold">Sign Out</Button>
+            <p className="text-muted-foreground text-sm font-light">Welcome back, {userProfile?.name}.</p>
+            <button
+              className="w-full p-10 bg-white text-black overflow-hidden relative border-none group rounded-[2.5rem] transition-transform active:scale-95 text-left flex items-center justify-between"
+              onClick={() => router.push('/dashboard')}
+            >
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70">{activeDevice}</p>
+                <h2 className="text-2xl font-bold tracking-tight">Enter Hub</h2>
+              </div>
+              <ArrowRight className="w-6 h-6" />
+            </button>
+            <Button variant="ghost" size="sm" onClick={logout} className="opacity-40 text-[9px] uppercase tracking-widest font-bold">Sign Out</Button>
           </div>
         </div>
         <Navigation />
@@ -171,7 +171,7 @@ export default function WelcomePage() {
 
   return (
     <main className="h-svh flex flex-col bg-background text-foreground overflow-hidden relative">
-      
+
       {/* Universal Floating Back Button */}
       {step !== 'intro' && (
         <div className="absolute top-6 left-6 z-50 animate-in fade-in zoom-in duration-500 delay-300 fill-mode-both">
@@ -185,11 +185,11 @@ export default function WelcomePage() {
       {(step === 'intro' || step === 'register') && (
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-1000">
           <div className="absolute inset-0 bg-black/60 z-10" />
-          <video 
+          <video
             ref={videoRef}
-            autoPlay 
-            loop 
-            muted 
+            autoPlay
+            loop
+            muted
             playsInline
             className="w-full h-full object-cover"
             poster="/logo_omni.PNG"
@@ -202,25 +202,25 @@ export default function WelcomePage() {
       <div className="relative z-10 w-full">
         {showHeaderLogo && <OmniTopLogo />}
       </div>
-      
+
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-8 relative overflow-hidden z-10">
-        
+
         {step === 'intro' && (
           <section className="flex-1 flex flex-col items-center justify-between py-10 sm:py-16 w-full animate-in fade-in duration-1000 min-h-0">
-             
-             {/* Dynamic Top Block */}
-             <div className="flex flex-col items-center justify-center flex-1 min-h-0 w-full shrink-0">
-               <div className="relative w-56 h-28 sm:w-72 sm:h-36 mb-6">
-                <Image 
-                  src="/logo_omni.PNG" 
-                  alt="Omni Kinetic" 
-                  fill 
+
+            {/* Dynamic Top Block */}
+            <div className="flex flex-col items-center justify-center flex-1 min-h-0 w-full shrink-0">
+              <div className="relative w-56 h-28 sm:w-72 sm:h-36 mb-6">
+                <Image
+                  src="/logo_omni.PNG"
+                  alt="Omni Kinetic"
+                  fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-contain"
                   priority
                 />
               </div>
-              
+
               <div className="max-w-[300px] text-center px-4">
                 <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-4 sm:mb-6" />
                 <p className="text-white/80 text-[10px] sm:text-[11px] tracking-[0.4em] sm:tracking-[0.5em] uppercase font-bold mb-2 sm:mb-3">
@@ -235,8 +235,8 @@ export default function WelcomePage() {
             {/* Dynamic Bottom Block */}
             <div className="w-full flex flex-col items-center justify-end shrink-0 pt-6">
               <div className="w-full mb-6 sm:mb-8">
-                <Button 
-                  onClick={() => setStep('register')} 
+                <Button
+                  onClick={() => setStep('register')}
                   className="w-full h-14 sm:h-16 bg-white text-black font-bold tracking-[0.3em] uppercase rounded-xl sm:rounded-2xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-4 border-none shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95"
                 >
                   <Fingerprint className="w-5 h-5 opacity-40 shrink-0" />
@@ -247,12 +247,12 @@ export default function WelcomePage() {
               <div className="flex flex-col items-center space-y-2 sm:space-y-4 opacity-80 pb-2">
                 <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.5em] font-black text-white/40">BY</span>
                 <div className="relative w-20 h-4 sm:w-28 sm:h-6">
-                  <Image 
-                    src="/loreal_logo.png" 
-                    alt="L'Oréal Luxe" 
-                    fill 
+                  <Image
+                    src="/loreal_logo.png"
+                    alt="L'Oréal Luxe"
+                    fill
                     sizes="120px"
-                    className="object-contain" 
+                    className="object-contain"
                   />
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function WelcomePage() {
 
         {step === 'explore' && (
           <section className={`flex-1 flex flex-col animate-in fade-in duration-700 overflow-hidden theme-${DEVICES[current].id.toLowerCase()}`}>
-            
+
             {/* Ambient Animated Orbs for the Carousel Preview */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 transition-opacity duration-1000">
               <div className="absolute -top-[15%] -left-[10%] w-[70vw] h-[70vh] rounded-full bg-brand/30 blur-[120px] mix-blend-screen animate-slow-drift" />
@@ -301,12 +301,12 @@ export default function WelcomePage() {
             </header>
 
             <div className="flex-1 flex flex-col relative overflow-hidden min-h-0 z-10 w-full max-w-[420px] mx-auto">
-              <Carousel 
-                setApi={setApi} 
+              <Carousel
+                setApi={setApi}
                 className="w-full h-full"
-                opts={{ 
-                  loop: true, 
-                  align: "center", 
+                opts={{
+                  loop: true,
+                  align: "center",
                   skipSnaps: false,
                 }}
               >
@@ -314,12 +314,12 @@ export default function WelcomePage() {
                   {DEVICES.map((device) => (
                     <CarouselItem key={device.id} className="pl-0 h-full">
                       <div className="flex flex-col items-center justify-between h-full w-full py-4">
-                        
+
                         <div className="relative w-full flex-1 min-h-[30vh] max-h-[50vh] my-4 transition-transform duration-1000 md:hover:scale-105 active:scale-95">
-                          <Image 
-                            src={device.img} 
-                            alt={device.name} 
-                            fill 
+                          <Image
+                            src={device.img}
+                            alt={device.name}
+                            fill
                             sizes="(max-width: 768px) 100vw, 50vw"
                             className="object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]"
                             priority
@@ -334,9 +334,9 @@ export default function WelcomePage() {
                           <p className="text-[11px] text-white/60 leading-relaxed max-w-[260px] mx-auto font-medium">
                             {device.desc}
                           </p>
-                          
+
                           <div className="pt-4">
-                            <Button 
+                            <Button
                               className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-[0.98] transition-transform border-none hover:bg-neutral-200"
                               onClick={() => startLinking(device)}
                             >
@@ -350,12 +350,12 @@ export default function WelcomePage() {
                 </CarouselContent>
               </Carousel>
             </div>
-            
+
             <div className="flex justify-center gap-2 py-4 shrink-0 relative z-10 mb-4">
               {DEVICES.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`} 
+                <div
+                  key={i}
+                  className={`h-1 transition-all duration-700 rounded-full ${current === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`}
                 />
               ))}
             </div>
@@ -367,7 +367,7 @@ export default function WelcomePage() {
             <div className="relative z-20">
               {/* Optimized Background Glow: No constant pulse on giant blurs to prevent mobile GPU hang */}
               <div className={`absolute -inset-16 bg-brand/30 rounded-full blur-2xl transition-all duration-1000 opacity-100 scale-125`} />
-              
+
               <div className={`relative h-32 w-32 sm:h-40 sm:w-40 rounded-full flex flex-col items-center justify-center gap-3 transition-all duration-700 bg-brand text-accent-foreground scale-110 shadow-[0_0_40px_hsl(var(--brand-primary)/0.4)]`}>
                 {scanState === 'ready' ? <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-white animate-in zoom-in duration-500" /> : <Bluetooth className="w-10 h-10 sm:w-12 sm:h-12 animate-pulse text-white" />}
               </div>
@@ -377,7 +377,7 @@ export default function WelcomePage() {
               <h2 className="text-2xl sm:text-3xl font-headline font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent pb-1">
                 {scanState === 'ready' ? 'Link Established' : `Pairing ${selectedProduct?.name}`}
               </h2>
-              
+
               <div className="h-10 sm:h-12 flex items-center justify-center px-4 w-full">
                 <p className="text-[10px] sm:text-[11px] text-brand-accent tracking-[0.2em] sm:tracking-[0.4em] uppercase font-black opacity-90 animate-in fade-in slide-in-from-bottom-2 duration-500 text-center" key={scanState}>
                   {scanState === 'detecting' && 'Detecting via BLE 5.2...'}
@@ -385,14 +385,14 @@ export default function WelcomePage() {
                   {scanState === 'ready' && 'Omni Kinetic is ready for you.'}
                 </p>
               </div>
-              
+
               <p className="text-[9px] sm:text-[10px] text-white/60 max-w-[240px] mx-auto leading-relaxed font-medium">
                 Maintain proximity to ensure an encrypted biometric connection.
               </p>
             </div>
-            
+
             <Button variant="ghost" onClick={() => { clearAllTimeouts(); setActiveDevice('none'); setStep('explore'); }} className="relative z-30 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest opacity-50 hover:text-brand-accent hover:opacity-100 mt-8">
-               <ChevronLeft className="w-4 h-4 mr-2" /> Cancel Synchronization
+              <ChevronLeft className="w-4 h-4 mr-2" /> Cancel Synchronization
             </Button>
           </section>
         )}
@@ -405,8 +405,8 @@ export default function WelcomePage() {
             </header>
             <div className="space-y-3">
               {PLANS.map((plan) => (
-                <button 
-                  key={plan.id} 
+                <button
+                  key={plan.id}
                   className={`w-full text-left p-5 transition-all border-none relative overflow-hidden group rounded-[2rem] bg-white/5 hover:bg-brand/10 ring-1 ring-white/10 hover:ring-brand/40 hover:shadow-[0_0_30px_hsl(var(--brand-primary)/0.2)]`}
                   onClick={() => handlePlanSelection(plan.id as PlanType)}
                 >

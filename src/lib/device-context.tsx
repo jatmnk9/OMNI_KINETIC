@@ -209,13 +209,8 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [musicConnected, setMusicConnected] = useState(false);
   const [musicAIMode, setMusicAIMode] = useState(true);
   const [selectedService, setSelectedServiceState] = useState<MusicService>('spotify');
-  const [auraConnected, setAuraConnected] = useState(true);
-  const [nearbyUser, setNearbyUser] = useState<NearbyUser | null>({ 
-    name: 'Alejandro M.', 
-    device: 'Synapse', 
-    distance: '2.4m', 
-    variant: 'Amber Night' 
-  });
+  const [auraConnected, setAuraConnected] = useState(false);
+  const [nearbyUser, setNearbyUser] = useState<NearbyUser | null>(null);
   const [scheduledDoses, setScheduledDoses] = useState<ScheduledDose[]>(DEFAULT_SCHEDULED_DOSES);
   const [burstHistory, setBurstHistory] = useState<BurstRecord[]>([]);
 
@@ -307,21 +302,20 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
       { name: 'Marco T.', device: 'Kinetic', distance: '1.8m', variant: 'Alga Marina' },
     ];
 
-    const auraInterval = setInterval(() => {
-      const shouldConnect = Math.random() > 0.85; // 15% chance
-      if (shouldConnect && !auraConnected) {
+    const connectTimeout = setTimeout(() => {
+      if (!auraConnected) {
         const user = nearbyUsers[Math.floor(Math.random() * nearbyUsers.length)];
         setNearbyUser(user);
         setAuraConnected(true);
-        // Disconnect after 15-25s
+        // Disconnect after 20-30s
         setTimeout(() => {
           setAuraConnected(false);
           setNearbyUser(null);
-        }, 15000 + Math.random() * 10000);
+        }, 20000 + Math.random() * 10000);
       }
-    }, 8000);
+    }, 2000); // Takes exactly 2 seconds to pair
 
-    return () => clearInterval(auraInterval);
+    return () => clearTimeout(connectTimeout);
   }, [activeDevice, auraConnected]);
 
   const triggerScent = useCallback(() => {
