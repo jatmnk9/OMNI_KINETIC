@@ -21,16 +21,29 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
+  Zap,
 } from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  ComposedChart, 
+  Line, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ReferenceLine,
+  Label
+} from 'recharts';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useDevice, BIOMETRIC_HISTORY } from '@/lib/device-context';
+import { useDevice, BIOMETRIC_HISTORY, DOSE_HISTORY } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
 import { cn } from '@/lib/utils';
 
-type MetricTab = 'overview' | 'heart' | 'sleep' | 'activity' | 'environment';
+type MetricTab = 'overview' | 'heart' | 'sleep' | 'activity' | 'environment' | 'impact';
 
 // Mini spark chart component
 function SparkChart({ data, color, height = 40 }: { data: number[]; color: string; height?: number }) {
@@ -79,6 +92,82 @@ function SparkChart({ data, color, height = 40 }: { data: number[]; color: strin
   );
 }
 
+function ImpactAnalysisChart({ data, doses }: { data: typeof BIOMETRIC_HISTORY; doses: typeof DOSE_HISTORY }) {
+  const chartData = data.map(d => ({
+    ...d,
+  }));
+
+  return (
+    <div className="h-64 w-full mt-4">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+          <XAxis 
+            dataKey="time" 
+            axisLine={false} 
+            tickLine={false} 
+            tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+            interval={2}
+          />
+          <YAxis yAxisId="left" hide />
+          <YAxis yAxisId="right" hide />
+          <Tooltip 
+            contentStyle={{ backgroundColor: '#171717', border: 'none', borderRadius: '12px', fontSize: '10px' }}
+            itemStyle={{ padding: '0px' }}
+          />
+          
+          <Area 
+            yAxisId="right"
+            type="monotone" 
+            dataKey="movement" 
+            fill="rgba(34, 197, 94, 0.1)" 
+            stroke="none" 
+          />
+
+          <Line 
+            yAxisId="right"
+            type="monotone" 
+            dataKey="stress" 
+            stroke="#EAB308" 
+            strokeWidth={2} 
+            dot={false}
+            name="Stress"
+          />
+
+          <Line 
+            yAxisId="left"
+            type="monotone" 
+            dataKey="heartRate" 
+            stroke="#EF4444" 
+            strokeWidth={2} 
+            dot={false}
+            name="Heart Rate"
+          />
+
+          {doses.map((dose, i) => (
+            <ReferenceLine 
+              key={i}
+              x={dose.time.split(':')[0] + ':00'} 
+              yAxisId="left"
+              stroke="rgba(255,255,255,0.4)"
+              strokeDasharray="3 3"
+            >
+              <Label 
+                value="DOSE" 
+                position="top" 
+                fill="rgba(255,255,255,0.5)" 
+                fontSize={8} 
+                fontWeight="black"
+              />
+            </ReferenceLine>
+          ))}
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+
 function TrendIndicator({ current, previous }: { current: number; previous: number }) {
   const diff = current - previous;
   const pct = previous > 0 ? Math.abs(Math.round((diff / previous) * 100)) : 0;
@@ -103,6 +192,7 @@ export default function ProfilePage() {
     { id: 'heart', label: 'Heart', icon: Heart },
     { id: 'sleep', label: 'Sleep', icon: Moon },
     { id: 'activity', label: 'Activity', icon: Footprints },
+    { id: 'impact', label: 'Impact', icon: Zap },
     { id: 'environment', label: 'Environ.', icon: Thermometer },
   ];
 
@@ -409,6 +499,81 @@ export default function ProfilePage() {
               </Card>
             </div>
           )}
+
+          {/* === IMPACT TAB === */}
+          {activeTab === 'impact' && (
+            <div className="space-y-4 animate-in fade-in duration-300">
+              <header className="px-2 space-y-1">
+                <h4 className="text-xl font-black tracking-tight">Efficacy Analysis</h4>
+                <p className="text-[10px] text-white/40 uppercase tracking-widest font-medium">Correlation: Movement vs Fragrance Recovery</p>
+              </header>
+
+              <Card className="p-6 bg-white/[0.02] border border-white/5 rounded-[2.5rem] relative overflow-hidden">
+                <div className="flex justify-between items-center relative z-10 mb-2">
+                   <div className="flex gap-4">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-red-400" />
+                        <span className="text-[8px] font-bold opacity-40 uppercase">Heart Rate</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                        <span className="text-[8px] font-bold opacity-40 uppercase">Stress</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-green-400/30" />
+                        <span className="text-[8px] font-bold opacity-40 uppercase">Movement</span>
+                      </div>
+                   </div>
+                </div>
+
+                <ImpactAnalysisChart data={history} doses={DOSE_HISTORY} />
+                
+                <div className="mt-6 p-4 bg-brand-accent/5 rounded-2xl border border-brand-accent/20 flex gap-4 items-center">
+                  <div className="w-10 h-10 bg-brand-accent/20 rounded-xl flex items-center justify-center shrink-0">
+                    <Zap className="w-5 h-5 text-brand-accent" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-accent">Neuro-Analysis Insight</p>
+                    <p className="text-[11px] text-white/80 leading-relaxed font-medium">
+                      Dosage at 14:05 successfully mitigated a potential stress peak. <span className="text-brand-accent">HR recovery was 18% faster</span> compared to unmanaged cycles.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Card className="p-5 bg-white/[0.03] border-none rounded-[1.8rem] space-y-2">
+                  <p className="text-[8px] uppercase font-bold tracking-widest opacity-30">Avg. Recovery Time</p>
+                  <p className="text-2xl font-black text-green-400">12.4<span className="text-[10px] ml-1">mins</span></p>
+                  <p className="text-[9px] opacity-40 font-medium italic">-2.1m from baseline</p>
+                </Card>
+                <Card className="p-5 bg-white/[0.03] border-none rounded-[1.8rem] space-y-2">
+                  <p className="text-[8px] uppercase font-bold tracking-widest opacity-30">Stress Inhibition</p>
+                  <p className="text-2xl font-black text-yellow-400">84<span className="text-[10px] ml-1">%</span></p>
+                  <p className="text-[9px] opacity-40 font-medium italic">High efficacy rating</p>
+                </Card>
+              </div>
+
+              <section className="space-y-3">
+                <h5 className="text-[9px] font-black uppercase tracking-widest px-2 opacity-30">Dosage Event Logs</h5>
+                <div className="space-y-2">
+                  {DOSE_HISTORY.slice(0, 3).map((dose, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-2xl border border-white/5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center font-bold text-[10px] opacity-40">{dose.time}</div>
+                        <div>
+                          <p className="text-xs font-bold">{dose.variant}</p>
+                          <p className="text-[9px] opacity-30 uppercase tracking-tighter">Impact: High Stability</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 opacity-20" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          )
+}
         </section>
 
         {/* Hardware & Subscription Section */}

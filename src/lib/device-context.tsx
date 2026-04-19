@@ -98,6 +98,21 @@ export const BIOMETRIC_HISTORY: BiometricHistoryEntry[] = [
   { time: '20:00', hrv: 94, stress: 12, temp: 36.4, steps: 13100, sleep: 7.2, mood: 5, movement: 15, heartRate: 62, humidity: 44, inclination: 0 },
 ];
 
+export interface DoseHistoryEntry {
+  time: string;
+  variant: string;
+  intensity: number;
+}
+
+export const DOSE_HISTORY: DoseHistoryEntry[] = [
+  { time: '07:05', variant: 'Extreme Citrus', intensity: 0.8 },
+  { time: '08:32', variant: 'Recovery Wood', intensity: 0.6 },
+  { time: '12:15', variant: 'Fresh Bamboo', intensity: 0.7 },
+  { time: '14:05', variant: 'Marine Kelp', intensity: 0.9 },
+  { time: '18:10', variant: 'Amber Night', intensity: 0.5 },
+  { time: '21:05', variant: 'Recovery Wood', intensity: 0.6 },
+];
+
 // === MUSIC TRACKS PER SERVICE ===
 export const SPOTIFY_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackIndex'>[] = [
   { track: 'Midnight Pulse', artist: 'KLANGFORM', bpm: 128, service: 'spotify', coverColor: '#1DB954', duration: '3:42' },
