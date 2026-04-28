@@ -4,15 +4,16 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export type DeviceType = 'none' | 'ApexEssence' | 'Synapse' | 'Kinetic';
-export type PlanType = 'Base' | 'Essential' | 'Premium';
+export type FragranceType = 'none' | 'Apex' | 'Synapse' | 'Flow';
 export type ControlMode = 'smart' | 'habit' | 'manual';
+export type SubscriptionPlan = 'none' | '6yearly' | '3quarterly';
+export type SensorType = 'none' | 'smartwatch' | 'ring' | 'strap';
 
-export interface RefillVariant {
+export interface LocationTrigger {
   id: string;
   name: string;
-  baseLine: DeviceType;
-  notes: string;
-  iconName: 'citrus' | 'trees' | 'snowflake' | 'moon' | 'leaf' | 'zap' | 'waves' | 'wind' | 'sprout';
+  active: boolean;
+  fragranceId: FragranceType;
 }
 
 export type MusicService = 'spotify' | 'apple' | 'youtube';
@@ -23,17 +24,10 @@ export interface MusicState {
   bpm: number;
   isPlaying: boolean;
   service: MusicService;
-  progress: number; // 0-100
-  coverColor: string; // hex for ambient glow
-  duration: string; // e.g. "3:24"
+  progress: number;
+  coverColor: string;
+  duration: string;
   trackIndex: number;
-}
-
-export interface NearbyUser {
-  name: string;
-  device: DeviceType;
-  distance: string;
-  variant: string;
 }
 
 export interface ScheduledDose {
@@ -49,35 +43,100 @@ export interface BurstRecord {
   variant: string;
 }
 
-// === VARIANT DATA ===
-export const ALL_VARIANTS: RefillVariant[] = [
-  // Apex
-  { id: 'apex-citrus', name: 'Extreme Citrus', baseLine: 'ApexEssence', notes: 'Lemon, Grapefruit, Bergamot', iconName: 'citrus' },
-  { id: 'apex-wood', name: 'Recovery Wood', baseLine: 'ApexEssence', notes: 'Sandalwood, Cedar, Vetiver', iconName: 'trees' },
-  { id: 'apex-frost', name: 'Glacial Frost', baseLine: 'ApexEssence', notes: 'Peppermint, Eucalyptus, Ice', iconName: 'snowflake' },
-  // Synapse
-  { id: 'syn-amber', name: 'Amber Night', baseLine: 'Synapse', notes: 'Amber, Musk, Dark Vanilla', iconName: 'moon' },
-  { id: 'syn-vetiver', name: 'Deep Vetiver', baseLine: 'Synapse', notes: 'Vetiver, Patchouli, Smoke', iconName: 'leaf' },
-  { id: 'syn-rose', name: 'Electric Rose', baseLine: 'Synapse', notes: 'Rose, Ozone, Electric Musk', iconName: 'zap' },
-  // Kinetic
-  { id: 'kin-seaweed', name: 'Marine Kelp', baseLine: 'Kinetic', notes: 'Seaweed, Sea Salt, Driftwood', iconName: 'waves' },
-  { id: 'kin-eucalyptus', name: 'Vital Eucalyptus', baseLine: 'Kinetic', notes: 'Eucalyptus, Pine, Green Tea', iconName: 'wind' },
-  { id: 'kin-bamboo', name: 'Fresh Bamboo', baseLine: 'Kinetic', notes: 'Bamboo, White Lotus, Rain', iconName: 'sprout' },
+// === FRAGRANCE DATA ===
+export interface Fragrance {
+  id: FragranceType;
+  name: string;
+  tagline: string;
+  claim: string;
+  desc: string;
+  img: string;
+  refillImg: string;
+  topNotes: string;
+  heartNotes: string;
+  baseNotes: string;
+  moments: string[];
+  themeClass: string;
+}
+
+export const FRAGRANCES: Fragrance[] = [
+  {
+    id: 'Apex',
+    name: 'Apex Essence',
+    tagline: 'Intense Movement',
+    claim: 'The scent of momentum. For every moment that demands the best of you.',
+    desc: 'When your body is at its peak — a critical meeting, a workout, a journey, an important decision.',
+    img: '/apex-removebg-preview.png',
+    refillImg: '/apex_refill-removebg-preview.png',
+    topNotes: 'Lemon · Bergamot · Pink Pepper',
+    heartNotes: 'Peppermint · Cardamom · Neroli',
+    baseNotes: 'Cedarwood · White Musk · Ginger',
+    moments: ['7:00am — Start the day', '9:30am — Key meeting', '6:00pm — Gym / Training', 'Anytime — Travel / High performance'],
+    themeClass: 'theme-apex',
+  },
+  {
+    id: 'Synapse',
+    name: 'Synapse',
+    tagline: 'Social Movement',
+    claim: 'The scent of connection. For every moment you move toward others.',
+    desc: 'When you move towards others — a lunch, a date, cinema, a soirée. The movement that brings people closer.',
+    img: '/synapse-removebg-preview.png',
+    refillImg: '/synapse_refill-removebg-preview.png',
+    topNotes: 'Peach · Neroli · Pink Pepper',
+    heartNotes: 'Jasmine Absolute · Ylang-Ylang · Rose',
+    baseNotes: 'Sandalwood · Amber · Vanilla Musk',
+    moments: ['12:00pm — Social lunch', '7:00pm — Date night', '9:00pm — Evening out', 'Anytime — Social gatherings'],
+    themeClass: 'theme-synapse',
+  },
+  {
+    id: 'Flow',
+    name: 'Flow',
+    tagline: 'Everyday Movement',
+    claim: 'The scent of ease. For every moment you simply move through life.',
+    desc: 'The constant, gentle movement of daily life — morning coffee, commute, work, a quiet Sunday.',
+    img: '/flow-removebg-preview.png',
+    refillImg: '/flow_refill-removebg-preview.png',
+    topNotes: 'White Tea · Citrus Zest · Eucalyptus',
+    heartNotes: 'Rosemary · Iris · Green Fig',
+    baseNotes: 'Vetiver · Musk Blanc · Cedarwood',
+    moments: ['8:00am — Morning ritual', '10:00am — Work / Focus', 'Anytime — Commute', 'Evening — Wind-down / Reading'],
+    themeClass: 'theme-flow',
+  },
 ];
 
-// === BIOMETRIC HISTORY (simulated) ===
+// === CART ===
+export interface CartItem {
+  fragranceId: FragranceType;
+  quantity: number;
+  type: 'single' | 'pack2' | 'pack3' | 'pack4';
+  unitPrice: number;
+}
+
+// === REFILL PRICING ===
+export const REFILL_PRICE = 89; // €89 per 30ml refill
+export const PACK_PRICES: Record<string, { qty: number; price: number; discount: string }> = {
+  pack2: { qty: 2, price: 169, discount: '5%' },
+  pack3: { qty: 3, price: 239, discount: '10%' },
+  pack4: { qty: 4, price: 299, discount: '16%' },
+};
+export const SUBSCRIPTION_PLANS = {
+  '6yearly': { name: '6 Refills / Year', desc: '1 refill every 2 months — never run out', monthlyPrice: 69, interval: 'monthly' },
+  '3quarterly': { name: '3 Every 90 Days', desc: 'Quarterly delivery of 3 refills', monthlyPrice: 59, interval: 'monthly' },
+};
+
+// === BIOMETRIC HISTORY ===
 export interface BiometricHistoryEntry {
   time: string;
   hrv: number;
-  stress: number; // 0-100
+  stress: number;
   temp: number;
   steps: number;
-  sleep: number; // hours
-  mood: number; // 1-5
-  movement: number; // 0-100 activity %
+  sleep: number;
+  mood: number;
+  movement: number;
   heartRate: number;
-  humidity: number; // %
-  inclination: number; // degrees
+  humidity: number;
+  inclination: number;
 }
 
 export const BIOMETRIC_HISTORY: BiometricHistoryEntry[] = [
@@ -105,15 +164,15 @@ export interface DoseHistoryEntry {
 }
 
 export const DOSE_HISTORY: DoseHistoryEntry[] = [
-  { time: '07:05', variant: 'Extreme Citrus', intensity: 0.8 },
-  { time: '08:32', variant: 'Recovery Wood', intensity: 0.6 },
-  { time: '12:15', variant: 'Fresh Bamboo', intensity: 0.7 },
-  { time: '14:05', variant: 'Marine Kelp', intensity: 0.9 },
-  { time: '18:10', variant: 'Amber Night', intensity: 0.5 },
-  { time: '21:05', variant: 'Recovery Wood', intensity: 0.6 },
+  { time: '07:05', variant: 'Apex Essence', intensity: 0.8 },
+  { time: '08:32', variant: 'Apex Essence', intensity: 0.6 },
+  { time: '12:15', variant: 'Flow', intensity: 0.7 },
+  { time: '14:05', variant: 'Synapse', intensity: 0.9 },
+  { time: '18:10', variant: 'Flow', intensity: 0.5 },
+  { time: '21:05', variant: 'Synapse', intensity: 0.6 },
 ];
 
-// === MUSIC TRACKS PER SERVICE ===
+// === MUSIC TRACKS ===
 export const SPOTIFY_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackIndex'>[] = [
   { track: 'Midnight Pulse', artist: 'KLANGFORM', bpm: 128, service: 'spotify', coverColor: '#1DB954', duration: '3:42' },
   { track: 'Deep Recovery', artist: 'Somnium Lab', bpm: 72, service: 'spotify', coverColor: '#1DB954', duration: '4:18' },
@@ -121,7 +180,6 @@ export const SPOTIFY_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackI
   { track: 'Obsidian Flow', artist: 'Darkroom Audio', bpm: 98, service: 'spotify', coverColor: '#1DB954', duration: '5:12' },
   { track: 'Kinetic Rush', artist: 'Pulse Theory', bpm: 140, service: 'spotify', coverColor: '#1DB954', duration: '2:58' },
 ];
-
 export const APPLE_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackIndex'>[] = [
   { track: 'Aurora Borealis', artist: 'Synth.Aether', bpm: 95, service: 'apple', coverColor: '#FC3C44', duration: '4:01' },
   { track: 'Neon Cortisol', artist: 'BioBeats', bpm: 118, service: 'apple', coverColor: '#FC3C44', duration: '3:33' },
@@ -129,7 +187,6 @@ export const APPLE_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackInd
   { track: 'Soma Phase', artist: 'Rêverie Lab', bpm: 76, service: 'apple', coverColor: '#FC3C44', duration: '5:30' },
   { track: 'Chromatic Pulse', artist: 'Spectra', bpm: 132, service: 'apple', coverColor: '#FC3C44', duration: '3:15' },
 ];
-
 export const YOUTUBE_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackIndex'>[] = [
   { track: 'Veloce', artist: 'Driftmode', bpm: 142, service: 'youtube', coverColor: '#FF0000', duration: '3:28' },
   { track: 'Aqua Flow', artist: 'TidalWave', bpm: 88, service: 'youtube', coverColor: '#FF0000', duration: '4:10' },
@@ -137,53 +194,60 @@ export const YOUTUBE_TRACKS: Omit<MusicState, 'isPlaying' | 'progress' | 'trackI
   { track: 'Hyper Focus', artist: 'Neurocode', bpm: 155, service: 'youtube', coverColor: '#FF0000', duration: '2:44' },
   { track: 'Afterglow', artist: 'Dusk Protocol', bpm: 92, service: 'youtube', coverColor: '#FF0000', duration: '4:55' },
 ];
-
 export const ALL_TRACKS_BY_SERVICE: Record<MusicService, Omit<MusicState, 'isPlaying' | 'progress' | 'trackIndex'>[]> = {
-  spotify: SPOTIFY_TRACKS,
-  apple: APPLE_TRACKS,
-  youtube: YOUTUBE_TRACKS,
+  spotify: SPOTIFY_TRACKS, apple: APPLE_TRACKS, youtube: YOUTUBE_TRACKS,
 };
 
 const DEFAULT_MUSIC: MusicState = { ...SPOTIFY_TRACKS[0], isPlaying: false, progress: 0, trackIndex: 0 };
 
-// === DEFAULT SCHEDULED DOSES ===
 const DEFAULT_SCHEDULED_DOSES: ScheduledDose[] = [
-  { time: '06:55', type: 'activation', label: 'Pre-swim activation dose', accepted: true },
+  { time: '06:55', type: 'activation', label: 'Pre-workout activation dose', accepted: true },
   { time: '08:30', type: 'recovery', label: 'Post-workout recovery', accepted: true },
   { time: '14:00', type: 'focus', label: 'Afternoon focus burst', accepted: false },
   { time: '21:00', type: 'recovery', label: 'Evening wind-down', accepted: false },
 ];
 
+// === PERFUME CONSTANTS ===
+const BOTTLE_CAPACITY_ML = 30;
+const DEVICE_CAPACITY_ML = 1.2;
+const SPRAY_ML = 0.08;
+const DAILY_SPRAYS = 6;
+
 interface DeviceContextType {
   activeDevice: DeviceType;
   setActiveDevice: (device: DeviceType) => void;
-  cartridgeLevel: number;
+  activeFragrance: FragranceType;
+  setActiveFragrance: (f: FragranceType) => void;
+  getFragrance: () => Fragrance | undefined;
+  // Perfume levels
+  devicePerfumeMl: number;
+  bottlePerfumeMl: number;
+  deviceBattery: number;
+  dailySprayCount: number;
+  estimatedBottleDays: number;
+  estimatedDeviceSprays: number;
+  // Cart
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (index: number) => void;
+  clearCart: () => void;
+  cartTotal: number;
+  // Subscription
+  subscriptionPlan: SubscriptionPlan;
+  setSubscriptionPlan: (p: SubscriptionPlan) => void;
+  // Core
   triggerScent: () => void;
   points: number;
-  currentPlan: PlanType;
-  setCurrentPlan: (plan: PlanType) => void;
   userProfile: { name: string; email: string } | null;
   setUserProfile: (profile: { name: string; email: string } | null) => void;
-  biometrics: {
-    hrv: number;
-    stress: string;
-    temp: number;
-  };
+  biometrics: { hrv: number; stress: string; temp: number };
   logout: () => void;
-  // New state for 5 modules
   controlMode: ControlMode;
   setControlMode: (mode: ControlMode) => void;
-  selectedVariant: RefillVariant | null;
-  setSelectedVariant: (variant: RefillVariant) => void;
-  cartridgeDaysLeft: number;
-  dailyUsageMl: number;
   musicState: MusicState;
-  auraConnected: boolean;
-  nearbyUser: NearbyUser | null;
   scheduledDoses: ScheduledDose[];
   setScheduledDoses: (doses: ScheduledDose[]) => void;
   burstHistory: BurstRecord[];
-  getVariantsForDevice: (device: DeviceType) => RefillVariant[];
   // Music controls
   musicConnected: boolean;
   musicAIMode: boolean;
@@ -196,89 +260,114 @@ interface DeviceContextType {
   musicTogglePlayPause: () => void;
   musicNext: () => void;
   musicPrev: () => void;
+  // Sensor
+  linkedSensor: SensorType;
+  setLinkedSensor: (s: SensorType) => void;
+  // Smart Mode Expansion
+  locationTriggers: LocationTrigger[];
+  setLocationTriggers: (triggers: LocationTrigger[]) => void;
+  calendarSync: boolean;
+  setCalendarSync: (sync: boolean) => void;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
 
 export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [activeDevice, setActiveDevice] = useState<DeviceType>('none');
-  const [cartridgeLevel, setCartridgeLevel] = useState(85);
+  const [activeFragrance, setActiveFragrance] = useState<FragranceType>('none');
   const [points, setPoints] = useState(450);
-  const [currentPlan, setCurrentPlan] = useState<PlanType>('Base');
   const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
-  
-  // Real-time biometric simulation with more dynamic jitter
-  const [biometrics, setBiometrics] = useState({
-    hrv: 82,
-    stress: 'Low',
-    temp: 36.6
-  });
 
-  // === NEW STATE ===
+  // Perfume levels
+  const [devicePerfumeMl, setDevicePerfumeMl] = useState(1.05);
+  const [bottlePerfumeMl, setBottlePerfumeMl] = useState(24.6);
+  const [deviceBattery, setDeviceBattery] = useState(78);
+  const [dailySprayCount, setDailySprayCount] = useState(3);
+
+  // Cart
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>('none');
+  const [linkedSensor, setLinkedSensor] = useState<SensorType>('smartwatch');
+
+  // Smart Mode Expansion
+  const [locationTriggers, setLocationTriggers] = useState<LocationTrigger[]>([
+    { id: '1', name: 'Work / Office', active: true, fragranceId: 'Flow' },
+    { id: '2', name: 'Elite Gym', active: true, fragranceId: 'Synapse' },
+    { id: '3', name: 'Home / Zen', active: false, fragranceId: 'Apex' },
+  ]);
+  const [calendarSync, setCalendarSync] = useState(true);
+
+  // Biometrics
+  const [biometrics, setBiometrics] = useState({ hrv: 82, stress: 'Low', temp: 36.6 });
+
+  // Controls
   const [controlMode, setControlMode] = useState<ControlMode>('smart');
-  const [selectedVariant, setSelectedVariant] = useState<RefillVariant | null>(null);
-  const dailyUsageMl = 1.2;
-  const totalCartridgeMl = 15; // 15ml cartridge
-  const cartridgeDaysLeft = Math.round((cartridgeLevel / 100) * totalCartridgeMl / dailyUsageMl);
   const [musicState, setMusicState] = useState<MusicState>(DEFAULT_MUSIC);
   const [musicConnected, setMusicConnected] = useState(false);
   const [musicAIMode, setMusicAIMode] = useState(true);
   const [selectedService, setSelectedServiceState] = useState<MusicService>('spotify');
-  const [auraConnected, setAuraConnected] = useState(false);
-  const [nearbyUser, setNearbyUser] = useState<NearbyUser | null>(null);
   const [scheduledDoses, setScheduledDoses] = useState<ScheduledDose[]>(DEFAULT_SCHEDULED_DOSES);
   const [burstHistory, setBurstHistory] = useState<BurstRecord[]>([]);
 
-  // Auto-select variant when device changes
-  useEffect(() => {
-    if (activeDevice !== 'none') {
-      const variants = ALL_VARIANTS.filter(v => v.baseLine === activeDevice);
-      if (variants.length > 0 && !selectedVariant) {
-        setSelectedVariant(variants[0]);
-      }
-    }
-  }, [activeDevice, selectedVariant]);
+  const getFragrance = useCallback(() => FRAGRANCES.find(f => f.id === activeFragrance), [activeFragrance]);
 
-  // Biometric simulation — cycles through all stress levels for demo
+  // Computed
+  const estimatedDeviceSprays = Math.floor(devicePerfumeMl / SPRAY_ML);
+  const dailyUsageMl = DAILY_SPRAYS * SPRAY_ML; // 0.48ml/day
+  const estimatedBottleDays = Math.round(bottlePerfumeMl / dailyUsageMl);
+
+  // Cart helpers
+  const addToCart = useCallback((item: CartItem) => {
+    setCart(prev => {
+      const existing = prev.findIndex(c => c.fragranceId === item.fragranceId && c.type === item.type);
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = { ...updated[existing], quantity: updated[existing].quantity + item.quantity };
+        return updated;
+      }
+      return [...prev, item];
+    });
+  }, []);
+
+  const removeFromCart = useCallback((index: number) => {
+    setCart(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const clearCart = useCallback(() => setCart([]), []);
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+
+  // Biometric simulation
   useEffect(() => {
     if (activeDevice === 'none') return;
-
     let cycleIndex = 0;
-
     const STRESS_CYCLE: { stress: string; hrvRange: [number, number] }[] = [
       { stress: 'Low', hrvRange: [88, 105] },
       { stress: 'Medium', hrvRange: [72, 85] },
       { stress: 'High', hrvRange: [60, 70] },
     ];
-
     const interval = setInterval(() => {
       cycleIndex = (cycleIndex + 1) % STRESS_CYCLE.length;
       const phase = STRESS_CYCLE[cycleIndex];
-
       setBiometrics(() => {
         const [min, max] = phase.hrvRange;
-        const nextHrv = min + Math.floor(Math.random() * (max - min));
         return {
-          hrv: nextHrv,
+          hrv: min + Math.floor(Math.random() * (max - min)),
           stress: phase.stress,
-          temp: parseFloat((36.5 + (Math.random() * 0.4)).toFixed(1))
+          temp: parseFloat((36.5 + (Math.random() * 0.4)).toFixed(1)),
         };
       });
-    }, 5000); // Cycle every 5 seconds
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [activeDevice]);
 
-  // Music rotation simulation — respects connected, playing, and AI mode
+  // Music simulation
   useEffect(() => {
     if (activeDevice === 'none' || !musicConnected) return;
-
-    // Progress the track only if playing
     const progressInterval = setInterval(() => {
       setMusicState(prev => {
         if (!prev.isPlaying) return prev;
         const next = Math.min(100, prev.progress + 0.8);
-        // Auto-advance when track ends
         if (next >= 100 && musicAIMode) {
           const tracks = ALL_TRACKS_BY_SERVICE[selectedService];
           const nextIdx = (prev.trackIndex + 1) % tracks.length;
@@ -287,8 +376,6 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
         return { ...prev, progress: next };
       });
     }, 1000);
-
-    // AI mode: change track every ~25s based on biometrics
     let trackInterval: ReturnType<typeof setInterval> | null = null;
     if (musicAIMode) {
       trackInterval = setInterval(() => {
@@ -300,54 +387,24 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
         });
       }, 25000);
     }
-
-    return () => {
-      clearInterval(progressInterval);
-      if (trackInterval) clearInterval(trackInterval);
-    };
+    return () => { clearInterval(progressInterval); if (trackInterval) clearInterval(trackInterval); };
   }, [activeDevice, musicConnected, musicAIMode, selectedService]);
 
-  // Aura proximity simulation
-  useEffect(() => {
-    if (activeDevice === 'none') return;
-
-    const nearbyUsers: NearbyUser[] = [
-      { name: 'Alejandro M.', device: 'Synapse', distance: '2.4m', variant: 'Amber Night' },
-      { name: 'Sofia R.', device: 'ApexEssence', distance: '3.1m', variant: 'Extreme Citrus' },
-      { name: 'Marco T.', device: 'Kinetic', distance: '1.8m', variant: 'Alga Marina' },
-    ];
-
-    const connectTimeout = setTimeout(() => {
-      if (!auraConnected) {
-        const user = nearbyUsers[Math.floor(Math.random() * nearbyUsers.length)];
-        setNearbyUser(user);
-        setAuraConnected(true);
-        // Disconnect after 20-30s
-        setTimeout(() => {
-          setAuraConnected(false);
-          setNearbyUser(null);
-        }, 20000 + Math.random() * 10000);
-      }
-    }, 2000); // Takes exactly 2 seconds to pair
-
-    return () => clearTimeout(connectTimeout);
-  }, [activeDevice, auraConnected]);
-
   const triggerScent = useCallback(() => {
-    const consumption = currentPlan === 'Premium' ? 0.3 : 0.5;
-    setCartridgeLevel(prev => Math.max(0, prev - (consumption / 10))); 
+    setDevicePerfumeMl(prev => Math.max(0, prev - SPRAY_ML));
+    setDailySprayCount(prev => prev + 1);
     setPoints(prev => prev + 5);
+    const frag = FRAGRANCES.find(f => f.id === activeFragrance);
     setBurstHistory(prev => [
-      { timestamp: new Date(), mode: controlMode, variant: selectedVariant?.name || 'Base' },
+      { timestamp: new Date(), mode: controlMode, variant: frag?.name || 'Unknown' },
       ...prev.slice(0, 19),
     ]);
-  }, [currentPlan, controlMode, selectedVariant]);
+  }, [controlMode, activeFragrance]);
 
-  // === MUSIC CONTROL FUNCTIONS ===
+  // Music controls
   const toggleMusicConnection = useCallback(() => {
     setMusicConnected(prev => {
       if (!prev) {
-        // Connecting: start playing first track of selected service
         const tracks = ALL_TRACKS_BY_SERVICE[selectedService];
         setMusicState({ ...tracks[0], isPlaying: true, progress: 0, trackIndex: 0 });
       } else {
@@ -357,9 +414,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
     });
   }, [selectedService]);
 
-  const toggleMusicAIMode = useCallback(() => {
-    setMusicAIMode(prev => !prev);
-  }, []);
+  const toggleMusicAIMode = useCallback(() => setMusicAIMode(prev => !prev), []);
 
   const setSelectedService = useCallback((s: MusicService) => {
     setSelectedServiceState(s);
@@ -369,115 +424,77 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [musicConnected]);
 
-  const musicPlay = useCallback(() => {
-    if (!musicConnected) return;
-    setMusicState(prev => ({ ...prev, isPlaying: true }));
-  }, [musicConnected]);
-
-  const musicPause = useCallback(() => {
-    setMusicState(prev => ({ ...prev, isPlaying: false }));
-  }, []);
-
-  const musicTogglePlayPause = useCallback(() => {
-    if (!musicConnected) return;
-    setMusicState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
-  }, [musicConnected]);
-
+  const musicPlay = useCallback(() => { if (musicConnected) setMusicState(prev => ({ ...prev, isPlaying: true })); }, [musicConnected]);
+  const musicPause = useCallback(() => setMusicState(prev => ({ ...prev, isPlaying: false })), []);
+  const musicTogglePlayPause = useCallback(() => { if (musicConnected) setMusicState(prev => ({ ...prev, isPlaying: !prev.isPlaying })); }, [musicConnected]);
   const musicNext = useCallback(() => {
     if (!musicConnected) return;
     const tracks = ALL_TRACKS_BY_SERVICE[selectedService];
-    setMusicState(prev => {
-      const nextIdx = (prev.trackIndex + 1) % tracks.length;
-      return { ...tracks[nextIdx], isPlaying: true, progress: 0, trackIndex: nextIdx };
-    });
+    setMusicState(prev => { const nextIdx = (prev.trackIndex + 1) % tracks.length; return { ...tracks[nextIdx], isPlaying: true, progress: 0, trackIndex: nextIdx }; });
   }, [musicConnected, selectedService]);
-
   const musicPrev = useCallback(() => {
     if (!musicConnected) return;
     const tracks = ALL_TRACKS_BY_SERVICE[selectedService];
-    setMusicState(prev => {
-      const prevIdx = prev.trackIndex <= 0 ? tracks.length - 1 : prev.trackIndex - 1;
-      return { ...tracks[prevIdx], isPlaying: true, progress: 0, trackIndex: prevIdx };
-    });
+    setMusicState(prev => { const prevIdx = prev.trackIndex <= 0 ? tracks.length - 1 : prev.trackIndex - 1; return { ...tracks[prevIdx], isPlaying: true, progress: 0, trackIndex: prevIdx }; });
   }, [musicConnected, selectedService]);
 
   const logout = () => {
     setActiveDevice('none');
+    setActiveFragrance('none');
     setUserProfile(null);
-    setCurrentPlan('Base');
-    setCartridgeLevel(85);
     setPoints(450);
     setControlMode('smart');
-    setSelectedVariant(null);
     setBurstHistory([]);
-    setAuraConnected(false);
-    setNearbyUser(null);
     setMusicConnected(false);
     setMusicAIMode(true);
     setMusicState(DEFAULT_MUSIC);
+    setCart([]);
+    setSubscriptionPlan('none');
+    setDevicePerfumeMl(1.05);
+    setBottlePerfumeMl(24.6);
+    setDeviceBattery(78);
+    setDailySprayCount(3);
+    setLinkedSensor('none');
   };
 
-  const getVariantsForDevice = useCallback((device: DeviceType): RefillVariant[] => {
-    return ALL_VARIANTS.filter(v => v.baseLine === device);
-  }, []);
-
-  // Map device to tailwind theme class
-  const themeMap: Record<DeviceType, string> = {
+  // Theme class based on fragrance
+  const themeMap: Record<FragranceType, string> = {
     none: '',
-    ApexEssence: 'theme-apexessence',
+    Apex: 'theme-apex',
     Synapse: 'theme-synapse',
-    Kinetic: 'theme-kinetic',
+    Flow: 'theme-flow',
   };
-  const themeClass = themeMap[activeDevice] || '';
+  const themeClass = themeMap[activeFragrance] || '';
 
   return (
-    <DeviceContext.Provider value={{ 
-      activeDevice, 
-      setActiveDevice, 
-      cartridgeLevel, 
-      triggerScent, 
-      points, 
-      currentPlan, 
-      setCurrentPlan,
-      userProfile,
-      setUserProfile,
-      biometrics,
-      logout,
-      controlMode,
-      setControlMode,
-      selectedVariant,
-      setSelectedVariant,
-      cartridgeDaysLeft,
-      dailyUsageMl,
+    <DeviceContext.Provider value={{
+      activeDevice, setActiveDevice,
+      activeFragrance, setActiveFragrance, getFragrance,
+      devicePerfumeMl, bottlePerfumeMl, deviceBattery, dailySprayCount,
+      estimatedBottleDays, estimatedDeviceSprays,
+      cart, addToCart, removeFromCart, clearCart, cartTotal,
+      subscriptionPlan, setSubscriptionPlan,
+      triggerScent, points,
+      userProfile, setUserProfile,
+      biometrics, logout,
+      controlMode, setControlMode,
       musicState,
-      auraConnected,
-      nearbyUser,
-      scheduledDoses,
-      setScheduledDoses,
+      scheduledDoses, setScheduledDoses,
       burstHistory,
-      getVariantsForDevice,
-      musicConnected,
-      musicAIMode,
-      selectedService,
-      setSelectedService,
-      toggleMusicConnection,
-      toggleMusicAIMode,
-      musicPlay,
-      musicPause,
-      musicTogglePlayPause,
-      musicNext,
-      musicPrev,
+      musicConnected, musicAIMode, selectedService, setSelectedService,
+      toggleMusicConnection, toggleMusicAIMode,
+      musicPlay, musicPause, musicTogglePlayPause, musicNext, musicPrev,
+      linkedSensor, setLinkedSensor,
+      locationTriggers, setLocationTriggers,
+      calendarSync, setCalendarSync
     }}>
       <div className={['min-h-screen', 'transition-colors', 'duration-1000', 'bg-background', 'text-foreground', themeClass].filter(Boolean).join(' ')}>
-        
-        {/* Animated luxury ambient background */}
-        {activeDevice !== 'none' && (
+        {activeFragrance !== 'none' && (
           <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
             <div className="absolute -top-[15%] -left-[10%] w-[70vw] h-[70vh] rounded-full bg-brand/30 blur-[120px] mix-blend-screen animate-slow-drift" />
             <div className="absolute top-[25%] -right-[15%] w-[60vw] h-[60vh] rounded-full bg-brand-accent/20 blur-[130px] mix-blend-screen animate-slow-drift-reverse" />
           </div>
         )}
-
         <div className="relative z-10">
           {children}
         </div>

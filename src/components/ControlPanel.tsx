@@ -9,7 +9,10 @@ import {
   Bell, 
   Timer,
   Check,
-  X 
+  X,
+  MapPin,
+  Calendar,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,6 +30,11 @@ interface ControlPanelProps {
   setScheduledDoses: (doses: ScheduledDose[]) => void;
   onBurst: () => void;
   biometrics: { hrv: number; stress: string; temp: number };
+  // New props
+  locationTriggers: any[];
+  setLocationTriggers: (t: any) => void;
+  calendarSync: boolean;
+  setCalendarSync: (s: boolean) => void;
 }
 
 function ModeToggle({ controlMode, setControlMode }: { controlMode: ControlMode; setControlMode: (m: ControlMode) => void }) {
@@ -61,7 +69,10 @@ function ModeToggle({ controlMode, setControlMode }: { controlMode: ControlMode;
   );
 }
 
-export function ControlPanel({ controlMode, setControlMode, scheduledDoses, setScheduledDoses, onBurst, biometrics }: ControlPanelProps) {
+export function ControlPanel({ 
+  controlMode, setControlMode, scheduledDoses, setScheduledDoses, onBurst, biometrics,
+  locationTriggers, setLocationTriggers, calendarSync, setCalendarSync
+}: ControlPanelProps) {
   const [burstInterval, setBurstInterval] = React.useState([4]);
   const [ignoreSensors, setIgnoreSensors] = React.useState(false);
 
@@ -120,9 +131,42 @@ export function ControlPanel({ controlMode, setControlMode, scheduledDoses, setS
             </div>
           </div>
 
-          <div className="bg-blue-500/5 rounded-xl p-3 border border-blue-500/10">
-            <p className="text-[10px] text-blue-300 italic leading-relaxed">
-              &ldquo;Elevated activity pattern detected. Performance dose optimized for the next 45 minutes.&rdquo;
+          <div className="space-y-4 pt-2">
+            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400/60 px-2">Environmental Awareness</h4>
+            <div className="flex items-center justify-between px-2">
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+                  <Calendar className="w-3 h-3" /> Calendar Sync
+                </p>
+                <p className="text-[8px] text-white/20 uppercase tracking-tighter">Adjusts based on events & meetings</p>
+              </div>
+              <Switch checked={calendarSync} onCheckedChange={setCalendarSync} className="data-[state=checked]:bg-blue-500" />
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-[9px] font-black uppercase tracking-widest text-white/40 px-2 flex items-center gap-2">
+                <MapPin className="w-3 h-3" /> Geo-Fencing Triggers
+              </p>
+              <div className="space-y-2">
+                {locationTriggers.map((loc) => (
+                  <div key={loc.id} className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]", loc.active ? "bg-blue-400" : "bg-white/10")} />
+                      <div>
+                        <p className="text-[10px] font-bold">{loc.name}</p>
+                        <p className="text-[8px] uppercase tracking-widest opacity-20">{loc.fragranceId} Active</p>
+                      </div>
+                    </div>
+                    <Switch checked={loc.active} onCheckedChange={(val) => setLocationTriggers(locationTriggers.map(t => t.id === loc.id ? { ...t, active: val } : t))} className="scale-75 data-[state=checked]:bg-blue-400" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+            <p className="text-[10px] text-blue-400 font-medium leading-relaxed italic">
+              "The smart engine is currently prioritizing stress mitigation based on upcoming calendar high-stress events."
             </p>
           </div>
         </Card>
@@ -207,6 +251,47 @@ export function ControlPanel({ controlMode, setControlMode, scheduledDoses, setS
               <span>12h</span>
             </div>
           </Card>
+
+          {/* New Rule Builder Sections for Manual */}
+          <div className="space-y-4 pt-2">
+            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-omni-orange/60 px-2">Rule Builder (Manual Overrides)</h4>
+            
+            <div className="flex items-center justify-between px-2">
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+                  <Calendar className="w-3 h-3" /> Manual Calendar Link
+                </p>
+                <p className="text-[8px] text-white/20 uppercase tracking-tighter">Trigger on specific event categories</p>
+              </div>
+              <Switch checked={calendarSync} onCheckedChange={setCalendarSync} className="data-[state=checked]:bg-omni-orange" />
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-[9px] font-black uppercase tracking-widest text-white/40 px-2 flex items-center gap-2">
+                <MapPin className="w-3 h-3" /> Location-Based Rules
+              </p>
+              <div className="space-y-2">
+                {locationTriggers.map((loc) => (
+                  <div key={loc.id} className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]", loc.active ? "bg-omni-orange" : "bg-white/10")} />
+                      <div>
+                        <p className="text-[10px] font-bold">{loc.name}</p>
+                        <p className="text-[8px] uppercase tracking-widest opacity-20">{loc.fragranceId} Active</p>
+                      </div>
+                    </div>
+                    <Switch checked={loc.active} onCheckedChange={(val) => setLocationTriggers(locationTriggers.map(t => t.id === loc.id ? { ...t, active: val } : t))} className="scale-75 data-[state=checked]:bg-omni-orange" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-omni-orange/5 rounded-2xl border border-omni-orange/10">
+            <p className="text-[10px] text-omni-orange/70 font-medium leading-relaxed italic text-center">
+              "Manual mode gives you total control. The rules above act as persistent triggers regardless of biometrics."
+            </p>
+          </div>
 
           {/* Ignore sensors toggle */}
           <Card className="p-5 bg-white/5 border-none rounded-[2rem] flex items-center justify-between">

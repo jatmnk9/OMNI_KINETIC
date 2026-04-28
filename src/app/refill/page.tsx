@@ -1,262 +1,463 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import {
   Droplets,
-  Sparkles,
-  Shuffle,
-  Check,
+  Battery,
+  AlertTriangle,
+  ShoppingCart,
+  Plus,
+  Minus,
   Package,
+  Check,
+  Sparkles,
+  MapPin,
+  Truck,
   ChevronRight,
-  Gift,
-  Zap,
-  Beaker,
+  X,
+  CreditCard,
+  Crown,
+  Star,
+  Navigation2,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useDevice, ALL_VARIANTS } from '@/lib/device-context';
+import { useDevice, FRAGRANCES, REFILL_PRICE, PACK_PRICES, SUBSCRIPTION_PLANS, FragranceType } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
-import { CartridgeGauge } from '@/components/CartridgeGauge';
-import { VariantIcon } from '@/components/VariantIcon';
 import { cn } from '@/lib/utils';
 
+const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { ssr: false });
+
+const PICKUP_LOCATIONS = [
+  { id: 1, name: "Omni Luxe — Champs-Élysées", brand: "Flagship", status: "Available", stock: 18, distance: "0.6 km", address: "101 Avenue des Champs-Élysées, 75008", rating: 4.9, lat: 48.8698, lng: 2.3076, color: "bg-brand-accent" },
+  { id: 2, name: "Luxe Wellness — Le Marais", brand: "Authorized", status: "Limited", stock: 4, distance: "1.2 km", address: "27 Rue des Francs-Bourgeois, 75004", rating: 4.7, lat: 48.8572, lng: 2.3618, color: "bg-orange-500" },
+  { id: 3, name: "Omni — Galeries Lafayette", brand: "Premium", status: "Available", stock: 32, distance: "0.9 km", address: "40 Boulevard Haussmann, 75009", rating: 4.8, lat: 48.8737, lng: 2.3320, color: "bg-brand-accent" },
+  { id: 4, name: "Omni Kinetic — Saint-Germain", brand: "Experience Center", status: "Available", stock: 45, distance: "1.8 km", address: "170 Boulevard Saint-Germain, 75006", rating: 5.0, lat: 48.8530, lng: 2.3327, color: "bg-brand-accent" },
+  { id: 5, name: "Omni Atelier — Opéra", brand: "Flagship", status: "Available", stock: 22, distance: "0.4 km", address: "2 Place de l'Opéra, 75009", rating: 4.9, lat: 48.8712, lng: 2.3316, color: "bg-brand-accent" },
+];
+
 export default function RefillPage() {
-  const { 
-    activeDevice, 
-    cartridgeLevel, 
-    cartridgeDaysLeft, 
-    dailyUsageMl,
-    currentPlan, 
-    selectedVariant, 
-    setSelectedVariant,
-    getVariantsForDevice,
+  const router = useRouter();
+  const {
+    activeFragrance,
+    devicePerfumeMl,
+    bottlePerfumeMl,
+    deviceBattery,
+    dailySprayCount,
+    estimatedBottleDays,
+    estimatedDeviceSprays,
+    cart,
+    addToCart,
+    removeFromCart,
+    clearCart,
+    cartTotal,
+    subscriptionPlan,
+    setSubscriptionPlan,
   } = useDevice();
 
-  const [blindDropActive, setBlindDropActive] = useState(false);
-  const [blindDropRevealing, setBlindDropRevealing] = useState(false);
-  const [revealedVariant, setRevealedVariant] = useState<typeof ALL_VARIANTS[0] | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({ Apex: 1, Synapse: 1, Flow: 1 });
+  const [showCart, setShowCart] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<'idle' | 'processing' | 'done'>('idle');
+  const [deliveryChoice, setDeliveryChoice] = useState<'pickup' | 'deliver' | null>(null);
+  const [selectedPickupId, setSelectedPickupId] = useState<number | null>(null);
 
-  const deviceName = activeDevice === 'ApexEssence' ? 'Apex' : (activeDevice === 'Synapse' ? 'Synapse' : 'Kinetic');
-  const price = activeDevice === 'ApexEssence' ? '$52.64' : (activeDevice === 'Synapse' ? '$58.49' : '$70.18');
-  const variants = getVariantsForDevice(activeDevice);
+  const handlePickupMarkerClick = useCallback((id: number) => {
+    setSelectedPickupId(id);
+  }, []);
 
-  const handleBlindDrop = () => {
-    setBlindDropActive(true);
-    setBlindDropRevealing(true);
-    setTimeout(() => {
-      const chosen = variants[Math.floor(Math.random() * variants.length)];
-      setRevealedVariant(chosen);
-      setTimeout(() => {
-        setBlindDropRevealing(false);
-      }, 800);
-    }, 2500);
+  const pickupMapMarkers = PICKUP_LOCATIONS.map(f => ({ id: f.id, lat: f.lat, lng: f.lng, name: f.name, status: f.status, color: f.color }));
+  const selectedPickup = PICKUP_LOCATIONS.find(l => l.id === selectedPickupId);
+
+  const updateQty = (id: string, delta: number) => {
+    setQuantities(prev => ({ ...prev, [id]: Math.max(1, Math.min(10, (prev[id] || 1) + delta)) }));
   };
 
-  const resetBlindDrop = () => {
-    setBlindDropActive(false);
-    setBlindDropRevealing(false);
-    setRevealedVariant(null);
+  const handleAddToCart = (fragranceId: FragranceType) => {
+    addToCart({
+      fragranceId,
+      quantity: quantities[fragranceId] || 1,
+      type: 'single',
+      unitPrice: REFILL_PRICE,
+    });
   };
+
+  const handleAddPack = (fragranceId: FragranceType, packType: 'pack2' | 'pack3' | 'pack4') => {
+    const pack = PACK_PRICES[packType];
+    addToCart({
+      fragranceId,
+      quantity: 1,
+      type: packType,
+      unitPrice: pack.price,
+    });
+  };
+
+  const handleCheckout = () => {
+    setCheckoutStep('processing');
+    setTimeout(() => setCheckoutStep('done'), 2500);
+  };
+
+  const needsRefillSoon = devicePerfumeMl < 0.3;
+  const bottleLow = bottlePerfumeMl < 10;
+  const devicePct = Math.round((devicePerfumeMl / 1.2) * 100);
+  const bottlePct = Math.round((bottlePerfumeMl / 30) * 100);
 
   return (
-    <main className="min-h-screen pb-24 bg-background text-foreground">
+    <main className="min-h-screen pb-32 bg-background text-foreground">
       <Header />
-      
+
       <div className="max-w-lg mx-auto p-6 space-y-8">
-        <header>
-          <h1 className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground">Author Variants</h1>
+        <header className="flex items-center justify-between">
+          <h1 className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground">Smart Refill</h1>
+          <button onClick={() => setShowCart(true)} className="relative bg-white/5 border border-white/10 rounded-full h-11 w-11 flex items-center justify-center hover:bg-white/10 transition-all">
+            <ShoppingCart className="w-5 h-5" />
+            {cart.length > 0 && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-brand-accent text-background text-[9px] font-black rounded-full flex items-center justify-center">{cart.length}</div>
+            )}
+          </button>
         </header>
 
-        {/* === TELEMETRY GAUGE === */}
-        <section className="flex flex-col items-center space-y-4">
-          <CartridgeGauge level={cartridgeLevel} daysLeft={cartridgeDaysLeft} />
-          
-          <div className="flex items-center gap-4 text-center">
-            <div className="space-y-0.5">
-              <p className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-40">Daily Usage</p>
-              <p className="text-lg font-black tabular-nums">{dailyUsageMl}<span className="text-[10px] opacity-40 ml-0.5">ml</span></p>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="space-y-0.5">
-              <p className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-40">Forecast</p>
-              <p className="text-lg font-black tabular-nums">{cartridgeDaysLeft}<span className="text-[10px] opacity-40 ml-0.5">days</span></p>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="space-y-0.5">
-              <p className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-40">Line</p>
-              <p className="text-lg font-black">{deviceName}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* === CURRENT VARIANT === */}
-        {selectedVariant && (
-          <Card className="p-5 bg-gradient-to-br from-brand/10 to-transparent border border-brand/20 rounded-[2rem] space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand/15 rounded-xl flex items-center justify-center">
-                  <VariantIcon iconName={selectedVariant.iconName} className="w-5 h-5 text-brand-accent" />
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-40">Installed Variant</p>
-                  <h3 className="font-bold text-base tracking-tight text-white">{deviceName} Base + {selectedVariant.name}</h3>
-                </div>
-              </div>
-              <Badge className="bg-brand-accent/20 text-brand-accent border-none text-[8px] font-bold uppercase">Active</Badge>
-            </div>
-            <p className="text-[10px] text-white/40 pl-[52px] italic">{selectedVariant.notes}</p>
-          </Card>
-        )}
-
-        {/* === VARIANT SELECTOR === */}
+        {/* === SECTION 1: PERFUME STATUS === */}
         <section className="space-y-4">
           <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
-            <Sparkles className="w-3 h-3 text-brand-accent" /> Choose Variant
-          </h2>
-          
-          <div className="space-y-3">
-            {variants.map((variant) => {
-              const isSelected = selectedVariant?.id === variant.id;
-              return (
-                <Card
-                  key={variant.id}
-                  className={cn(
-                    "p-5 border-none rounded-[1.8rem] flex items-center gap-4 cursor-pointer transition-all duration-500 group relative overflow-hidden",
-                    isSelected 
-                      ? "bg-white/10 ring-1 ring-brand-accent/30 shadow-2xl" 
-                      : "bg-white/[0.03] hover:bg-white/[0.06]"
-                  )}
-                  onClick={() => setSelectedVariant(variant)}
-                >
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-brand/5 to-transparent opacity-50" />
-                  )}
-                  <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center relative z-10 shrink-0">
-                    <VariantIcon iconName={variant.iconName} className="w-5 h-5 text-brand-accent" />
-                  </div>
-                  <div className="flex-1 space-y-1 relative z-10 min-w-0">
-                    <h4 className="font-bold text-sm tracking-tight">{variant.name}</h4>
-                    <p className="text-[10px] text-white/40 truncate">{variant.notes}</p>
-                  </div>
-                  {isSelected ? (
-                    <div className="w-8 h-8 bg-brand-accent rounded-full flex items-center justify-center shrink-0 relative z-10 shadow-lg">
-                      <Check className="w-4 h-4 text-background" />
-                    </div>
-                  ) : (
-                    <ChevronRight className="w-5 h-5 opacity-20 group-hover:opacity-60 transition-opacity relative z-10 shrink-0" />
-                  )}
-                </Card>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* === DISCOVERY MODE: BLIND DROP === */}
-        <section className="space-y-4">
-          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
-            <Shuffle className="w-3 h-3 text-omni-orange" /> Discovery Mode
+            <Droplets className="w-3 h-3 text-brand-accent" /> Status
           </h2>
 
-          {!blindDropActive ? (
-            <Card 
-              className="p-6 border border-omni-orange/20 rounded-[2rem] bg-omni-orange/5 space-y-4 cursor-pointer group hover:bg-omni-orange/10 transition-all duration-500 relative overflow-hidden"
-              onClick={handleBlindDrop}
-            >
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-omni-orange/5 rounded-full blur-2xl group-hover:bg-omni-orange/10 transition-all" />
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="w-14 h-14 bg-omni-orange/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Gift className="w-7 h-7 text-omni-orange" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-base text-white">Blind Drop</h3>
-                    <Badge className="bg-omni-orange/20 text-omni-orange border-none text-[7px] font-black uppercase tracking-wider animate-pulse">
-                      AI Selects
-                    </Badge>
-                  </div>
-                  <p className="text-[10px] text-white/40 mt-0.5 max-w-[240px]">
-                    AI will analyze your biometric history and send the optimal variant for your recent performance
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 pl-[74px] relative z-10">
-                <Zap className="w-3 h-3 text-omni-orange opacity-60" />
-                <span className="text-[9px] text-omni-orange/60 uppercase tracking-widest font-bold">Tap to activate</span>
-              </div>
-            </Card>
-          ) : (
-            <Card className="p-8 border border-omni-orange/30 rounded-[2rem] bg-omni-orange/5 relative overflow-hidden">
-              {blindDropRevealing ? (
-                <div className="flex flex-col items-center space-y-6 py-4 animate-in fade-in zoom-in duration-500">
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-3xl bg-omni-orange/20 flex items-center justify-center animate-pulse">
-                      <Package className="w-12 h-12 text-omni-orange animate-bounce" />
-                    </div>
-                    <div className="absolute inset-0 bg-omni-orange/30 rounded-3xl animate-wave-expand" />
-                    <div className="absolute inset-0 bg-omni-orange/20 rounded-3xl animate-wave-expand" style={{ animationDelay: '0.5s' }} />
-                  </div>
-                  <p className="text-[11px] text-omni-orange uppercase tracking-[0.4em] font-black animate-pulse">
-                    Analyzing biometrics...
-                  </p>
-                </div>
-              ) : revealedVariant ? (
-                <div className="flex flex-col items-center space-y-5 py-2 animate-in fade-in zoom-in duration-700">
-                  <div className="w-16 h-16 bg-brand/15 rounded-2xl flex items-center justify-center">
-                    <VariantIcon iconName={revealedVariant.iconName} className="w-8 h-8 text-brand-accent" />
-                  </div>
-                  <div className="text-center space-y-1">
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-omni-orange font-bold">AI Selection</p>
-                    <h3 className="text-2xl font-black tracking-tight text-white">{revealedVariant.name}</h3>
-                    <p className="text-[10px] text-white/40 italic">{revealedVariant.notes}</p>
-                  </div>
-                  <div className="flex gap-3 w-full pt-2">
-                    <Button 
-                      className="flex-1 h-12 bg-omni-orange text-white font-bold uppercase tracking-widest text-[10px] rounded-xl shadow-lg border-none hover:bg-omni-orange/90"
-                      onClick={() => { setSelectedVariant(revealedVariant); resetBlindDrop(); }}
-                    >
-                      Accept
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 h-12 rounded-xl font-bold uppercase tracking-widest text-[10px] border-white/10 hover:bg-white/5"
-                      onClick={resetBlindDrop}
-                    >
-                      Retry
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
+          {/* Alert banner */}
+          {(needsRefillSoon || bottleLow) && (
+            <Card className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-[1.5rem] flex items-center gap-3 animate-in fade-in duration-500">
+              <AlertTriangle className="w-5 h-5 text-orange-400 shrink-0" />
+              <p className="text-[11px] text-orange-300 font-medium">
+                {needsRefillSoon ? 'Device running low — recharge your wearable soon.' : 'Bottle level is low — consider ordering a refill.'}
+              </p>
             </Card>
           )}
+
+          <div className="grid grid-cols-3 gap-3">
+            {/* Device Perfume */}
+            <Card className="p-4 bg-white/[0.03] border-none rounded-[1.5rem] flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--brand-accent))" strokeWidth="3" strokeDasharray={`${devicePct * 0.94} 100`} strokeLinecap="round" />
+                </svg>
+                <Droplets className="absolute inset-0 m-auto w-4 h-4 text-brand-accent" />
+              </div>
+              <p className="text-[8px] uppercase font-bold tracking-widest opacity-40">Device</p>
+              <p className="text-sm font-black tabular-nums">{devicePerfumeMl.toFixed(2)}<span className="text-[8px] opacity-30 ml-0.5">ml</span></p>
+            </Card>
+
+            {/* Battery */}
+            <Card className="p-4 bg-white/[0.03] border-none rounded-[1.5rem] flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="15" fill="none" stroke={deviceBattery > 20 ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeDasharray={`${deviceBattery * 0.94} 100`} strokeLinecap="round" />
+                </svg>
+                <Battery className="absolute inset-0 m-auto w-4 h-4" style={{ color: deviceBattery > 20 ? '#22C55E' : '#EF4444' }} />
+              </div>
+              <p className="text-[8px] uppercase font-bold tracking-widest opacity-40">Battery</p>
+              <p className="text-sm font-black tabular-nums">{deviceBattery}<span className="text-[8px] opacity-30 ml-0.5">%</span></p>
+            </Card>
+
+            {/* Bottle Level */}
+            <Card className="p-4 bg-white/[0.03] border-none rounded-[1.5rem] flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--omni-orange))" strokeWidth="3" strokeDasharray={`${bottlePct * 0.94} 100`} strokeLinecap="round" />
+                </svg>
+                <Package className="absolute inset-0 m-auto w-4 h-4 text-omni-orange" />
+              </div>
+              <p className="text-[8px] uppercase font-bold tracking-widest opacity-40">Bottle</p>
+              <p className="text-sm font-black tabular-nums">{bottlePerfumeMl.toFixed(1)}<span className="text-[8px] opacity-30 ml-0.5">ml</span></p>
+            </Card>
+          </div>
+
+          {/* Predictive info */}
+          <div className="flex items-center justify-between px-2">
+            <div className="space-y-0.5">
+              <p className="text-[9px] uppercase font-bold tracking-widest opacity-40">Est. Bottle Life</p>
+              <p className="text-sm font-black tabular-nums">{estimatedBottleDays} days</p>
+            </div>
+            <div className="space-y-0.5 text-right">
+              <p className="text-[9px] uppercase font-bold tracking-widest opacity-40">Today</p>
+              <p className="text-sm font-black tabular-nums">{dailySprayCount}<span className="text-[9px] opacity-30 ml-0.5">/ 6 sprays</span></p>
+            </div>
+          </div>
         </section>
 
-        {/* === PURCHASE CTA === */}
-        <section className="space-y-4 pt-2 pb-4">
-          <Card className="p-5 bg-white/5 border-none rounded-[2rem] flex items-center gap-5 group hover:bg-white/10 transition-colors">
-            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center p-2">
-              <Droplets className="w-8 h-8 opacity-40 text-brand-accent" />
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-bold text-sm uppercase tracking-widest">{deviceName} Smart Refill</h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    {selectedVariant ? `${selectedVariant.name}` : 'Base formula'}
-                  </p>
-                </div>
-                <span className="text-brand-accent font-black">{price}</span>
-              </div>
-            </div>
-          </Card>
+        {/* === SECTION 2: REFILL STORE === */}
+        <section className="space-y-4">
+          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
+            <Sparkles className="w-3 h-3 text-brand-accent" /> Refill Store
+          </h2>
 
-          <Button className="w-full h-20 bg-brand text-accent-foreground font-black uppercase tracking-[0.3em] rounded-[1.8rem] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-sm">
-            Confirm Smart Refill
-          </Button>
+          {FRAGRANCES.map((frag) => (
+            <Card key={frag.id} className={cn(
+              "p-5 border-none rounded-[2rem] space-y-4 transition-all",
+              activeFragrance === frag.id ? "bg-brand/10 ring-1 ring-brand-accent/20" : "bg-white/[0.03]"
+            )}>
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16 shrink-0">
+                  <Image src={frag.refillImg} alt={frag.name} fill className="object-contain" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-base tracking-tight">{frag.name}</h3>
+                    {activeFragrance === frag.id && (
+                      <Badge className="bg-brand-accent/20 text-brand-accent border-none text-[7px] font-bold uppercase">Active</Badge>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-white/40 italic">{frag.tagline}</p>
+                  <p className="text-base font-black text-brand-accent mt-1">€{REFILL_PRICE}<span className="text-[9px] opacity-40 ml-1 font-medium">/ 30ml</span></p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-1">
+                  <button onClick={() => updateQty(frag.id, -1)} className="w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                    <Minus className="w-4 h-4 opacity-40" />
+                  </button>
+                  <span className="text-sm font-black tabular-nums w-6 text-center">{quantities[frag.id] || 1}</span>
+                  <button onClick={() => updateQty(frag.id, 1)} className="w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                    <Plus className="w-4 h-4 opacity-40" />
+                  </button>
+                </div>
+                <Button onClick={() => handleAddToCart(frag.id)} className="h-10 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl px-5 hover:bg-neutral-200 active:scale-95 transition-all border-none">
+                  Add to Cart
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </section>
+
+        {/* === SECTION 3: PACKS === */}
+        <section className="space-y-4">
+          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
+            <Package className="w-3 h-3 text-omni-orange" /> Packs & Savings
+          </h2>
+          <div className="grid grid-cols-3 gap-3">
+            {Object.entries(PACK_PRICES).map(([key, pack]) => (
+              <Card key={key} className="p-4 bg-white/[0.03] border-none rounded-[1.5rem] flex flex-col items-center gap-2 cursor-pointer hover:bg-white/[0.06] transition-all group"
+                onClick={() => handleAddPack(activeFragrance !== 'none' ? activeFragrance : 'Apex', key as any)}>
+                <Badge className="bg-omni-orange/20 text-omni-orange border-none text-[8px] font-black uppercase">{pack.discount} off</Badge>
+                <p className="text-xl font-black">x{pack.qty}</p>
+                <p className="text-sm font-black text-brand-accent">€{pack.price}</p>
+                <p className="text-[8px] opacity-30 uppercase font-bold">€{Math.round(pack.price / pack.qty)}/ea</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* === SECTION 4: SUBSCRIPTION === */}
+        <section className="space-y-4">
+          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
+            <Crown className="w-3 h-3 text-brand-accent" /> Smart Subscription
+          </h2>
+          {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => {
+            const isActive = subscriptionPlan === key;
+            return (
+              <Card key={key} className={cn(
+                "p-5 rounded-[2rem] space-y-3 transition-all border",
+                isActive ? "bg-brand-accent/10 border-brand-accent/30 ring-1 ring-brand-accent/20" : "bg-white/[0.03] border-white/5"
+              )}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-sm tracking-tight">{plan.name}</h3>
+                    <p className="text-[10px] text-white/40 mt-0.5">{plan.desc}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-black text-brand-accent">€{plan.monthlyPrice}<span className="text-[9px] opacity-40">/mo</span></p>
+                    {isActive && (
+                      <Badge className="bg-brand-accent text-background text-[7px] font-black uppercase border-none mt-1">Active</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[9px] text-white/30">
+                  <Check className="w-3 h-3" /> Free delivery
+                  <Check className="w-3 h-3 ml-2" /> Cancel anytime
+                  <Check className="w-3 h-3 ml-2" /> Priority access
+                </div>
+                {!isActive ? (
+                  <Button onClick={() => {
+                    setSubscriptionPlan(key as any);
+                    addToCart({ fragranceId: activeFragrance !== 'none' ? activeFragrance : 'Apex', quantity: 1, type: 'single', unitPrice: plan.monthlyPrice });
+                    setShowCart(true);
+                  }} className="w-full h-11 bg-white text-black hover:bg-white/90 font-bold uppercase tracking-widest text-[9px] rounded-xl active:scale-95 transition-all border-none">
+                    Subscribe · €{plan.monthlyPrice}/mo
+                  </Button>
+                ) : (
+                  <Button onClick={() => setSubscriptionPlan('none')} variant="outline" className="w-full h-11 font-bold uppercase tracking-widest text-[9px] rounded-xl border-white/10 hover:bg-white hover:text-black transition-all">
+                    Cancel Subscription
+                  </Button>
+                )}
+              </Card>
+            );
+          })}
         </section>
       </div>
+
+      {/* === CART DRAWER === */}
+      {showCart && (
+        <div className="fixed inset-0 z-[70] animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => { setShowCart(false); setCheckoutStep('idle'); setDeliveryChoice(null); }} />
+          <div className="absolute bottom-0 left-0 right-0 max-w-lg mx-auto bg-card rounded-t-[3rem] p-6 space-y-6 animate-in slide-in-from-bottom-8 duration-500 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-black tracking-tight">Your Cart</h2>
+              <button onClick={() => { setShowCart(false); setCheckoutStep('idle'); setDeliveryChoice(null); }} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {checkoutStep === 'idle' && (
+              <>
+                {cart.length === 0 ? (
+                  <div className="text-center py-8 space-y-3">
+                    <ShoppingCart className="w-12 h-12 mx-auto text-white/10" />
+                    <p className="text-sm text-white/30">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      {cart.map((item, idx) => {
+                        const frag = FRAGRANCES.find(f => f.id === item.fragranceId);
+                        return (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-2xl">
+                            <div className="flex items-center gap-3">
+                              {frag && (
+                                <div className="relative w-10 h-10 shrink-0">
+                                  <Image src={frag.refillImg} alt={frag.name} fill className="object-contain" />
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-xs font-bold">{frag?.name} {item.type !== 'single' ? `(${item.type.replace('pack', 'x')})` : ''}</p>
+                                <p className="text-[10px] text-white/30">Qty: {item.quantity} × €{item.unitPrice}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-black">€{item.unitPrice * item.quantity}</span>
+                              <button onClick={() => removeFromCart(idx)} className="w-7 h-7 bg-white/5 rounded-full flex items-center justify-center hover:bg-red-500/20 transition-colors">
+                                <X className="w-3 h-3 opacity-40" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                      <div>
+                        <p className="text-[9px] uppercase font-bold tracking-widest opacity-40">Total</p>
+                        <p className="text-2xl font-black">€{cartTotal}</p>
+                      </div>
+                      <Button onClick={clearCart} variant="ghost" className="text-[9px] uppercase tracking-widest opacity-40 hover:opacity-100">Clear All</Button>
+                    </div>
+                    <Button onClick={handleCheckout} className="w-full h-16 bg-white text-black font-bold uppercase tracking-[0.3em] rounded-2xl shadow-2xl hover:bg-neutral-200 active:scale-95 transition-all flex items-center justify-center gap-3 border-none">
+                      <CreditCard className="w-5 h-5 opacity-60" />
+                      Checkout · €{cartTotal}
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+
+            {checkoutStep === 'processing' && (
+              <div className="flex flex-col items-center py-12 space-y-6 animate-in fade-in duration-500">
+                <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center animate-pulse">
+                  <CreditCard className="w-10 h-10 text-brand-accent" />
+                </div>
+                <p className="text-[11px] text-white uppercase tracking-[0.4em] font-black animate-pulse">Processing payment...</p>
+              </div>
+            )}
+
+            {checkoutStep === 'done' && !deliveryChoice && (
+              <div className="flex flex-col items-center py-8 space-y-6 animate-in fade-in zoom-in duration-700">
+                <div className="w-20 h-20 rounded-3xl bg-green-500/10 flex items-center justify-center">
+                  <Check className="w-10 h-10 text-green-400" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-xl font-black">Payment Successful</h3>
+                  <p className="text-[11px] text-white/40">How would you like to receive your order?</p>
+                </div>
+                <div className="w-full space-y-3">
+                  <Button onClick={() => setDeliveryChoice('pickup')} className="w-full h-14 bg-white text-black hover:bg-white/90 font-bold uppercase tracking-[0.2em] rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-3 text-[10px] border-none">
+                    <MapPin className="w-5 h-5 opacity-60" /> Pick up at Store
+                  </Button>
+                  <Button onClick={() => setDeliveryChoice('deliver')} variant="outline" className="w-full h-14 font-bold uppercase tracking-[0.2em] rounded-2xl border-white/20 text-white hover:bg-white hover:text-black active:scale-95 transition-all flex items-center justify-center gap-3 text-[10px]">
+                    <Truck className="w-5 h-5 opacity-60" /> Deliver to my Address
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {checkoutStep === 'done' && deliveryChoice === 'pickup' && (
+              <div className="space-y-4 animate-in fade-in duration-500">
+                <div className="text-center space-y-1">
+                  <h3 className="text-lg font-black">Select Pickup Point</h3>
+                  <p className="text-[10px] text-white/40">Tap a marker on the map to select your store</p>
+                </div>
+
+                {/* Embedded map */}
+                <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border border-white/10">
+                  <LeafletMap
+                    markers={pickupMapMarkers}
+                    selectedId={selectedPickupId}
+                    onMarkerClick={handlePickupMarkerClick}
+                    center={[48.8650, 2.3320]}
+                    zoom={12}
+                  />
+                </div>
+
+                {/* Selected location detail */}
+                {selectedPickup && (
+                  <Card className="p-4 bg-white/5 border-none rounded-2xl space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-sm tracking-tight">{selectedPickup.name}</h4>
+                      <Badge className="bg-brand-accent text-background font-black text-[9px] h-5 px-2">
+                        {selectedPickup.rating} <Star className="w-2.5 h-2.5 ml-0.5 fill-current" />
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] text-white/40 flex items-center gap-1">
+                      <Navigation2 className="w-3 h-3" /> {selectedPickup.address} · {selectedPickup.distance}
+                    </p>
+                  </Card>
+                )}
+
+                <Button
+                  disabled={!selectedPickup}
+                  onClick={() => { setShowCart(false); clearCart(); setCheckoutStep('idle'); setDeliveryChoice(null); setSelectedPickupId(null); }}
+                  className={cn(
+                    "w-full h-14 font-bold uppercase tracking-[0.2em] rounded-2xl active:scale-95 transition-all text-[10px] border-none",
+                    selectedPickup ? "bg-white text-black hover:bg-white/90" : "bg-white/10 text-white/30 cursor-not-allowed"
+                  )}
+                >
+                  {selectedPickup ? `Confirm Pickup — ${selectedPickup.name.split('—')[0].trim()}` : 'Select a store on the map'}
+                </Button>
+              </div>
+            )}
+
+            {checkoutStep === 'done' && deliveryChoice === 'deliver' && (
+              <div className="flex flex-col items-center py-8 space-y-6 animate-in fade-in duration-500">
+                <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                  <Truck className="w-8 h-8 text-green-400" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-black">Order Confirmed</h3>
+                  <p className="text-[11px] text-white/40">Estimated delivery: 2-3 business days</p>
+                </div>
+                <Button onClick={() => { setShowCart(false); clearCart(); setCheckoutStep('idle'); setDeliveryChoice(null); }} className="w-full h-14 bg-white text-black font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-neutral-200 active:scale-95 transition-all text-[10px] border-none">
+                  Done
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <Navigation />
     </main>
   );

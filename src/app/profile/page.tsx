@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   Shield, 
   Smartphone, 
@@ -22,6 +23,9 @@ import {
   TrendingDown,
   Minus,
   Zap,
+  Crown,
+  Watch,
+  Plus,
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -38,7 +42,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useDevice, BIOMETRIC_HISTORY, DOSE_HISTORY } from '@/lib/device-context';
+import { useDevice, BIOMETRIC_HISTORY, DOSE_HISTORY, SUBSCRIPTION_PLANS } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
 import { cn } from '@/lib/utils';
@@ -179,7 +183,7 @@ function TrendIndicator({ current, previous }: { current: number; previous: numb
 const MOOD_LABELS = ['', 'Very Low', 'Low', 'Neutral', 'Good', 'Excellent'];
 
 export default function ProfilePage() {
-  const { userProfile, activeDevice, currentPlan, points, biometrics } = useDevice();
+  const { userProfile, activeDevice, activeFragrance, getFragrance, points, biometrics, subscriptionPlan, linkedSensor } = useDevice();
   const tier = points > 1000 ? 'Platinum' : 'Gold';
   const [activeTab, setActiveTab] = useState<MetricTab>('overview');
 
@@ -224,6 +228,35 @@ export default function ProfilePage() {
             <p className="text-xs text-muted-foreground font-medium opacity-60 tracking-wider">{userProfile?.email || 'jatzirywong9@gmail.com'}</p>
           </div>
         </div>
+
+        {/* Telemetry Sensors */}
+        <section className="space-y-4 animate-in slide-in-from-top-4 duration-700">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground px-2">Telemetry Sensors</h3>
+          <Card className="bg-white/5 border border-white/5 p-5 rounded-[2rem] space-y-4">
+            {linkedSensor === 'smartwatch' ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-neutral-900 rounded-2xl flex items-center justify-center border border-white/10 shadow-inner overflow-hidden relative">
+                    <Image src="/smartwatch.png" alt="Smartwatch" fill className="object-contain p-1 opacity-80" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm leading-tight">Apple Watch Ultra</h4>
+                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Primary Data Source</p>
+                  </div>
+                </div>
+                <Badge variant="outline" className="border-green-500/40 text-green-400 font-bold text-[7px] h-5 px-2 bg-green-500/5 animate-pulse">STREAMING</Badge>
+              </div>
+            ) : (
+              <div className="py-4 text-center">
+                <p className="text-[10px] text-white/20 uppercase tracking-widest font-black italic">No telemetry sensor linked</p>
+              </div>
+            )}
+            
+            <button className="w-full h-12 bg-white/5 hover:bg-white/10 transition-all rounded-xl border border-white/5 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
+              <Plus className="w-3 h-3" /> Link New Sensor
+            </button>
+          </Card>
+        </section>
 
         {/* Status Quick Grid */}
         <div className="grid grid-cols-2 gap-4">
@@ -588,7 +621,7 @@ export default function ProfilePage() {
                    <Smartphone className="w-6 h-6 text-brand-accent" />
                 </div>
                 <div>
-                   <h4 className="font-bold text-base leading-tight">{activeDevice}</h4>
+                   <h4 className="font-bold text-base leading-tight">{activeDevice === 'ApexEssence' ? 'Necklace' : activeDevice === 'Synapse' ? 'Bracelet' : 'Ring'}</h4>
                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Hardware Synced</p>
                 </div>
               </div>
@@ -601,13 +634,32 @@ export default function ProfilePage() {
                    <Shield className="w-6 h-6 text-brand-accent" />
                 </div>
                 <div>
-                   <h4 className="font-bold text-base leading-tight">{currentPlan} Intelligence</h4>
-                   <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Active Tier</p>
+                   <h4 className="font-bold text-base leading-tight">{getFragrance()?.name || 'No Fragrance'}</h4>
+                   <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Active Fragrance</p>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 opacity-20" />
             </div>
           </Card>
+
+          {/* Subscription status */}
+          {subscriptionPlan !== 'none' && (
+            <Card className="p-5 bg-brand-accent/5 border border-brand-accent/20 rounded-[2rem] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-brand-accent/10 rounded-xl flex items-center justify-center">
+                    <Crown className="w-5 h-5 text-brand-accent" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm">{SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.name}</h4>
+                    <p className="text-[10px] text-white/40">€{SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.monthlyPrice}/mo</p>
+                  </div>
+                </div>
+                <Badge className="bg-brand-accent text-background text-[7px] font-black uppercase border-none">Active</Badge>
+              </div>
+              <p className="text-[10px] text-white/30 italic">{SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.desc}</p>
+            </Card>
+          )}
         </section>
 
         {/* Identity Settings */}
