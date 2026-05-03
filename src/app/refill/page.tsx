@@ -27,7 +27,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useDevice, FRAGRANCES, REFILL_PRICE, PACK_PRICES, SUBSCRIPTION_PLANS, FragranceType } from '@/lib/device-context';
+import { useDevice, FRAGRANCES, REFILL_PRICE, FragranceType } from '@/lib/device-context';
 import { Navigation } from '@/components/Navigation';
 import { Header } from '@/components/Header';
 import { cn } from '@/lib/utils';
@@ -57,8 +57,6 @@ export default function RefillPage() {
     removeFromCart,
     clearCart,
     cartTotal,
-    subscriptionPlan,
-    setSubscriptionPlan,
   } = useDevice();
 
   const [quantities, setQuantities] = useState<Record<string, number>>({ Apex: 1, Synapse: 1, Flow: 1 });
@@ -87,15 +85,7 @@ export default function RefillPage() {
     });
   };
 
-  const handleAddPack = (fragranceId: FragranceType, packType: 'pack2' | 'pack3' | 'pack4') => {
-    const pack = PACK_PRICES[packType];
-    addToCart({
-      fragranceId,
-      quantity: 1,
-      type: packType,
-      unitPrice: pack.price,
-    });
-  };
+
 
   const handleCheckout = () => {
     setCheckoutStep('processing');
@@ -215,7 +205,7 @@ export default function RefillPage() {
                     )}
                   </div>
                   <p className="text-[10px] text-white/40 italic">{frag.tagline}</p>
-                  <p className="text-base font-black text-brand-accent mt-1">€{REFILL_PRICE}<span className="text-[9px] opacity-40 ml-1 font-medium">/ 30ml</span></p>
+                  <p className="text-base font-black text-brand-accent mt-1">$ {REFILL_PRICE}<span className="text-[9px] opacity-40 ml-1 font-medium">/ 30ml refill</span></p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -234,71 +224,6 @@ export default function RefillPage() {
               </div>
             </Card>
           ))}
-        </section>
-
-        {/* === SECTION 3: PACKS === */}
-        <section className="space-y-4">
-          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
-            <Package className="w-3 h-3 text-omni-orange" /> Packs & Savings
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
-            {Object.entries(PACK_PRICES).map(([key, pack]) => (
-              <Card key={key} className="p-4 bg-white/[0.03] border-none rounded-[1.5rem] flex flex-col items-center gap-2 cursor-pointer hover:bg-white/[0.06] transition-all group"
-                onClick={() => handleAddPack(activeFragrance !== 'none' ? activeFragrance : 'Apex', key as any)}>
-                <Badge className="bg-omni-orange/20 text-omni-orange border-none text-[8px] font-black uppercase">{pack.discount} off</Badge>
-                <p className="text-xl font-black">x{pack.qty}</p>
-                <p className="text-sm font-black text-brand-accent">€{pack.price}</p>
-                <p className="text-[8px] opacity-30 uppercase font-bold">€{Math.round(pack.price / pack.qty)}/ea</p>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* === SECTION 4: SUBSCRIPTION === */}
-        <section className="space-y-4">
-          <h2 className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground flex items-center gap-2">
-            <Crown className="w-3 h-3 text-brand-accent" /> Smart Subscription
-          </h2>
-          {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => {
-            const isActive = subscriptionPlan === key;
-            return (
-              <Card key={key} className={cn(
-                "p-5 rounded-[2rem] space-y-3 transition-all border",
-                isActive ? "bg-brand-accent/10 border-brand-accent/30 ring-1 ring-brand-accent/20" : "bg-white/[0.03] border-white/5"
-              )}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-bold text-sm tracking-tight">{plan.name}</h3>
-                    <p className="text-[10px] text-white/40 mt-0.5">{plan.desc}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-black text-brand-accent">€{plan.monthlyPrice}<span className="text-[9px] opacity-40">/mo</span></p>
-                    {isActive && (
-                      <Badge className="bg-brand-accent text-background text-[7px] font-black uppercase border-none mt-1">Active</Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-[9px] text-white/30">
-                  <Check className="w-3 h-3" /> Free delivery
-                  <Check className="w-3 h-3 ml-2" /> Cancel anytime
-                  <Check className="w-3 h-3 ml-2" /> Priority access
-                </div>
-                {!isActive ? (
-                  <Button onClick={() => {
-                    setSubscriptionPlan(key as any);
-                    addToCart({ fragranceId: activeFragrance !== 'none' ? activeFragrance : 'Apex', quantity: 1, type: 'single', unitPrice: plan.monthlyPrice });
-                    setShowCart(true);
-                  }} className="w-full h-11 bg-white text-black hover:bg-white/90 font-bold uppercase tracking-widest text-[9px] rounded-xl active:scale-95 transition-all border-none">
-                    Subscribe · €{plan.monthlyPrice}/mo
-                  </Button>
-                ) : (
-                  <Button onClick={() => setSubscriptionPlan('none')} variant="outline" className="w-full h-11 font-bold uppercase tracking-widest text-[9px] rounded-xl border-white/10 hover:bg-white hover:text-black transition-all">
-                    Cancel Subscription
-                  </Button>
-                )}
-              </Card>
-            );
-          })}
         </section>
       </div>
 

@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Droplets, MapPin, Award } from 'lucide-react';
+import { Home, Droplets, MapPin, Award, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Navigation() {
@@ -12,6 +12,7 @@ export function Navigation() {
   const navItems = [
     { icon: Home, label: 'Home', href: '/dashboard' },
     { icon: Droplets, label: 'Refill', href: '/refill' },
+    { icon: Crown, label: 'Club', href: '/scent-club' },
     { icon: MapPin, label: 'Locator', href: '/map' },
     { icon: Award, label: 'Rewards', href: '/rewards' },
   ];

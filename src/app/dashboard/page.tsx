@@ -205,7 +205,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex-1 min-w-0 space-y-1">
               <h3 className="font-bold text-sm tracking-tight">Smart Refill & Store</h3>
-              <p className="text-[10px] text-muted-foreground truncate">Order refills, manage subscriptions & track levels</p>
+              <p className="text-[10px] text-muted-foreground truncate">Order refills, track levels & manage your scent</p>
             </div>
             <ChevronRight className="w-5 h-5 opacity-20 group-hover:translate-x-1 transition-transform shrink-0" />
           </div>

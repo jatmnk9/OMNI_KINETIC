@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 export type DeviceType = 'none' | 'ApexEssence' | 'Synapse' | 'Kinetic';
 export type FragranceType = 'none' | 'Apex' | 'Synapse' | 'Flow';
 export type ControlMode = 'smart' | 'habit' | 'manual';
-export type SubscriptionPlan = 'none' | '6yearly' | '3quarterly';
+export type SubscriptionPlan = 'none' | 'signature' | 'dual' | 'continuum';
 export type SensorType = 'none' | 'smartwatch' | 'ring' | 'strap';
 
 export interface LocationTrigger {
@@ -113,15 +113,35 @@ export interface CartItem {
 }
 
 // === REFILL PRICING ===
-export const REFILL_PRICE = 89; // €89 per 30ml refill
-export const PACK_PRICES: Record<string, { qty: number; price: number; discount: string }> = {
-  pack2: { qty: 2, price: 169, discount: '5%' },
-  pack3: { qty: 3, price: 239, discount: '10%' },
-  pack4: { qty: 4, price: 299, discount: '16%' },
-};
+export const REFILL_PRICE = 109; // $109 per 30ml refill
 export const SUBSCRIPTION_PLANS = {
-  '6yearly': { name: '6 Refills / Year', desc: '1 refill every 2 months — never run out', monthlyPrice: 69, interval: 'monthly' },
-  '3quarterly': { name: '3 Every 90 Days', desc: 'Quarterly delivery of 3 refills', monthlyPrice: 59, interval: 'monthly' },
+  signature: {
+    name: 'Kinetic Essence',
+    subtitle: 'Signature',
+    desc: '1 refill 30ml delivered to your door every 3 months.',
+    price: 102,
+    frequency: 'Every 3 months',
+    refills: 1,
+    badge: 'ESSENTIAL',
+  },
+  dual: {
+    name: 'Kinetic Duality',
+    subtitle: 'Dual',
+    desc: '2 refills 30ml — same or different fragrance — every 3 months.',
+    price: 194,
+    frequency: 'Every 3 months',
+    refills: 2,
+    badge: 'POPULAR',
+  },
+  continuum: {
+    name: 'Kinetic Infinity',
+    subtitle: 'Continuum',
+    desc: '4 refills 30ml — your full year supply, delivered once.',
+    price: 370,
+    frequency: 'Once a year',
+    refills: 4,
+    badge: 'BEST VALUE',
+  },
 };
 
 // === BIOMETRIC HISTORY ===

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { 
   Shield, 
@@ -26,6 +26,12 @@ import {
   Crown,
   Watch,
   Plus,
+  X,
+  Bluetooth,
+  CheckCircle,
+  Wifi,
+  Radio,
+  Loader2,
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -48,6 +54,358 @@ import { Header } from '@/components/Header';
 import { cn } from '@/lib/utils';
 
 type MetricTab = 'overview' | 'heart' | 'sleep' | 'activity' | 'environment' | 'impact';
+type PairingStep = 'idle' | 'scanning' | 'found' | 'connecting' | 'syncing' | 'paired';
+
+// ============== SENSOR PAIRING MODAL ==============
+function SensorPairingModal({ 
+  isOpen, 
+  onClose, 
+  onPaired 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onPaired: () => void;
+}) {
+  const [step, setStep] = useState<PairingStep>('idle');
+  const [scanProgress, setScanProgress] = useState(0);
+  const [syncProgress, setSyncProgress] = useState(0);
+  const [pulseCount, setPulseCount] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const cleanup = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+
+  // Reset on open
+  useEffect(() => {
+    if (isOpen) {
+      setStep('idle');
+      setScanProgress(0);
+      setSyncProgress(0);
+      setPulseCount(0);
+    }
+    return cleanup;
+  }, [isOpen, cleanup]);
+
+  // Pulse animation counter
+  useEffect(() => {
+    if (!isOpen) return;
+    const i = setInterval(() => setPulseCount(p => p + 1), 1200);
+    return () => clearInterval(i);
+  }, [isOpen]);
+
+  const startPairing = () => {
+    setStep('scanning');
+    setScanProgress(0);
+    
+    // Scanning progress
+    let progress = 0;
+    intervalRef.current = setInterval(() => {
+      progress += Math.random() * 8 + 2;
+      if (progress >= 100) {
+        progress = 100;
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setScanProgress(100);
+        setStep('found');
+        // Auto-advance to connecting
+        timerRef.current = setTimeout(() => {
+          setStep('connecting');
+          // Connecting phase
+          timerRef.current = setTimeout(() => {
+            setStep('syncing');
+            setSyncProgress(0);
+            let sp = 0;
+            intervalRef.current = setInterval(() => {
+              sp += Math.random() * 6 + 3;
+              if (sp >= 100) {
+                sp = 100;
+                if (intervalRef.current) clearInterval(intervalRef.current);
+                setSyncProgress(100);
+                timerRef.current = setTimeout(() => {
+                  setStep('paired');
+                }, 600);
+              }
+              setSyncProgress(Math.min(sp, 100));
+            }, 120);
+          }, 2200);
+        }, 1500);
+      }
+      setScanProgress(Math.min(progress, 100));
+    }, 100);
+  };
+
+  const handleFinish = () => {
+    onPaired();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  const stepLabels: Record<PairingStep, string> = {
+    idle: 'Ready to Pair',
+    scanning: 'Scanning for devices…',
+    found: 'Device Found!',
+    connecting: 'Establishing Connection…',
+    syncing: 'Syncing Biometric Protocols…',
+    paired: 'Successfully Paired',
+  };
+
+  const stepNumber = {
+    idle: 0, scanning: 1, found: 1, connecting: 2, syncing: 3, paired: 4,
+  };
+
+  const steps = [
+    { n: 1, label: 'Scan' },
+    { n: 2, label: 'Connect' },
+    { n: 3, label: 'Sync' },
+    { n: 4, label: 'Done' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center" onClick={onClose}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300" />
+      
+      {/* Modal */}
+      <div 
+        className="relative w-full max-w-md mx-4 bg-neutral-950 border border-white/10 rounded-[2.5rem] p-8 space-y-6 animate-in zoom-in-95 fade-in slide-in-from-bottom-4 duration-500 shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors z-10"
+        >
+          <X className="w-4 h-4 text-white/60" />
+        </button>
+
+        {/* Header */}
+        <div className="text-center space-y-1">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Bluetooth className={cn(
+              "w-4 h-4 transition-colors duration-500",
+              step === 'paired' ? 'text-green-400' : step === 'idle' ? 'text-white/30' : 'text-blue-400 animate-pulse'
+            )} />
+            <h2 className="text-[10px] font-black uppercase tracking-[0.35em] text-muted-foreground">Sensor Pairing</h2>
+          </div>
+          <p className={cn(
+            "text-sm font-bold transition-colors duration-300",
+            step === 'paired' ? 'text-green-400' : step === 'found' ? 'text-blue-400' : 'text-white/80'
+          )}>
+            {stepLabels[step]}
+          </p>
+        </div>
+
+        {/* Smartwatch visual */}
+        <div className="relative flex items-center justify-center py-6">
+          {/* Pulsing rings */}
+          {(step === 'scanning' || step === 'connecting') && (
+            <>
+              <div className="absolute w-48 h-48 rounded-full border border-blue-500/20 animate-[ping_2s_ease-in-out_infinite]" />
+              <div className="absolute w-56 h-56 rounded-full border border-blue-500/10 animate-[ping_2s_ease-in-out_0.5s_infinite]" />
+              <div className="absolute w-64 h-64 rounded-full border border-blue-500/5 animate-[ping_2s_ease-in-out_1s_infinite]" />
+            </>
+          )}
+          
+          {/* Success glow */}
+          {step === 'paired' && (
+            <div className="absolute w-44 h-44 rounded-full bg-green-500/20 blur-3xl animate-pulse" />
+          )}
+
+          {/* Syncing glow */}
+          {step === 'syncing' && (
+            <div className="absolute w-44 h-44 rounded-full bg-purple-500/20 blur-3xl animate-pulse" />
+          )}
+
+          {/* Found glow */}
+          {step === 'found' && (
+            <div className="absolute w-44 h-44 rounded-full bg-blue-500/25 blur-2xl animate-pulse" />
+          )}
+
+          {/* Device circle */}
+          <div className={cn(
+            "relative w-40 h-40 rounded-[2rem] flex items-center justify-center transition-all duration-700",
+            step === 'idle' && 'bg-white/[0.03] border border-white/10',
+            step === 'scanning' && 'bg-blue-500/5 border border-blue-500/20 scale-105',
+            step === 'found' && 'bg-blue-500/10 border-2 border-blue-400/40 scale-110',
+            step === 'connecting' && 'bg-blue-500/10 border-2 border-blue-400/30 scale-105 animate-pulse',
+            step === 'syncing' && 'bg-purple-500/10 border-2 border-purple-400/30 scale-105',
+            step === 'paired' && 'bg-green-500/10 border-2 border-green-400/40 scale-110',
+          )}>
+            <Image 
+              src="/smartwatch.png" 
+              alt="Smartwatch" 
+              width={120} 
+              height={120} 
+              className={cn(
+                "object-contain transition-all duration-700 drop-shadow-2xl",
+                step === 'idle' && 'opacity-40 grayscale',
+                step === 'scanning' && 'opacity-60 grayscale-[50%]',
+                step === 'found' && 'opacity-90 grayscale-0 scale-105',
+                step === 'connecting' && 'opacity-80',
+                step === 'syncing' && 'opacity-90',
+                step === 'paired' && 'opacity-100 scale-105',
+              )}
+            />
+
+            {/* Success checkmark overlay */}
+            {step === 'paired' && (
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-neutral-950 animate-in zoom-in duration-500 shadow-lg shadow-green-500/40">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
+            )}
+
+            {/* Scanning indicator */}
+            {step === 'scanning' && (
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border-4 border-neutral-950 animate-bounce shadow-lg shadow-blue-500/40">
+                <Radio className="w-4 h-4 text-white" />
+              </div>
+            )}
+
+            {/* Connecting spinner */}
+            {step === 'connecting' && (
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border-4 border-neutral-950 shadow-lg shadow-blue-500/40">
+                <Loader2 className="w-4 h-4 text-white animate-spin" />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Progress steps */}
+        <div className="flex items-center justify-between px-4">
+          {steps.map((s, i) => (
+            <React.Fragment key={s.n}>
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all duration-500 border",
+                  stepNumber[step] >= s.n 
+                    ? 'bg-white text-black border-white shadow-lg shadow-white/20' 
+                    : stepNumber[step] === s.n - 1 
+                      ? 'border-white/30 text-white/60 animate-pulse' 
+                      : 'border-white/10 text-white/20'
+                )}>
+                  {stepNumber[step] >= s.n ? <CheckCircle className="w-4 h-4" /> : s.n}
+                </div>
+                <span className={cn(
+                  "text-[8px] font-bold uppercase tracking-widest transition-colors duration-300",
+                  stepNumber[step] >= s.n ? 'text-white/80' : 'text-white/20'
+                )}>
+                  {s.label}
+                </span>
+              </div>
+              {i < steps.length - 1 && (
+                <div className="flex-1 h-[1px] mx-2 mt-[-16px]">
+                  <div className={cn(
+                    "h-full transition-all duration-700",
+                    stepNumber[step] > s.n ? 'bg-white/40' : 'bg-white/5'
+                  )} />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Progress bar for scanning/syncing */}
+        {(step === 'scanning' || step === 'syncing') && (
+          <div className="space-y-2 animate-in fade-in duration-300">
+            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className={cn(
+                  "h-full rounded-full transition-all duration-200",
+                  step === 'scanning' ? 'bg-blue-400' : 'bg-purple-400'
+                )}
+                style={{ width: `${step === 'scanning' ? scanProgress : syncProgress}%` }}
+              />
+            </div>
+            <p className="text-center text-[9px] font-bold text-white/30 tabular-nums">
+              {Math.round(step === 'scanning' ? scanProgress : syncProgress)}%
+            </p>
+          </div>
+        )}
+
+        {/* Device info (after found) */}
+        {(step === 'found' || step === 'connecting' || step === 'syncing' || step === 'paired') && (
+          <div className="bg-white/[0.03] rounded-2xl p-4 space-y-3 border border-white/5 animate-in slide-in-from-bottom-2 fade-in duration-500">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center border border-white/10 overflow-hidden relative">
+                  <Image src="/smartwatch.png" alt="Watch" fill className="object-contain p-1" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs leading-tight">Apple Watch Ultra</h4>
+                  <p className="text-[9px] text-white/30 font-medium">WatchOS 11 · BLE 5.3</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Wifi className={cn(
+                  "w-3 h-3 transition-colors",
+                  step === 'paired' ? 'text-green-400' : 'text-blue-400 animate-pulse'
+                )} />
+                <span className={cn(
+                  "text-[8px] font-black uppercase tracking-widest",
+                  step === 'paired' ? 'text-green-400' : 'text-blue-400'
+                )}>
+                  {step === 'found' ? 'DETECTED' : step === 'connecting' ? 'LINKING' : step === 'syncing' ? 'SYNCING' : 'ACTIVE'}
+                </span>
+              </div>
+            </div>
+            
+            {step === 'paired' && (
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 animate-in fade-in duration-500">
+                <div className="text-center">
+                  <p className="text-[8px] text-white/20 uppercase font-bold tracking-wider">Signal</p>
+                  <p className="text-xs font-black text-green-400">Strong</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[8px] text-white/20 uppercase font-bold tracking-wider">Latency</p>
+                  <p className="text-xs font-black text-white/80">12ms</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[8px] text-white/20 uppercase font-bold tracking-wider">Battery</p>
+                  <p className="text-xs font-black text-white/80">92%</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="pt-2">
+          {step === 'idle' && (
+            <button 
+              onClick={startPairing}
+              className="w-full h-14 bg-white text-black font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-white/10"
+            >
+              <Bluetooth className="w-4 h-4" />
+              Start Pairing
+            </button>
+          )}
+
+          {(step === 'scanning' || step === 'connecting' || step === 'syncing' || step === 'found') && (
+            <button 
+              onClick={() => { cleanup(); onClose(); }}
+              className="w-full h-12 bg-white/5 text-white/40 font-bold text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-white/10 transition-all"
+            >
+              Cancel
+            </button>
+          )}
+
+          {step === 'paired' && (
+            <button 
+              onClick={handleFinish}
+              className="w-full h-14 bg-green-500 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-green-400 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-green-500/30 animate-in zoom-in-95 duration-300"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Done
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Mini spark chart component
 function SparkChart({ data, color, height = 40 }: { data: number[]; color: string; height?: number }) {
@@ -183,9 +541,10 @@ function TrendIndicator({ current, previous }: { current: number; previous: numb
 const MOOD_LABELS = ['', 'Very Low', 'Low', 'Neutral', 'Good', 'Excellent'];
 
 export default function ProfilePage() {
-  const { userProfile, activeDevice, activeFragrance, getFragrance, points, biometrics, subscriptionPlan, linkedSensor } = useDevice();
+  const { userProfile, activeDevice, activeFragrance, getFragrance, points, biometrics, subscriptionPlan, linkedSensor, setLinkedSensor } = useDevice();
   const tier = points > 1000 ? 'Platinum' : 'Gold';
   const [activeTab, setActiveTab] = useState<MetricTab>('overview');
+  const [showPairingModal, setShowPairingModal] = useState(false);
 
   const history = BIOMETRIC_HISTORY;
   const latest = history[history.length - 1];
@@ -252,11 +611,22 @@ export default function ProfilePage() {
               </div>
             )}
             
-            <button className="w-full h-12 bg-white/5 hover:bg-white/10 transition-all rounded-xl border border-white/5 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
-              <Plus className="w-3 h-3" /> Link New Sensor
+            <button 
+              onClick={() => setShowPairingModal(true)}
+              className="w-full h-12 bg-white/5 hover:bg-white/10 transition-all rounded-xl border border-white/5 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/60 hover:text-white/80 hover:border-white/10 group"
+            >
+              <Plus className="w-3 h-3 group-hover:rotate-90 transition-transform duration-300" /> Link New Sensor
             </button>
           </Card>
         </section>
+
+        {/* Pairing Modal */}
+        <SensorPairingModal 
+          isOpen={showPairingModal} 
+          onClose={() => setShowPairingModal(false)}
+          onPaired={() => setLinkedSensor('smartwatch')}
+        />
+
 
         {/* Status Quick Grid */}
         <div className="grid grid-cols-2 gap-4">
@@ -652,7 +1022,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-sm">{SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.name}</h4>
-                    <p className="text-[10px] text-white/40">€{SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.monthlyPrice}/mo</p>
+                    <p className="text-[10px] text-white/40">${SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.price} · {SUBSCRIPTION_PLANS[subscriptionPlan as keyof typeof SUBSCRIPTION_PLANS]?.subtitle}</p>
                   </div>
                 </div>
                 <Badge className="bg-brand-accent text-background text-[7px] font-black uppercase border-none">Active</Badge>
